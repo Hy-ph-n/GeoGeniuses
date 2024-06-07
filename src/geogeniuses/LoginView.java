@@ -230,38 +230,41 @@ public class LoginView extends State {
                         //A for loop that will test to see if the name and password match up with a manager or customer.
                         if (!positionTitle.equals("None")) {
                             for (int i = 0; i < logon.size(); i++) {
-                                if (loginName.equals(logon.get(i).logonName) && loginPassword.equals(logon.get(i).password) && person.get(i).personDeleted != 1) {
+                                try {
+                                    if (loginName.equals(logon.get(i).logonName) && loginPassword.equals(logon.get(i).password) && person.get(i).personDeleted != 1) {
 
-                                    SetPersonID(loginName);
+                                        SetPersonID(loginName);
 
-                                    //Resets the login name and login password fields to their default states
-                                    logName.setText("");
-                                    logPassword.setText("");
+                                        //Resets the login name and login password fields to their default states
+                                        logName.setText("");
+                                        logPassword.setText("");
 
-                                    if (positionTitle.equals("Manager")) {
-                                        //A switch to the the manager's view
-                                        //jf.setTitle("Manager View");
-                                        //jp.setVisible(false);
-                                        //jf.remove(jp);
-                                        //jf.setBounds(jf.getX(), jf.getY(), 1216, 610);
-                                        //jf.add(managerView.jp);
-                                        //managerView.jp.setVisible(true);
-                                        JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Manager", JOptionPane.INFORMATION_MESSAGE);
+                                        if (positionTitle.equals("Manager")) {
+                                            //A switch to the the manager's view
+                                            //jf.setTitle("Manager View");
+                                            //jp.setVisible(false);
+                                            //jf.remove(jp);
+                                            //jf.setBounds(jf.getX(), jf.getY(), 1216, 610);
+                                            //jf.add(managerView.jp);
+                                            //managerView.jp.setVisible(true);
+                                            JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Manager", JOptionPane.INFORMATION_MESSAGE);
+                                        }
+
+                                        if (positionTitle.equals("Customer")) {
+                                            //Updates the inventory for the customer
+                                            //((CustomerView) customerView).updateData();
+                                            //A switch to the customer's view
+                                            //jf.setTitle("Customer View");
+                                            //jp.setVisible(false);
+                                            //jf.remove(jp);
+                                            //jf.add(customerView.jp);
+                                            //jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
+                                            //customerView.jp.setVisible(true);
+                                            JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Customer", JOptionPane.INFORMATION_MESSAGE);
+                                        }
+
                                     }
-
-                                    if (positionTitle.equals("Customer")) {
-                                        //Updates the inventory for the customer
-                                        //((CustomerView) customerView).updateData();
-                                        //A switch to the customer's view
-                                        //jf.setTitle("Customer View");
-                                        //jp.setVisible(false);
-                                        //jf.remove(jp);
-                                        //jf.add(customerView.jp);
-                                        //jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
-                                        //customerView.jp.setVisible(true);
-                                        JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Customer", JOptionPane.INFORMATION_MESSAGE);
-                                    }
-
+                                } catch (IndexOutOfBoundsException ex) {
                                 }
                             }
                         }

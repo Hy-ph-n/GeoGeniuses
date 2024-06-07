@@ -447,7 +447,6 @@ public class Register extends State {
                                     }
                                 }
                             } catch (SQLException ex) {
-                                System.out.println(ex);
                             }
                         } else if (registrationLogonName.length() < 8) {
                             valid = false;
