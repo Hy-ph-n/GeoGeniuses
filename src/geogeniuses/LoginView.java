@@ -69,17 +69,18 @@ public class LoginView extends State {
         jp.add(nameError);
 
         passError = new JLabel("");
-        passError.setBounds(475, 70, 300, 15);
+        passError.setBounds(475, 78, 300, 15);
         passError.setForeground(Color.red);
         jp.add(passError);
 
         JLabel passCharacter = new JLabel("");
-        passCharacter.setBounds(475, 84, 300, 15);
+        passCharacter.setBounds(475, 78, 300, 15);
         passCharacter.setForeground(Color.red);
         jp.add(passCharacter);
 
         resetLabel = new JLabel("");
         resetLabel.setBounds(455, 379, 200, 15);
+        resetLabel.setForeground(Color.red);
         jp.add(resetLabel);
 
         logName.addKeyListener(new KeyAdapter() {
@@ -131,7 +132,9 @@ public class LoginView extends State {
                 passwordValid = true;
                 String loginPassword = new String(logPassword.getPassword());
                 passError.setText("");
+                passError.setBounds(475, 78, 300, 15);
                 passCharacter.setText("");
+                passCharacter.setBounds(475, 78, 300, 15);
 
                 if (!loginPassword.isEmpty()) {
                     boolean whitespace = false;
@@ -191,7 +194,9 @@ public class LoginView extends State {
 
                             if (requirementsMet < 3) {
                                 passwordValid = false;
+                                passError.setBounds(475, 70, 300, 15);
                                 passError.setText("Requires a capital and/or lowercase letter");
+                                passCharacter.setBounds(475, 84, 300, 15);
                                 passCharacter.setText("Requires special character and/or number");
                             }
                         }

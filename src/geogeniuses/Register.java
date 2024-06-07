@@ -440,7 +440,7 @@ public class Register extends State {
                                 ps = con.prepareStatement(query);
                                 ResultSet rs = ps.executeQuery();
                                 while (rs.next()) {
-                                    String logN = rs.getString("CustomerLoginName");
+                                    String logN = rs.getString(1);
                                     if (registrationLogonName.equals(logN)) {
                                         logNameError.setText("Already in use");
                                         valid = false;
