@@ -47,6 +47,7 @@ public class Register extends State {
     JLabel zipError;
 
     JComboBox stateBox;
+    JLabel stateError;
 
     JTextField emailField;
     JLabel emailError;
@@ -64,7 +65,7 @@ public class Register extends State {
     JComboBox postfix;
 
     Register() {
-        
+
         Color lightCyan = Color.decode("#DFFDFF");
         jp.setBackground(lightCyan);
 
@@ -245,6 +246,11 @@ public class Register extends State {
         stateBox.setBounds(500, 157, 125, 20);
         jp.add(stateBox);
 
+        stateError = new JLabel("");
+        stateError.setBounds(627, 157, 200, 20);
+        stateError.setForeground(Color.red);
+        jp.add(stateError);
+
         JLabel emailLabel = new JLabel("Email");
         emailLabel.setBounds(100, 185, 200, 20);
         jp.add(emailLabel);
@@ -380,6 +386,7 @@ public class Register extends State {
         addressError.setText("");
         cityError.setText("");
         zipError.setText("");
+        stateError.setText("");
         emailError.setText("");
         phoneError1.setText("");
         phoneError2.setText("");
@@ -617,16 +624,28 @@ public class Register extends State {
             }
         }
 
-        //If statement ensuring the user has entered a valid email if they entered one
-        if (email.isEmpty()) {
-            email = null;
-        } else {
-            if (email.contains("\u0040") && email.contains(".com")) {
+        //If statement ensuring the user has entered a state
+        if (state.equals("")) {
+            valid = false;
+            stateError.setText("Invalid state");
+        }
 
+        // If statement ensuring the user has entered a valid email
+        if (!email.equals("")) {
+            if (email.length() <= 40) {
+                if (email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.com")) {
+                    
+                } else {
+                    valid = false;
+                    emailError.setText("Email invalid");
+                }
             } else {
                 valid = false;
-                emailError.setText("Email invalid");
+                emailError.setText("Above 40 characters");
             }
+        } else {
+            valid = false;
+            emailError.setText("Email required");
         }
 
         //If statements for the primary phone number (optional) will give warnings if an entry is made but not prevent new account creation
@@ -809,6 +828,7 @@ public class Register extends State {
         zipField.setText("");
         zipError.setText("");
         stateBox.setSelectedItem("");
+        stateError.setText("");
         emailField.setText("");
         emailError.setText("");
         phonePrimary1.setText("");

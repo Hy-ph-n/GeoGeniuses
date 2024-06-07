@@ -120,12 +120,14 @@ public class ResetPassword extends State {
             answerError3.setText("");
 
             try {
+                // Collects challenge answers for comparison purposes, also makes them all uppercase so there is no case sensitivity
                 String query = "SELECT FirstChallengeAnswer FROM Logon WHERE PersonID = " + currentPerson + ";";
                 ps = con.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
                 rs.next();
 
                 String correctAnswer1 = rs.getString(1);
+                correctAnswer1 = correctAnswer1.toUpperCase();
 
                 query = "SELECT SecondChallengeAnswer FROM Logon WHERE PersonID = " + currentPerson + ";";
                 ps = con.prepareStatement(query);
@@ -133,6 +135,7 @@ public class ResetPassword extends State {
                 rs.next();
 
                 String correctAnswer2 = rs.getString(1);
+                correctAnswer2 = correctAnswer2.toUpperCase();
 
                 query = "SELECT ThirdChallengeAnswer FROM Logon WHERE PersonID = " + currentPerson + ";";
                 ps = con.prepareStatement(query);
@@ -140,18 +143,19 @@ public class ResetPassword extends State {
                 rs.next();
 
                 String correctAnswer3 = rs.getString(1);
+                correctAnswer3 = correctAnswer3.toUpperCase();
 
-                if (!securityAnswer1.getText().equals(correctAnswer1)) {
+                if (!securityAnswer1.getText().toUpperCase().equals(correctAnswer1)) {
                     validUser = false;
                     answerError1.setText("Invalid answer");
                 }
 
-                if (!securityAnswer2.getText().equals(correctAnswer2)) {
+                if (!securityAnswer2.getText().toUpperCase().equals(correctAnswer2)) {
                     validUser = false;
                     answerError2.setText("Invalid answer");
                 }
 
-                if (!securityAnswer3.getText().equals(correctAnswer3)) {
+                if (!securityAnswer3.getText().toUpperCase().equals(correctAnswer3)) {
                     validUser = false;
                     answerError3.setText("Invalid answer");
                 }
