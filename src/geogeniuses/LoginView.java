@@ -105,6 +105,17 @@ public class LoginView extends State {
                                             //managerView.jp.setVisible(true);
                                             JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Manager", JOptionPane.INFORMATION_MESSAGE);
                                         }
+                                        
+                                        if (positionTitle.equals("Employee")) {
+                                            //A switch to the the employee's view
+                                            //jf.setTitle("Employee View");
+                                            //jp.setVisible(false);
+                                            //jf.remove(jp);
+                                            //jf.setBounds(jf.getX(), jf.getY(), 1216, 610);
+                                            //jf.add(managerView.jp);
+                                            //managerView.jp.setVisible(true);
+                                            JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Employee", JOptionPane.INFORMATION_MESSAGE);
+                                        }
 
                                         if (positionTitle.equals("Customer")) {
                                             //Updates the inventory for the customer
