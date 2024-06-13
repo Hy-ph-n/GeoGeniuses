@@ -22,8 +22,6 @@ public class LoginView extends State {
     JTextField logName;
     JPasswordField logPassword;
 
-    JLabel resetLabel;
-
     boolean loginValid = true;
 
     boolean resetPassword = true;
@@ -62,11 +60,6 @@ public class LoginView extends State {
         logPassword.setBounds(275, 75, 200, 20);
         logPassword.setEchoChar('*');
         jp.add(logPassword);
-
-        resetLabel = new JLabel("");
-        resetLabel.setBounds(455, 379, 200, 15);
-        resetLabel.setForeground(Color.red);
-        jp.add(resetLabel);
 
         JButton loginButton = new JButton("Login");
         loginButton.setBounds(325, 140, 100, 50);
@@ -165,7 +158,6 @@ public class LoginView extends State {
         resetPasswordButton.addActionListener((e) -> {
             resetPassword = true;
             String loginName = logName.getText();
-            resetLabel.setText("");
 
             if (!loginName.isEmpty()) {
                 SetPersonID(loginName);
@@ -181,8 +173,6 @@ public class LoginView extends State {
                     jf.add(resetPasswordView.jp);
                     jf.setBounds(jf.getX(), jf.getY(), 650, 523);
                     resetPasswordView.jp.setVisible(true);
-                } else {
-                    resetLabel.setText("Password reset not allowed");
                 }
             }
         }
