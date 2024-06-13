@@ -112,8 +112,8 @@ public class LoginView extends State {
                                             //jp.setVisible(false);
                                             //jf.remove(jp);
                                             //jf.setBounds(jf.getX(), jf.getY(), 1216, 610);
-                                            //jf.add(managerView.jp);
-                                            //managerView.jp.setVisible(true);
+                                            //jf.add(employeeView.jp);
+                                            //employeeView.jp.setVisible(true);
                                             JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Employee", JOptionPane.INFORMATION_MESSAGE);
                                         }
 
