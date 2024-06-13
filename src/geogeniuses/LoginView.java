@@ -17,7 +17,6 @@ public class LoginView extends State {
     static int currentPerson = 0;
 
     JTextField logName;
-    JLabel nameError;
     JPasswordField logPassword;
 
     JLabel resetLabel;
@@ -61,60 +60,11 @@ public class LoginView extends State {
         logPassword.setEchoChar('*');
         jp.add(logPassword);
 
-        nameError = new JLabel("");
-        nameError.setBounds(475, 41, 300, 15);
-        nameError.setForeground(Color.red);
-        jp.add(nameError);
-
         resetLabel = new JLabel("");
         resetLabel.setBounds(455, 379, 200, 15);
         resetLabel.setForeground(Color.red);
         jp.add(resetLabel);
-
-        logName.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                loginValid = true;
-                String loginName = logName.getText();
-                nameError.setText("");
-                if (!loginName.isEmpty()) {
-                    boolean whitespace = false;
-                    //Removes any whitespaces from the beginning and end of the login name
-                    loginName = loginName.trim();
-                    logName.setText(loginName);
-
-                    //Ensures no whitespaces are present in the login name
-                    for (char c : loginName.toCharArray()) {
-                        if (Character.isWhitespace(c)) {
-                            whitespace = true;
-                        }
-                    }
-
-                    if (!whitespace) {
-                        char c;
-                        boolean specialPresent = false;
-                        for (int i = 0; i < loginName.length(); i++) {
-                            c = loginName.charAt(i);
-                            if (!Character.isAlphabetic(c) && !Character.isDigit(c)) {
-                                specialPresent = true;
-                            }
-                        }
-
-                        //If a special character is present, sends an error message
-                        if (specialPresent) {
-                            loginValid = false;
-                            nameError.setText("Login name cannot contain a special character");
-                        }
-                    } else {
-                        loginValid = false;
-                        nameError.setText("No whitespace allowed");
-                    }
-                } else {
-                    loginValid = false;
-                    nameError.setText("No login name");
-                }
-            }
-        });
-
+        
         JButton loginButton = new JButton("Login");
         loginButton.setBounds(325, 140, 100, 50);
         loginButton.addActionListener((e) -> {
@@ -202,7 +152,6 @@ public class LoginView extends State {
             resetPassword = true;
             String loginName = logName.getText();
             resetLabel.setText("");
-            nameError.setText("");
 
             if (!loginName.isEmpty()) {
                 SetPersonID(loginName);
@@ -221,8 +170,6 @@ public class LoginView extends State {
                 } else {
                     resetLabel.setText("Password reset not allowed");
                 }
-            } else {
-                nameError.setText("Must enter login name");
             }
         }
         );
@@ -324,7 +271,6 @@ public class LoginView extends State {
             currentPerson = Integer.parseInt(rs.getString(1));
         } catch (SQLException e) {
             resetPassword = false;
-            nameError.setText("Not a valid user");
         } catch (Exception e) {
             resetPassword = false;
         }
