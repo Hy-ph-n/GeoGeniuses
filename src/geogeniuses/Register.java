@@ -349,7 +349,7 @@ public class Register extends State {
                                         ResultSet rs = ps.executeQuery();
                                         while (rs.next()) {
                                             String logN = rs.getString(1);
-                                            if (registrationLogonName.equals(logN)) {
+                                            if (registrationLogonName.toUpperCase().equals(logN.toUpperCase())) {
                                                 logNameError.setText("Already in use");
                                                 loginValid = false;
                                             }
