@@ -74,19 +74,19 @@ public class Register extends State {
         jp.setBackground(lightCyan);
 
         JLabel pleaseRegister = new JLabel("Login Name");
-        pleaseRegister.setBounds(100, 10, pleaseRegister.getPreferredSize().width, pleaseRegister.getPreferredSize().height);
+        pleaseRegister.setBounds(90, 10, pleaseRegister.getPreferredSize().width, pleaseRegister.getPreferredSize().height);
         jp.add(pleaseRegister);
 
         registerLogName = new JTextField("");
-        registerLogName.setBounds(100, 25, 200, 20);
+        registerLogName.setBounds(90, 25, 200, 20);
         jp.add(registerLogName);
 
         JLabel firstNameLabel = new JLabel("First Name");
-        firstNameLabel.setBounds(100, 65, firstNameLabel.getPreferredSize().width, firstNameLabel.getPreferredSize().height);
+        firstNameLabel.setBounds(90, 65, firstNameLabel.getPreferredSize().width, firstNameLabel.getPreferredSize().height);
         jp.add(firstNameLabel);
 
         registerFirstName = new JTextField("");
-        registerFirstName.setBounds(100, 80, 200, 20);
+        registerFirstName.setBounds(90, 80, 200, 20);
         jp.add(registerFirstName);
 
         JLabel middleNameLabel = new JLabel("Middle Name");
@@ -98,11 +98,11 @@ public class Register extends State {
         jp.add(registerMiddleName);
 
         JLabel lastNameLabel = new JLabel("Last Name");
-        lastNameLabel.setBounds(500, 65, lastNameLabel.getPreferredSize().width, lastNameLabel.getPreferredSize().height);
+        lastNameLabel.setBounds(510, 65, lastNameLabel.getPreferredSize().width, lastNameLabel.getPreferredSize().height);
         jp.add(lastNameLabel);
 
         registerLastName = new JTextField("");
-        registerLastName.setBounds(500, 80, 200, 20);
+        registerLastName.setBounds(510, 80, 200, 20);
         jp.add(registerLastName);
 
         JLabel pleasePassword = new JLabel("Password");
@@ -115,17 +115,17 @@ public class Register extends State {
         jp.add(registerPassword);
 
         logNameError = new JLabel("");
-        logNameError.setBounds(175, 10, 300, 15);
+        logNameError.setBounds(165, 10, 300, 15);
         logNameError.setForeground(Color.red);
         jp.add(logNameError);
 
         firstNameError = new JLabel("");
-        firstNameError.setBounds(175, 65, 300, 15);
+        firstNameError.setBounds(165, 65, 300, 15);
         firstNameError.setForeground(Color.red);
         jp.add(firstNameError);
 
         lastNameError = new JLabel("");
-        lastNameError.setBounds(575, 65, 300, 15);
+        lastNameError.setBounds(585, 65, 300, 15);
         lastNameError.setForeground(Color.red);
         jp.add(lastNameError);
 
@@ -140,25 +140,25 @@ public class Register extends State {
         jp.add(specialError);
 
         JLabel prefixx = new JLabel("Prefix");
-        prefixx.setBounds(45, 65, 300, 15);
+        prefixx.setBounds(25, 65, 300, 15);
         jp.add(prefixx);
 
         String[] preFix = {"", "Mr.", "Ms.", "Mrs.", "Dr."};
         prefix = new JComboBox(preFix);
-        prefix.setBounds(45, 79, 55, 20);
+        prefix.setBounds(25, 79, 55, 20);
         jp.add(prefix);
 
         JLabel suffix = new JLabel("Suffix");
-        suffix.setBounds(700, 65, 300, 15);
+        suffix.setBounds(720, 65, 300, 15);
         jp.add(suffix);
 
         String[] sufFix = {"", "Jr.", "Sr.", "I", "II", "III"};
         postfix = new JComboBox(sufFix);
-        postfix.setBounds(700, 79, 55, 20);
+        postfix.setBounds(720, 79, 55, 20);
         jp.add(postfix);
 
         securityQuestion1 = new JLabel("");
-        securityQuestion1.setBounds(100, 300, 200, 15);
+        securityQuestion1.setBounds(90, 300, 200, 15);
         jp.add(securityQuestion1);
 
         securityQuestion2 = new JLabel("");
@@ -166,11 +166,11 @@ public class Register extends State {
         jp.add(securityQuestion2);
 
         securityQuestion3 = new JLabel("");
-        securityQuestion3.setBounds(500, 300, 200, 15);
+        securityQuestion3.setBounds(510, 300, 200, 15);
         jp.add(securityQuestion3);
 
         securityAnswer1 = new JTextField("");
-        securityAnswer1.setBounds(100, 317, 200, 20);
+        securityAnswer1.setBounds(90, 317, 200, 20);
         jp.add(securityAnswer1);
 
         securityAnswer2 = new JTextField("");
@@ -178,7 +178,7 @@ public class Register extends State {
         jp.add(securityAnswer2);
 
         securityAnswer3 = new JTextField("");
-        securityAnswer3.setBounds(500, 317, 200, 20);
+        securityAnswer3.setBounds(510, 317, 200, 20);
         jp.add(securityAnswer3);
 
         answerError = new JLabel("");
@@ -187,11 +187,11 @@ public class Register extends State {
         jp.add(answerError);
 
         JLabel addressLabel1 = new JLabel("Address 1");
-        addressLabel1.setBounds(100, 120, 200, 20);
+        addressLabel1.setBounds(90, 120, 200, 20);
         jp.add(addressLabel1);
 
         addressField1 = new JTextField("");
-        addressField1.setBounds(100, 137, 200, 20);
+        addressField1.setBounds(90, 137, 200, 20);
         jp.add(addressField1);
 
         JLabel addressLabel2 = new JLabel("Address 2");
@@ -203,28 +203,28 @@ public class Register extends State {
         jp.add(addressField2);
 
         JLabel addressLabel3 = new JLabel("Address 3");
-        addressLabel3.setBounds(500, 120, 200, 20);
+        addressLabel3.setBounds(510, 120, 200, 20);
         jp.add(addressLabel3);
 
         addressField3 = new JTextField("");
-        addressField3.setBounds(500, 137, 200, 20);
+        addressField3.setBounds(510, 137, 200, 20);
         jp.add(addressField3);
 
         addressError = new JLabel("");
-        addressError.setBounds(175, 123, 300, 15);
+        addressError.setBounds(165, 123, 300, 15);
         addressError.setForeground(Color.red);
         jp.add(addressError);
 
         JLabel cityLabel = new JLabel("City");
-        cityLabel.setBounds(100, 180, 200, 20);
+        cityLabel.setBounds(90, 180, 200, 20);
         jp.add(cityLabel);
 
         cityField = new JTextField("");
-        cityField.setBounds(100, 197, 200, 20);
+        cityField.setBounds(90, 197, 200, 20);
         jp.add(cityField);
 
         cityError = new JLabel("");
-        cityError.setBounds(175, 180, 200, 20);
+        cityError.setBounds(165, 180, 200, 20);
         cityError.setForeground(Color.red);
         jp.add(cityError);
 
@@ -242,29 +242,29 @@ public class Register extends State {
         jp.add(zipError);
 
         JLabel stateLabel = new JLabel("States");
-        stateLabel.setBounds(500, 180, 200, 20);
+        stateLabel.setBounds(510, 180, 200, 20);
         jp.add(stateLabel);
 
         String[] states = {"", "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"};
         stateBox = new JComboBox(states);
-        stateBox.setBounds(500, 197, 125, 20);
+        stateBox.setBounds(510, 197, 125, 20);
         jp.add(stateBox);
 
         stateError = new JLabel("");
-        stateError.setBounds(627, 197, 200, 20);
+        stateError.setBounds(637, 197, 200, 20);
         stateError.setForeground(Color.red);
         jp.add(stateError);
 
         JLabel emailLabel = new JLabel("Email");
-        emailLabel.setBounds(100, 240, 200, 20);
+        emailLabel.setBounds(90, 240, 200, 20);
         jp.add(emailLabel);
 
         emailField = new JTextField("");
-        emailField.setBounds(100, 257, 200, 20);
+        emailField.setBounds(90, 257, 200, 20);
         jp.add(emailField);
 
         emailError = new JLabel("");
-        emailError.setBounds(175, 242, 400, 15);
+        emailError.setBounds(165, 242, 400, 15);
         emailError.setForeground(Color.red);
         jp.add(emailError);
 
@@ -290,23 +290,23 @@ public class Register extends State {
         jp.add(phoneError1);
 
         JLabel phoneLabel2 = new JLabel("Phone #2");
-        phoneLabel2.setBounds(500, 240, 200, 20);
+        phoneLabel2.setBounds(510, 240, 200, 20);
         jp.add(phoneLabel2);
 
         phoneSecondary1 = new JTextField("");
-        phoneSecondary1.setBounds(500, 257, 67, 20);
+        phoneSecondary1.setBounds(510, 257, 67, 20);
         jp.add(phoneSecondary1);
 
         phoneSecondary2 = new JTextField("");
-        phoneSecondary2.setBounds(567, 257, 66, 20);
+        phoneSecondary2.setBounds(577, 257, 66, 20);
         jp.add(phoneSecondary2);
 
         phoneSecondary3 = new JTextField("");
-        phoneSecondary3.setBounds(633, 257, 67, 20);
+        phoneSecondary3.setBounds(643, 257, 67, 20);
         jp.add(phoneSecondary3);
 
         phoneError2 = new JLabel("");
-        phoneError2.setBounds(575, 257, 400, 15);
+        phoneError2.setBounds(585, 242, 400, 15);
         phoneError2.setForeground(Color.red);
         jp.add(phoneError2);
 
@@ -728,7 +728,7 @@ public class Register extends State {
                 phonePrimary = primary1 + primary2 + primary3;
             } else {
                 valid = false;
-                phoneError1.setText("Enter only numbers");
+                phoneError1.setText("Enter phone number");
             }
         }
 
@@ -772,7 +772,7 @@ public class Register extends State {
             if (phoneValid) {
                 phoneSecondary = secondary1 + secondary2 + secondary3;
             } else {
-                phoneError2.setText("Enter numbers in phone format");
+                phoneError2.setText("Enter phone number");
             }
         }
 

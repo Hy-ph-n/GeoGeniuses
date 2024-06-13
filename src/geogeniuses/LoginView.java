@@ -1,12 +1,15 @@
 package geogeniuses;
 
 //Imports for the scanner, array list, filewriter, filereater, the buffered writer and reader, and ioexceptions.
+import com.aspose.pdf.Document;
+import com.aspose.pdf.Page;
+import com.aspose.pdf.TextFragment;
 import java.sql.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import javax.swing.*;
 import java.util.ArrayList;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyAdapter;
 
 public class LoginView extends State {
 
@@ -64,7 +67,7 @@ public class LoginView extends State {
         resetLabel.setBounds(455, 379, 200, 15);
         resetLabel.setForeground(Color.red);
         jp.add(resetLabel);
-        
+
         JButton loginButton = new JButton("Login");
         loginButton.setBounds(325, 140, 100, 50);
         loginButton.addActionListener((e) -> {
@@ -174,6 +177,14 @@ public class LoginView extends State {
         }
         );
         jp.add(resetPasswordButton);
+        
+        JButton helpButton = new JButton("Help");
+        helpButton.setBounds(0, 0, 75, 50);
+        helpButton.addActionListener((e) -> {
+            helpSystem();
+        }
+        );
+        jp.add(helpButton);
 
         jf.setVisible(true);
 
@@ -273,6 +284,23 @@ public class LoginView extends State {
             resetPassword = false;
         } catch (Exception e) {
             resetPassword = false;
+        }
+    }
+
+    void helpSystem() {
+        Document document = new Document();
+
+        Page page = document.getPages().add();
+
+        page.getParagraphs().add(new TextFragment("Logging In - Please enter a valid username and password and press 'Login' to login\n\nRegistration - If you wish to register, you must press the register button, you must enter all required fields in registration\n\nReset Password - If you wish to reset your password, you must first enter your username"));
+
+        document.save("help.pdf");
+        
+        try {
+        File pdfFile = new File("help.pdf");
+        Desktop.getDesktop().open(pdfFile);
+        } catch (IOException e) {
+            System.out.println(e);
         }
     }
 }
