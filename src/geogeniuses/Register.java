@@ -5,6 +5,8 @@ import javax.swing.JButton;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
 import java.sql.SQLException;
 import java.util.Random;
 
@@ -12,6 +14,7 @@ public class Register extends State {
 
     JTextField registerLogName;
     JLabel logNameError;
+    boolean loginValid = true;
 
     JTextField registerFirstName;
     JTextField registerMiddleName;
@@ -22,6 +25,7 @@ public class Register extends State {
     JPasswordField registerPassword;
     JLabel passError;
     JLabel specialError;
+    boolean passwordValid = true;
 
     int questionID1;
     int questionID2;
@@ -306,6 +310,158 @@ public class Register extends State {
         phoneError2.setForeground(Color.red);
         jp.add(phoneError2);
 
+        registerLogName.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                loginValid = true;
+                String registrationLogonName = registerLogName.getText();
+                logNameError.setText("");
+                //If statement ensuring the user entered a login name
+                if (!registrationLogonName.isEmpty()) {
+                    //If statement ensuring the login name does not begin with a number
+                    if (!registrationLogonName.matches("^[0-9].*")) {
+                        //If statement ensuring the login name does not contain any special characters
+                        boolean specialChar = false;
+                        for (char c : registrationLogonName.toCharArray()) {
+                            if (!Character.isLetterOrDigit(c) && !Character.isWhitespace(c)) {
+                                specialChar = true;
+                            }
+                        }
+                        if (!specialChar) {
+                            boolean whitespace = false;
+                            //Line of code ensuring the login name does not contain a space at the start or end
+                            registrationLogonName = registrationLogonName.trim();
+                            registerLogName.setText(registrationLogonName);
+
+                            //Ensures no whitespaces are present in the password
+                            for (char c : registrationLogonName.toCharArray()) {
+                                if (Character.isWhitespace(c)) {
+                                    whitespace = true;
+                                }
+                            }
+
+                            if (!whitespace) {
+                                //If statement ensuring the login name is not less than 8 characters or more than 20
+                                if (registrationLogonName.length() >= 8 && registrationLogonName.length() <= 20) {
+                                    //This try statement contains a query that will test if the login name already exists.
+                                    try {
+                                        String query = "SELECT LogonName FROM Logon";
+                                        ps = con.prepareStatement(query);
+                                        ResultSet rs = ps.executeQuery();
+                                        while (rs.next()) {
+                                            String logN = rs.getString(1);
+                                            if (registrationLogonName.equals(logN)) {
+                                                logNameError.setText("Already in use");
+                                                loginValid = false;
+                                            }
+                                        }
+                                    } catch (SQLException ex) {
+                                    }
+                                } else if (registrationLogonName.length() < 8) {
+                                    loginValid = false;
+                                    logNameError.setText("Below 8 letters");
+                                } else if (registrationLogonName.length() > 20) {
+                                    logNameError.setText("Above 20 letters");
+                                }
+                            } else {
+                                loginValid = false;
+                                logNameError.setText("Whitespace present");
+                            }
+                        } else {
+                            loginValid = false;
+                            logNameError.setText("No special chars");
+                        }
+                    } else {
+                        loginValid = false;
+                        logNameError.setText("Starts with number");
+                    }
+                } else {
+                    loginValid = false;
+                    logNameError.setText("Username required");
+                }
+            }
+        });
+
+        registerPassword.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                passwordValid = true;
+                String registrationPassword = new String(registerPassword.getPassword());
+                passError.setText("");
+                passError.setBounds(500, 22, 400, 15);
+                specialError.setText("");
+
+                //If statement ensuring the user entered a password
+                if (!registrationPassword.isEmpty()) {
+                    boolean whitespace = false;
+                    //Removes any whitespaces from the beginning or end of the password
+                    registrationPassword = registrationPassword.trim();
+                    registerPassword.setText(registrationPassword);
+
+                    //Ensures no whitespaces are present in the password
+                    for (char c : registrationPassword.toCharArray()) {
+                        if (Character.isWhitespace(c)) {
+                            whitespace = true;
+                        }
+                    }
+
+                    if (!whitespace) {
+                        //If statement ensuring the password is not less than 8 characters or more than 20
+                        if (registrationPassword.length() < 8) {
+                            passwordValid = false;
+                            passError.setText("Password must be at least 7 characters long");
+                        } else if (registrationPassword.length() > 20) {
+                            passwordValid = false;
+                            passError.setText("Password cannot be more than 20 characters long");
+                        } else {
+                            int requirementsMet = 0;
+                            char c;
+                            boolean uppercasePresent = false;
+                            boolean lowercasePresent = false;
+                            boolean numberPresent = false;
+                            boolean specialPresent = false;
+                            for (int i = 0; i < registrationPassword.length(); i++) {
+                                c = registrationPassword.charAt(i);
+                                if (Character.isUpperCase(c)) {
+                                    uppercasePresent = true;
+                                } else if (Character.isLowerCase(c)) {
+                                    lowercasePresent = true;
+                                } else if (Character.isDigit(c)) {
+                                    numberPresent = true;
+                                } else if (!Character.isAlphabetic(c) && !Character.isDigit(c)) {
+                                    specialPresent = true;
+                                }
+                            }
+                            //A series of if statements to test if the user meets at least 3 out of 4 requirements
+                            if (uppercasePresent) {
+                                requirementsMet++;
+                            }
+                            if (lowercasePresent) {
+                                requirementsMet++;
+                            }
+                            if (numberPresent) {
+                                requirementsMet++;
+                            }
+                            if (specialPresent) {
+                                requirementsMet++;
+                            }
+                            if (requirementsMet < 3) {
+                                passwordValid = false;
+                                passError.setBounds(500, 16, 400, 15);
+                                passError.setText("Password must hold a upper and/or lowercase letter");
+                                specialError.setText("Password must hold a number and/or special letter");
+                            }
+                        }
+                    } else {
+                        passwordValid = false;
+                        passError.setText("No whitespace allowed");
+                    }
+                } else {
+                    passwordValid = false;
+                    passError.setText("Must enter a password");
+                }
+            }
+        }
+        );
+
         JButton registerButton = new JButton("Register");
         registerButton.setBounds(200, 375, 100, 50);
         registerButton.addActionListener((e) -> {
@@ -377,8 +533,6 @@ public class Register extends State {
         //only needs to get switched once to prevent account creation.
         boolean valid = true;
 
-        logNameError.setText("");
-        passError.setText("");
         passError.setBounds(500, 22, 400, 15);
         specialError.setText("");
         firstNameError.setText("");
@@ -415,137 +569,22 @@ public class Register extends State {
         String secondary3 = phoneSecondary3.getText();
 
         //If statement ensuring the user entered a login name
-        if (!registrationLogonName.isEmpty()) {
-            //If statement ensuring the login name does not begin with a number
-            if (!registrationLogonName.matches("^[0-9].*")) {
-                //If statement ensuring the login name does not contain any special characters
-                boolean specialChar = false;
-                for (char c : registrationLogonName.toCharArray()) {
-                    if (!Character.isLetterOrDigit(c) && !Character.isWhitespace(c)) {
-                        specialChar = true;
-                    }
-                }
-                if (!specialChar) {
-                    boolean whitespace = false;
-                    //Line of code ensuring the login name does not contain a space at the start or end
-                    registrationLogonName = registrationLogonName.trim();
-                    registerLogName.setText(registrationLogonName);
-
-                    //Ensures no whitespaces are present in the password
-                    for (char c : registrationLogonName.toCharArray()) {
-                        if (Character.isWhitespace(c)) {
-                            whitespace = true;
-                        }
-                    }
-
-                    if (!whitespace) {
-                        //If statement ensuring the login name is not less than 8 characters or more than 20
-                        if (registrationLogonName.length() >= 8 && registrationLogonName.length() <= 20) {
-                            //This try statement contains a query that will test if the login name already exists.
-                            try {
-                                String query = "SELECT LogonName FROM Logon";
-                                ps = con.prepareStatement(query);
-                                ResultSet rs = ps.executeQuery();
-                                while (rs.next()) {
-                                    String logN = rs.getString(1);
-                                    if (registrationLogonName.equals(logN)) {
-                                        logNameError.setText("Already in use");
-                                        valid = false;
-                                    }
-                                }
-                            } catch (SQLException ex) {
-                            }
-                        } else if (registrationLogonName.length() < 8) {
-                            valid = false;
-                            logNameError.setText("Below 8 letters");
-                        } else if (registrationLogonName.length() > 20) {
-                            logNameError.setText("Above 20 letters");
-                        }
-                    } else {
-                        valid = false;
-                        logNameError.setText("Whitespace present");
-                    }
-                } else {
-                    valid = false;
-                    logNameError.setText("No special chars");
-                }
-            } else {
-                valid = false;
-                logNameError.setText("Starts with number");
-            }
-        } else {
+        if (!loginValid) {
+            valid = false;
+        } else if (registrationLogonName.isEmpty()) {
             valid = false;
             logNameError.setText("Username required");
         }
 
-        //If statement ensuring the user entered a password
-        if (!registrationPassword.isEmpty()) {
-            boolean whitespace = false;
-            //Removes any whitespaces from the beginning or end of the password
-            registrationPassword = registrationPassword.trim();
-            registerPassword.setText(registrationPassword);
-
-            //Ensures no whitespaces are present in the password
-            for (char c : registrationPassword.toCharArray()) {
-                if (Character.isWhitespace(c)) {
-                    whitespace = true;
-                }
-            }
-
-            if (!whitespace) {
-                //If statement ensuring the password is not less than 8 characters or more than 20
-                if (registrationPassword.length() < 8) {
-                    valid = false;
-                    passError.setText("Password must be at least 7 characters long");
-                } else if (registrationPassword.length() > 20) {
-                    valid = false;
-                    passError.setText("Password cannot be more than 20 characters long");
-                } else {
-                    int requirementsMet = 0;
-                    char c;
-                    boolean uppercasePresent = false;
-                    boolean lowercasePresent = false;
-                    boolean numberPresent = false;
-                    boolean specialPresent = false;
-                    for (int i = 0; i < registrationPassword.length(); i++) {
-                        c = registrationPassword.charAt(i);
-                        if (Character.isUpperCase(c)) {
-                            uppercasePresent = true;
-                        } else if (Character.isLowerCase(c)) {
-                            lowercasePresent = true;
-                        } else if (Character.isDigit(c)) {
-                            numberPresent = true;
-                        } else if (!Character.isAlphabetic(c) && !Character.isDigit(c)) {
-                            specialPresent = true;
-                        }
-                    }
-                    //A series of if statements to test if the user meets at least 3 out of 4 requirements
-                    if (uppercasePresent) {
-                        requirementsMet++;
-                    }
-                    if (lowercasePresent) {
-                        requirementsMet++;
-                    }
-                    if (numberPresent) {
-                        requirementsMet++;
-                    }
-                    if (specialPresent) {
-                        requirementsMet++;
-                    }
-                    if (requirementsMet < 3) {
-                        valid = false;
-                        passError.setBounds(500, 16, 400, 15);
-                        passError.setText("Password must hold a upper and/or lowercase letter");
-                        specialError.setText("Password must hold a number and/or special letter");
-                    }
-                }
-            } else {
-                valid = false;
-                passError.setText("No whitespace allowed");
-            }
-        } else {
+        //If statement ensuring the user has entered a valid password
+        if (!passwordValid) {
             valid = false;
+        } else if (registrationPassword.isEmpty()) {
+            valid = false;
+            passwordValid = false;
+            passError.setBounds(500, 22, 400, 15);
             passError.setText("Must enter a password");
+            specialError.setText("");
         }
 
         //If statement ensuring the user has entered their first name
@@ -634,7 +673,7 @@ public class Register extends State {
         if (!email.equals("")) {
             if (email.length() <= 40) {
                 if (email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.com")) {
-                    
+
                 } else {
                     valid = false;
                     emailError.setText("Email invalid");
@@ -700,7 +739,7 @@ public class Register extends State {
                 phoneValid = false;
             } else {
                 for (int i = 1; i < secondary1.length(); i++) {
-                    if (!Character.isDigit(primary1.charAt(i))) {
+                    if (!Character.isDigit(secondary1.charAt(i))) {
                         phoneValid = false;
                     }
                 }

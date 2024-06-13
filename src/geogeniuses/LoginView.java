@@ -19,12 +19,10 @@ public class LoginView extends State {
     JTextField logName;
     JLabel nameError;
     JPasswordField logPassword;
-    JLabel passError;
 
     JLabel resetLabel;
 
     boolean loginValid = true;
-    boolean passwordValid = true;
 
     boolean resetPassword = true;
 
@@ -67,16 +65,6 @@ public class LoginView extends State {
         nameError.setBounds(475, 41, 300, 15);
         nameError.setForeground(Color.red);
         jp.add(nameError);
-
-        passError = new JLabel("");
-        passError.setBounds(475, 78, 300, 15);
-        passError.setForeground(Color.red);
-        jp.add(passError);
-
-        JLabel passCharacter = new JLabel("");
-        passCharacter.setBounds(475, 78, 300, 15);
-        passCharacter.setForeground(Color.red);
-        jp.add(passCharacter);
 
         resetLabel = new JLabel("");
         resetLabel.setBounds(455, 379, 200, 15);
@@ -127,91 +115,6 @@ public class LoginView extends State {
             }
         });
 
-        logPassword.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                passwordValid = true;
-                String loginPassword = new String(logPassword.getPassword());
-                passError.setText("");
-                passError.setBounds(475, 78, 300, 15);
-                passCharacter.setText("");
-                passCharacter.setBounds(475, 78, 300, 15);
-
-                if (!loginPassword.isEmpty()) {
-                    boolean whitespace = false;
-                    //Removes any whitespaces from the beginning and end of the login password
-                    loginPassword = loginPassword.trim();
-                    logPassword.setText(loginPassword);
-
-                    //Ensures no whitespaces are present in the password
-                    for (char c : loginPassword.toCharArray()) {
-                        if (Character.isWhitespace(c)) {
-                            whitespace = true;
-                        }
-                    }
-
-                    if (!whitespace) {
-                        if (loginPassword.length() < 8) {
-                            passwordValid = false;
-                            passCharacter.setText("Password must be at least 7 characters long");
-                        } else if (loginPassword.length() > 20) {
-                            passwordValid = false;
-                            passCharacter.setText("Password cannot be more than 20 characters long");
-                        } else {
-                            passCharacter.setText("");
-
-                            int requirementsMet = 0;
-                            char c;
-                            boolean uppercasePresent = false;
-                            boolean lowercasePresent = false;
-                            boolean numberPresent = false;
-                            boolean specialPresent = false;
-                            for (int i = 0; i < loginPassword.length(); i++) {
-                                c = loginPassword.charAt(i);
-                                if (Character.isUpperCase(c)) {
-                                    uppercasePresent = true;
-                                } else if (Character.isLowerCase(c)) {
-                                    lowercasePresent = true;
-                                } else if (Character.isDigit(c)) {
-                                    numberPresent = true;
-                                } else if (!Character.isAlphabetic(c) && !Character.isDigit(c)) {
-                                    specialPresent = true;
-                                }
-                            }
-
-                            //A series of if statements to test if the user meets at least 3 out of 4 requirements
-                            if (uppercasePresent) {
-                                requirementsMet++;
-                            }
-                            if (lowercasePresent) {
-                                requirementsMet++;
-                            }
-                            if (numberPresent) {
-                                requirementsMet++;
-                            }
-                            if (specialPresent) {
-                                requirementsMet++;
-                            }
-
-                            if (requirementsMet < 3) {
-                                passwordValid = false;
-                                passError.setBounds(475, 70, 300, 15);
-                                passError.setText("Requires a capital and/or lowercase letter");
-                                passCharacter.setBounds(475, 84, 300, 15);
-                                passCharacter.setText("Requires special character and/or number");
-                            }
-                        }
-                    } else {
-                        passwordValid = false;
-                        passError.setText("Password contains whitespaces");
-                    }
-                } else {
-                    passwordValid = false;
-                    passError.setText("No password");
-                }
-            }
-        }
-        );
-
         JButton loginButton = new JButton("Login");
         loginButton.setBounds(325, 140, 100, 50);
         loginButton.addActionListener((e) -> {
@@ -219,7 +122,7 @@ public class LoginView extends State {
             String loginName = logName.getText();
             String loginPassword = new String(logPassword.getPassword());
             if (!loginName.isEmpty() && !loginPassword.isEmpty()) {
-                if (loginValid && passwordValid) {
+                if (loginValid) {
                     try {
                         String query = "SELECT PersonID, PositionTitle FROM Logon WHERE LogonName = '" + loginName + "';";
                         ps = con.prepareStatement(query);
