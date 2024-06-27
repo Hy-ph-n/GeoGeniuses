@@ -1099,6 +1099,9 @@ public class CustomerView extends State {
                     }
                     preparedStatement.setInt(4, cart.get(i).quantity);
                     preparedStatement.execute();
+                    cart.clear();
+                    Thread logonData = new Thread(LoginView.logonInfo);
+                logonData.start();
                 }
             } catch (IOException e) {
                 System.out.println(e);
