@@ -6,6 +6,7 @@ import com.aspose.pdf.Page;
 import com.aspose.pdf.TextFragment;
 import java.sql.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.*;
@@ -13,9 +14,10 @@ import java.util.ArrayList;
 
 public class LoginView extends State {
 
-    //Creates an arraylist of managers.
+    //Creates an arraylist of people and items.
     static ArrayList<Person> person = new ArrayList();
     static ArrayList<Logon> logon = new ArrayList();
+    static ArrayList<Inventory> inventory = new ArrayList();
 
     static int currentPerson = 0;
 
@@ -24,7 +26,7 @@ public class LoginView extends State {
 
     boolean loginValid = true;
 
-    boolean resetPassword = true;
+    static boolean resetPassword = true;
 
     LoginView() {
 
@@ -61,8 +63,20 @@ public class LoginView extends State {
         logPassword.setEchoChar('*');
         jp.add(logPassword);
 
+        JLabel help = new JLabel("Help");
+        help.setBounds(745, 0, 50, 20);
+        help.setForeground(Color.blue);
+        jp.add(help);
+
+        help.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                helpSystem();
+            }
+        });
+
         JButton loginButton = new JButton("Login");
-        loginButton.setBounds(325, 140, 100, 50);
+        loginButton.setBounds(310, 140, 130, 50);
         loginButton.addActionListener((e) -> {
             String positionTitle = "None";
             String loginName = logName.getText();
@@ -98,7 +112,7 @@ public class LoginView extends State {
                                             //managerView.jp.setVisible(true);
                                             JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Manager", JOptionPane.INFORMATION_MESSAGE);
                                         }
-                                        
+
                                         if (positionTitle.equals("Employee")) {
                                             //A switch to the the employee's view
                                             //jf.setTitle("Employee View");
@@ -112,19 +126,19 @@ public class LoginView extends State {
 
                                         if (positionTitle.equals("Customer")) {
                                             //Updates the inventory for the customer
-                                            //((CustomerView) customerView).updateData();
+                                            ((CustomerView) customerView).updateData();
                                             //A switch to the customer's view
-                                            //jf.setTitle("Customer View");
-                                            //jp.setVisible(false);
-                                            //jf.remove(jp);
-                                            //jf.add(customerView.jp);
-                                            //jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
-                                            //customerView.jp.setVisible(true);
-                                            JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Customer", JOptionPane.INFORMATION_MESSAGE);
+                                            jf.setTitle("Customer View");
+                                            jp.setVisible(false);
+                                            jf.remove(jp);
+                                            jf.add(customerView.jp);
+                                            jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
+                                            customerView.jp.setVisible(true);
                                         }
 
                                     }
                                 } catch (IndexOutOfBoundsException ex) {
+                                    System.out.println(ex);
                                 }
                             }
                         }
@@ -137,8 +151,46 @@ public class LoginView extends State {
         );
         jp.add(loginButton);
 
+        JButton guestButton = new JButton("Guest Login");
+        guestButton.setBounds(310, 190, 130, 20);
+        guestButton.addActionListener((e) -> {
+            //Resets the login name and login password fields to their default states
+            logName.setText("");
+            logPassword.setText("");
+
+            CustomerView.itemsName.setBounds(CustomerView.panel.getWidth() / 8, 150, 200, 15);
+            CustomerView.itemsDescription.setBounds(11, 175, 250, 60);
+            CustomerView.price.setBounds(CustomerView.panel.getWidth() / 8, 300, 200, 15);
+            CustomerView.quantity.setBounds(CustomerView.panel.getWidth() / 8, 315, 200, 15);
+            CustomerView.searchBarEntry.setVisible(true);
+            CustomerView.searchBar.setVisible(true);
+            CustomerView.cardNumberEntry.setVisible(false);
+            CustomerView.cardNumber.setVisible(false);
+            CustomerView.cvvEntry.setVisible(false);
+            CustomerView.cardCVV.setVisible(false);
+            CustomerView.cardExpireYear.setVisible(false);
+            CustomerView.cardExpirationYear.setVisible(false);
+            CustomerView.cardExpireMonth.setVisible(false);
+            CustomerView.cardExpirationMonth.setVisible(false);
+            CustomerView.discountEntry.setVisible(false);
+            CustomerView.discountCode.setVisible(false);
+            CustomerView.checkout.setVisible(false);
+
+            //Updates the inventory for the customer
+            ((CustomerView) customerView).updateData();
+            //A switch to the customer's view
+            jf.setTitle("Customer View");
+            jp.setVisible(false);
+            jf.remove(jp);
+            jf.add(customerView.jp);
+            jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
+            customerView.jp.setVisible(true);
+        }
+        );
+        jp.add(guestButton);
+
         JButton registerButton = new JButton("Register");
-        registerButton.setBounds(325, 250, 100, 50);
+        registerButton.setBounds(310, 250, 130, 50);
         registerButton.addActionListener((e) -> {
             logName.setText("");
             logPassword.setText("");
@@ -154,7 +206,7 @@ public class LoginView extends State {
         jp.add(registerButton);
 
         JButton resetPasswordButton = new JButton("Reset Password");
-        resetPasswordButton.setBounds(300, 360, 150, 50);
+        resetPasswordButton.setBounds(310, 360, 130, 50);
         resetPasswordButton.addActionListener((e) -> {
             resetPassword = true;
             String loginName = logName.getText();
@@ -178,17 +230,8 @@ public class LoginView extends State {
         }
         );
         jp.add(resetPasswordButton);
-        
-        JButton helpButton = new JButton("Help");
-        helpButton.setBounds(0, 0, 75, 50);
-        helpButton.addActionListener((e) -> {
-            helpSystem();
-        }
-        );
-        jp.add(helpButton);
 
         jf.setVisible(true);
-
     }
 
     void load() {
@@ -202,9 +245,13 @@ public class LoginView extends State {
 
                 Thread logonData = new Thread(logonInfo);
                 logonData.start();
+
+                Thread inventoryData = new Thread(inventoryInfo);
+                inventoryData.start();
             }
 
         } catch (SQLException ex) {
+            System.out.println(ex);
         }
     }
 
@@ -273,10 +320,51 @@ public class LoginView extends State {
         }
     };
 
-    void SetPersonID(String loginName) {
+    static Runnable inventoryInfo = () -> {
+        String e[];
+        try {
+            Blob imgBlob = null;
+
+            String query = "SELECT InventoryID, ItemName, ItemDescription, CategoryID, RetailPrice, Cost, Quantity, RestockThreshold, ItemImage, Discontinued FROM Inventory";
+            ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData md = rs.getMetaData();
+            while (rs.next()) {
+                e = new String[md.getColumnCount() + 1];
+                for (int i = 1; i < md.getColumnCount() + 1; i++) {
+                    e[i - 1] = rs.getString(i);
+                }
+
+                //Several of the arrays positions need to be converted into forms that the arrayList can use.
+                int inventoryID = Integer.parseInt(e[0]);
+                String itemName = e[1];
+                String itemDescription = e[2];
+                int categoryID = Integer.parseInt(e[3]);
+                double retailPrice = Double.parseDouble(e[4]);
+                double cost = Double.parseDouble(e[5]);
+                int quantity = Integer.parseInt(e[6]);
+                int restockThreshold = Integer.parseInt(e[7]);
+                byte[] b = null;
+                int discontinued = Integer.parseInt(e[9]);
+
+                //try {
+                //imgBlob = rs.getBlob(e[8]);
+                //b = imgBlob.getBinaryStream(1, imgBlob.length()).readAllBytes();
+                //} catch (IOException ex) {
+                //System.out.println(ex);
+                //}
+                //Adds everything
+                inventory.add(new Inventory(inventoryID, itemName, itemDescription, categoryID, retailPrice, cost, quantity, restockThreshold, b, discontinued));
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+        }
+    };
+
+    static void SetPersonID(String logonName) {
         try {
             System.out.println("Running");
-            String query = "SELECT PersonID FROM Logon WHERE LogonName = '" + loginName + "';";
+            String query = "SELECT PersonID FROM Logon WHERE LogonName = '" + logonName + "';";
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             rs.next();
@@ -296,10 +384,10 @@ public class LoginView extends State {
         page.getParagraphs().add(new TextFragment("Logging In - Please enter a valid username and password and press 'Login' to login\n\nRegistration - If you wish to register, you must press the register button, you must enter all required fields in registration\n\nReset Password - If you wish to reset your password, you must first enter your username"));
 
         document.save("help.pdf");
-        
+
         try {
-        File pdfFile = new File("help.pdf");
-        Desktop.getDesktop().open(pdfFile);
+            File pdfFile = new File("help.pdf");
+            Desktop.getDesktop().open(pdfFile);
         } catch (IOException e) {
             System.out.println(e);
         }

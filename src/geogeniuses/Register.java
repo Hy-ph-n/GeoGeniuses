@@ -672,7 +672,7 @@ public class Register extends State {
         // If statement ensuring the user has entered a valid email
         if (!email.equals("")) {
             if (email.length() <= 40) {
-                if (email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.com")) {
+                if (email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
 
                 } else {
                     valid = false;
@@ -832,17 +832,19 @@ public class Register extends State {
 
             //Resets all entries to their default states
             Reset();
+            
+            //Sets the person id so that the customer view will work
+            LoginView.SetPersonID(registrationLogonName);
 
             //Updates the inventory for the customer
-            //((CustomerView) customerView).updateData();
+            ((CustomerView) customerView).updateData();
             //A switch to the customer's view
-            //jf.setTitle("Customer View");
-            //jp.setVisible(false);
-            //jf.remove(jp);
-            //jf.add(customerView.jp);
-            //jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
-            //customerView.jp.setVisible(true);
-            JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Customer", JOptionPane.INFORMATION_MESSAGE);
+            jf.setTitle("Customer View");
+            jp.setVisible(false);
+            jf.remove(jp);
+            jf.add(customerView.jp);
+            jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
+            customerView.jp.setVisible(true);
         }
     }
 

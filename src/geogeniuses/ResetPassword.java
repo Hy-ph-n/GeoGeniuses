@@ -37,7 +37,7 @@ public class ResetPassword extends State {
     static int currentPerson = LoginView.currentPerson;
 
     ResetPassword() {
-        
+
         Color lightCyan = Color.decode("#DFFDFF");
         jp.setBackground(lightCyan);
 
@@ -187,6 +187,10 @@ public class ResetPassword extends State {
 
             //Resets all entries to their default states
             Reset();
+
+            // Sets the current person back to nothing
+            currentPerson = 0;
+            LoginView.currentPerson = 0;
 
             //A switch to the login view
             jf.setTitle("Login");
@@ -396,16 +400,17 @@ public class ResetPassword extends State {
                 //Resets all entries to their default states
                 Reset();
 
-                //Updates the inventory for the customer
-                //((CustomerView) customerView).updateData();
-                //A switch to the customer's view
-                //jf.setTitle("Customer View");
-                //jp.setVisible(false);
-                //jf.remove(jp);
-                //jf.add(customerView.jp);
-                //jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
-                //customerView.jp.setVisible(true);
-                JOptionPane.showMessageDialog(null, "Password Successfully Changed", "Type of Account: Customer", JOptionPane.INFORMATION_MESSAGE);
+                // Sets the current person back to nothing
+                currentPerson = 0;
+                LoginView.currentPerson = 0;
+
+                //A switch to the login view
+                jf.setTitle("Login");
+                jp.setVisible(false);
+                jf.remove(jp);
+                jf.add(loginView.jp);
+                jf.setBounds(550, 200, 800, 500);
+                loginView.jp.setVisible(true);
             } catch (SQLException e) {
                 System.out.println(e);
             }
