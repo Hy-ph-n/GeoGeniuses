@@ -146,25 +146,25 @@ public class CustomerView extends State {
         itemGrainSize.setHorizontalAlignment(SwingConstants.CENTER);
         itemGrainSize.setVisible(false);
         panel.add(itemGrainSize);
-        
+
         itemGrainShape = new JLabel("");
         itemGrainShape.setBounds(panel.getWidth() / 8, 330, 200, 15);
         itemGrainShape.setHorizontalAlignment(SwingConstants.CENTER);
         itemGrainShape.setVisible(false);
         panel.add(itemGrainShape);
-        
+
         itemHeft = new JLabel("");
         itemHeft.setBounds(panel.getWidth() / 8, 315, 200, 15);
         itemHeft.setHorizontalAlignment(SwingConstants.CENTER);
         itemHeft.setVisible(false);
         panel.add(itemHeft);
-        
+
         itemHardness = new JLabel("");
         itemHardness.setBounds(panel.getWidth() / 8, 330, 200, 15);
         itemHardness.setHorizontalAlignment(SwingConstants.CENTER);
         itemHardness.setVisible(false);
         panel.add(itemHardness);
-        
+
         price = new JLabel("");
         price.setBounds(panel.getWidth() / 8, 345, 200, 15);
         price.setHorizontalAlignment(SwingConstants.CENTER);
@@ -845,6 +845,8 @@ public class CustomerView extends State {
             cartVisible = false;
             cart.clear();
             jp.validate();
+            
+            itemsSelected = 0;
         });
         panel.add(clearCart);
 
@@ -1101,9 +1103,9 @@ public class CustomerView extends State {
             for (Cart item : cart) {
                 sb.append("<tr>");
                 sb.append("<td style=\"padding: 6px; border: 1px solid #ccc; text-align: left;\">").append(item.itemName).append("</td>");
-                sb.append("<td style=\"padding: 6px; border: 1px solid #ccc; text-align: left;\">$").append(item.itemCost).append("</td>");
+                sb.append("<td style=\"padding: 6px; border: 1px solid #ccc; text-align: left;\">$").append(f.format(item.itemCost)).append("</td>");
                 sb.append("<td style=\"padding: 6px; border: 1px solid #ccc; text-align: left;\">").append(item.quantity).append("</td>");
-                sb.append("<td style=\"padding: 6px; border: 1px solid #ccc; text-align: left;\">$").append(item.itemCost * item.quantity).append("</td>");
+                sb.append("<td style=\"padding: 6px; border: 1px solid #ccc; text-align: left;\">$").append(f.format(item.itemCost * item.quantity)).append("</td>");
                 sb.append("</tr>");
             }
 
@@ -1253,18 +1255,14 @@ public class CustomerView extends State {
                     }
                     preparedStatement.setInt(4, cart.get(i).quantity);
                     preparedStatement.execute();
-                    cart.clear();
-                    Thread logonData = new Thread(LoginView.logonInfo);
-                    logonData.start();
-
-                    inventory.setPreferredSize(new Dimension(625, 0));
-                    jp.remove(cartPanel);
-                    cartVisible = false;
-
-                    itemsSelected = 0;
-
-                    updateData();
                 }
+                inventory.setPreferredSize(new Dimension(625, 0));
+                jp.remove(cartPanel);
+                cartVisible = false;
+                cart.clear();
+                jp.validate();
+
+                itemsSelected = 0;
             } catch (IOException e) {
                 System.out.println(e);
             }
@@ -1278,6 +1276,15 @@ public class CustomerView extends State {
 
         Page page = document.getPages().add();
 
+        if (LoginView.currentPerson == 0) {
+            page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
+                + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
+                + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
+                + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
+                + "\n\nLogout Button - The log out button returns the user to the login menu"
+                + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
+                + "\n\nReturn - A button that returns the user to search/purchase options"));
+        } else {
         page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
                 + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
                 + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
@@ -1289,6 +1296,7 @@ public class CustomerView extends State {
                 + "\n\nReturn - A button that returns the user to search/purchase options"
                 + "\n\nCard Data - You must enter a valid card number (Visa/Mastercard) and Card Verification Value (CVV), the card year cannot be five years expired"
                 + "\n\nDiscount Code (NOT REQUIRED) - You must enter a valid discount code if you wish to save money"));
+        }
 
         document.save("help.pdf");
 
