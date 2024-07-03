@@ -1265,6 +1265,7 @@ public class CustomerView extends State {
                 jp.validate();
 
                 itemsSelected = 0;
+                updateData();
             } catch (IOException e) {
                 System.out.println(e);
             }
