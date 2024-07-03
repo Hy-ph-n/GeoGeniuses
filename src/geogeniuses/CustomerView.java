@@ -1265,7 +1265,8 @@ public class CustomerView extends State {
                 jp.validate();
 
                 itemsSelected = 0;
-                updateData();
+                Thread inventoryData = new Thread(LoginView.inventoryInfo);
+                inventoryData.start();
             } catch (IOException e) {
                 System.out.println(e);
             }
