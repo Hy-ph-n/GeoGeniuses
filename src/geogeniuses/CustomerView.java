@@ -408,6 +408,7 @@ public class CustomerView extends State {
         refreshButton.setBounds(20, 60, 110, 30);
         refreshButton.setBackground(thistle);
         refreshButton.addActionListener((e) -> {
+            searchBar.setText("");
             updateData();
         });
         panel.add(refreshButton);
@@ -877,6 +878,7 @@ public class CustomerView extends State {
             returnToSearch.setVisible(false);
             searchBarEntry.setVisible(true);
             searchBar.setVisible(true);
+            searchBar.setText("");
             searchError.setText("");
             cardNumberEntry.setVisible(true);
             cardNumber.setVisible(true);
@@ -1281,9 +1283,8 @@ public class CustomerView extends State {
                 + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
                 + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
                 + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
-                + "\n\nLogout Button - The log out button returns the user to the login menu"
                 + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
-                + "\n\nReturn - A button that returns the user to search/purchase options"));
+                + "\n\nLogout Button - The log out button returns the user to the login menu"));
         } else {
         page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
                 + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
