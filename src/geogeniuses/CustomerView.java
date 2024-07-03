@@ -5,6 +5,8 @@ import com.aspose.pdf.Page;
 import com.aspose.pdf.TextFragment;
 import java.sql.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
@@ -17,11 +19,13 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.regex.*;
+import javax.swing.filechooser.FileSystemView;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 //The customer view is entered by either a customer account or a guest account.
 public class CustomerView extends State {
 
-    //
     ArrayList<JButton> items = new ArrayList();
 
     //The order arraylist will track orders.
@@ -33,13 +37,23 @@ public class CustomerView extends State {
     static JPanel panel = new JPanel(null);
     static JPanel itemDisplay = new JPanel(null);
 
+    static JPanel cartPanel = new JPanel(null);
+    JTable cartjt;
+
+    String[] cartCol;
+    Object[][] cartData;
+
+    boolean cartVisible = false;
+
     static JLabel itemsName;
     static JTextArea itemsDescription;
+    static JLabel itemRockOrGem;
+    static JLabel itemGrainSize;
+    static JLabel itemGrainShape;
+    static JLabel itemHeft;
+    static JLabel itemHardness;
     static JLabel price;
     static JLabel quantity;
-
-    static JRadioButton confirm;
-    static JRadioButton cancel;
 
     //Items selected is just to ensure the user does not make an order without having bought anything
     static int itemsSelected = 0;
@@ -80,13 +94,14 @@ public class CustomerView extends State {
     // The current date placed into a variable
     LocalDate currentDate = LocalDate.now();
 
-    static JButton searchButton;
+    static JButton refreshButton;
     static JButton igneousButton;
     static JButton sedimentaryButton;
     static JButton metamorphicButton;
     static JButton addToCart;
     static JButton returnToSearch;
     static JButton checkout;
+    static JButton clearCart;
     static JButton logOut;
 
     ScrollPane inventory;
@@ -94,21 +109,24 @@ public class CustomerView extends State {
     CustomerView() {
 
         Color lightCyan = Color.decode("#DFFDFF");
+        Color thistle = Color.decode("#D5CBE2");
+        Color royalPurple = Color.decode("#8062A7");
 
         jp.setLayout(new BoxLayout(jp, BoxLayout.X_AXIS));
 
         panel.setBackground(lightCyan);
         panel.setBounds(0, 0, 273, 523);
+        panel.setPreferredSize(new Dimension(120, 0));
         jp.add(panel);
 
         itemsName = new JLabel("");
-        itemsName.setBounds(panel.getWidth() / 8, 60, 200, 15);
+        itemsName.setBounds(panel.getWidth() / 8, 150, 200, 15);
         itemsName.setHorizontalAlignment(SwingConstants.CENTER);
         itemsName.setVisible(false);
         panel.add(itemsName);
 
         itemsDescription = new JTextArea("");
-        itemsDescription.setBounds(11, 80, 250, 60);
+        itemsDescription.setBounds(11, 175, 250, 60);
         itemsDescription.setEnabled(false);
         itemsDescription.setDisabledTextColor(Color.black);
         itemsDescription.setLineWrap(true);
@@ -117,80 +135,110 @@ public class CustomerView extends State {
         itemsDescription.setVisible(false);
         panel.add(itemsDescription);
 
+        itemRockOrGem = new JLabel("");
+        itemRockOrGem.setBounds(panel.getWidth() / 8, 300, 200, 15);
+        itemRockOrGem.setHorizontalAlignment(SwingConstants.CENTER);
+        itemRockOrGem.setVisible(false);
+        panel.add(itemRockOrGem);
+
+        itemGrainSize = new JLabel("");
+        itemGrainSize.setBounds(panel.getWidth() / 8, 315, 200, 15);
+        itemGrainSize.setHorizontalAlignment(SwingConstants.CENTER);
+        itemGrainSize.setVisible(false);
+        panel.add(itemGrainSize);
+        
+        itemGrainShape = new JLabel("");
+        itemGrainShape.setBounds(panel.getWidth() / 8, 330, 200, 15);
+        itemGrainShape.setHorizontalAlignment(SwingConstants.CENTER);
+        itemGrainShape.setVisible(false);
+        panel.add(itemGrainShape);
+        
+        itemHeft = new JLabel("");
+        itemHeft.setBounds(panel.getWidth() / 8, 315, 200, 15);
+        itemHeft.setHorizontalAlignment(SwingConstants.CENTER);
+        itemHeft.setVisible(false);
+        panel.add(itemHeft);
+        
+        itemHardness = new JLabel("");
+        itemHardness.setBounds(panel.getWidth() / 8, 330, 200, 15);
+        itemHardness.setHorizontalAlignment(SwingConstants.CENTER);
+        itemHardness.setVisible(false);
+        panel.add(itemHardness);
+        
         price = new JLabel("");
-        price.setBounds(panel.getWidth() / 8, 140, 200, 15);
+        price.setBounds(panel.getWidth() / 8, 345, 200, 15);
         price.setHorizontalAlignment(SwingConstants.CENTER);
         price.setVisible(false);
         panel.add(price);
 
         quantity = new JLabel("");
-        quantity.setBounds(panel.getWidth() / 8, 165, 200, 15);
+        quantity.setBounds(panel.getWidth() / 8, 360, 200, 15);
         quantity.setHorizontalAlignment(SwingConstants.CENTER);
         quantity.setVisible(false);
         panel.add(quantity);
 
-        //This radio button will check the operation of a user. If they decide to add an order to the cart, they will have to use this button.
-        confirm = new JRadioButton("Add to Cart");
-        confirm.setBounds(160, 200, 90, 25);
-        confirm.setBackground(null);
-        confirm.setVisible(false);
-        panel.add(confirm);
-        //This radio button will check the operation of a user. If they decide not to add an order to the cart, they will have to use this button.
-        cancel = new JRadioButton("Don't Add To Cart");
-        cancel.setBounds(25, 200, 130, 25);
-        cancel.setBackground(null);
-        cancel.setVisible(false);
-        panel.add(cancel);
-
-        confirm.addActionListener((e) -> {
-            if (cancel.isSelected()) {
-                cancel.setSelected(false);
-            }
-        });
-
-        cancel.addActionListener((e) -> {
-            if (confirm.isSelected()) {
-                confirm.setSelected(false);
-            }
-        });
-
         addToCart = new JButton("Add to Cart");
-        addToCart.setBounds(155, 400, 100, 50);
+        addToCart.setBounds(140, 410, 100, 50);
         addToCart.setVisible(false);
+        addToCart.setBackground(thistle);
         addToCart.addActionListener((e) -> {
-            if (confirm.isSelected()) {
-                boolean itemNotInCart = true;
-                itemsSelected++;
-                for (int i = 0; i < cart.size(); i++) {
-                    Cart cartItem = cart.get(i);
-                    if (LoginView.inventory.get(itemSelected).inventoryID == cartItem.inventoryID) {
-                        itemNotInCart = false;
+            boolean itemNotInCart = true;
+            boolean cartChange = false;
+            if (!cartVisible) {
+                inventory.setPreferredSize(new Dimension(360, 0));
+                jp.add(cartPanel);
+                cartVisible = true;
+                jp.validate();
+            }
+            itemsSelected++;
+            for (int i = 0; i < cart.size(); i++) {
+                Cart cartItem = cart.get(i);
+                if (LoginView.inventory.get(itemSelected).inventoryID == cartItem.inventoryID) {
+                    itemNotInCart = false;
+                    if ((LoginView.inventory.get(itemSelected).quantity - cartItem.quantity) > 0) {
                         cartItem.quantity++;
                         // Changes the data in the current cart index, the only difference being a change in quantity
                         cart.set(i, cartItem);
+                        quantity.setText("Quantity: " + (LoginView.inventory.get(itemSelected).quantity - cartItem.quantity));
+                        cartChange = true;
                         break;
+                    } else {
+                        addToCart.setEnabled(false);
                     }
-                } // If the selected item is not already in the cart, it gets added
-                if (itemNotInCart) {
-                    cart.add(new Cart(LoginView.inventory.get(itemSelected).inventoryID, LoginView.inventory.get(itemSelected).itemName, LoginView.inventory.get(itemSelected).retailPrice, 1));
                 }
+            } // If the selected item is not already in the cart, it gets added
+            if (itemNotInCart) {
+                cart.add(new Cart(LoginView.inventory.get(itemSelected).inventoryID, LoginView.inventory.get(itemSelected).itemName, LoginView.inventory.get(itemSelected).retailPrice, 1));
+                quantity.setText("Quantity: " + (LoginView.inventory.get(itemSelected).quantity - 1));
+                cartChange = true;
+            }
+            if (cartChange) {
+                cartData = getCartData();
+                DefaultTableModel carttable = (DefaultTableModel) cartjt.getModel();
+                carttable.setDataVector(cartData, cartCol);
+                jp.validate();
             }
         });
         panel.add(addToCart);
 
         returnToSearch = new JButton("Return");
-        returnToSearch.setBounds(30, 400, 100, 50);
+        returnToSearch.setBounds(25, 410, 100, 50);
         returnToSearch.setVisible(false);
+        returnToSearch.setBackground(thistle);
         returnToSearch.addActionListener((e) -> {
             itemSelected = 0;
 
             itemsName.setVisible(false);
             itemsDescription.setVisible(false);
+            itemRockOrGem.setVisible(false);
+            itemGrainSize.setVisible(false);
+            itemGrainShape.setVisible(false);
+            itemHeft.setVisible(false);
+            itemHardness.setVisible(false);
             price.setVisible(false);
             quantity.setVisible(false);
-            confirm.setVisible(false);
-            cancel.setVisible(false);
             addToCart.setVisible(false);
+            addToCart.setEnabled(true);
             returnToSearch.setVisible(false);
             searchBarEntry.setVisible(true);
             searchBar.setVisible(true);
@@ -209,11 +257,12 @@ public class CustomerView extends State {
             discountEntry.setVisible(true);
             discountCode.setVisible(true);
             discountError.setText("");
-            searchButton.setVisible(true);
+            refreshButton.setVisible(true);
             igneousButton.setVisible(true);
             sedimentaryButton.setVisible(true);
             metamorphicButton.setVisible(true);
             checkout.setVisible(true);
+            clearCart.setVisible(true);
             logOut.setVisible(true);
         });
         panel.add(returnToSearch);
@@ -224,11 +273,29 @@ public class CustomerView extends State {
         inventory = new ScrollPane(itemDisplay);
         inventory.setBounds(0, 0, 210, 485);
         inventory.setVisible(true);
+        inventory.setPreferredSize(new Dimension(625, 0));
         jp.add(inventory);
 
+        cartPanel = new JPanel();
+        cartPanel.setLayout(null);
+        cartPanel.setBounds(0, 0, 267, 485);
+
+        cartjt = new JTable();
+        cartCol = new String[]{"Item Name", "Item Qty", "Item Cost"};
+        cartData = getCartData();
+        cartjt.setModel(new DefaultTableModel(cartData, cartCol));
+        cartjt.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        cartjt.setShowGrid(false);
+        cartjt.setDefaultEditor(Object.class, null);
+        ScrollPane cartjs = new ScrollPane(cartjt);
+        cartjs.setBounds(0, 0, cartPanel.getWidth(), cartPanel.getHeight());
+
+        cartPanel.add(cartjs);
+        cartPanel.setPreferredSize(new Dimension(120, 0));
+
         JLabel help = new JLabel("Help");
-        help.setBounds(13, 0, 50, 20);
-        help.setForeground(Color.blue);
+        help.setBounds(235, 0, 50, 20);
+        help.setForeground(royalPurple);
         panel.add(help);
 
         help.addMouseListener(new MouseAdapter() {
@@ -239,99 +306,115 @@ public class CustomerView extends State {
         });
 
         searchBarEntry = new JLabel("Search");
-        searchBarEntry.setBounds(37, 15, 200, 15);
+        searchBarEntry.setBounds(32, 15, 200, 15);
         panel.add(searchBarEntry);
 
         searchBar = new JTextField("");
-        searchBar.setBounds(37, 32, 200, 20);
+        searchBar.setBounds(32, 32, 200, 20);
         panel.add(searchBar);
 
         searchError = new JLabel("");
-        searchError.setBounds(130, 10, 200, 15);
+        searchError.setBounds(125, 10, 200, 15);
         searchError.setForeground(Color.red);
         panel.add(searchError);
 
-        searchButton = new JButton("Search");
-        searchButton.setBounds(25, 60, 110, 30);
-        searchButton.addActionListener((e) -> {
-            GridBagConstraints imageLayout = new GridBagConstraints();
-            imageLayout.insets = new Insets(2, 2, 2, 2);
-            int x = 0;
-            int y = 0;
-            String n[];
-            try {
-                if (!con.isClosed()) {
-                    //The boolean searchValid prevents the display from being cleared until the result set retrieves at least one value
-                    boolean searchValid = false;
-                    int l = 0;
-                    ItemSelection select = new ItemSelection(items);
-                    //Using 'like' means that as long as the character is present, the character being anything from 'Obsidian' to 'a'
-                    //then the search will select it.
-                    String query = "SELECT ItemName, ItemImage FROM Inventory WHERE ItemName LIKE '%" + searchBar.getText() + "%';";
-                    ps = con.prepareStatement(query);
-                    ResultSet rs = ps.executeQuery();
-                    ResultSetMetaData md = rs.getMetaData();
-                    while (rs.next()) {
-                        n = new String[md.getColumnCount() + 1];
-                        for (int i = 1; i < md.getColumnCount() + 1; i++) {
-                            n[i - 1] = rs.getString(i);
-                        }
-
-                        //At this point, the search is valid, so we can clear the display once and then leave it alone so it does not constantly clear
-                        if (!searchValid) {
-                            searchValid = true;
-                            itemDisplay.removeAll();
-                            items.clear();
-                            itemDisplay.repaint();
-                        }
-
-                        String itemName = n[0];
-
-                        imageLayout.weightx = 0.5;
-                        imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                        imageLayout.gridx = x;
-                        imageLayout.gridy = y;
-                        if (x == 4) {
-                            x = 0;
-                            y++;
-                        } else {
-                            x++;
-                        }
-
-                        if (n[1] == null) {
-                            JButton item = new JButton(itemName);
-                            items.add(item);
-                            items.get(l).addActionListener(select);
-                            itemDisplay.add(items.get(l), imageLayout);
-                        } else {
-                            try {
-                                Blob itemBlob = null;
-                                itemBlob = rs.getBlob("ItemImage");
-                                byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                                ItemIcon itemImage = new ItemIcon(b);
-                                JButton item = new JButton(itemName, itemImage);
-                                items.add(item);
-                                items.get(l).addActionListener(select);
-                                itemDisplay.add(items.get(l), imageLayout);
-                            } catch (IOException ex) {
-                                JButton item = new JButton(itemName);
-                                items.add(item);
-                                items.get(l).addActionListener(select);
-                                itemDisplay.add(items.get(l), imageLayout);
+        searchBar.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                GridBagConstraints imageLayout = new GridBagConstraints();
+                imageLayout.insets = new Insets(2, 2, 2, 2);
+                int x = 0;
+                int y = 0;
+                String n[];
+                try {
+                    if (!con.isClosed()) {
+                        //The boolean searchValid prevents the display from being cleared until the result set retrieves at least one value
+                        boolean searchValid = false;
+                        int l = 0;
+                        ItemSelection select = new ItemSelection(items);
+                        //Using 'like' means that as long as the character is present, the character being anything from 'Obsidian' to 'a'
+                        //then the search will select it.
+                        String query = "SELECT ItemName, ItemImage FROM Inventory WHERE ItemName LIKE '%" + searchBar.getText() + "%';";
+                        ps = con.prepareStatement(query);
+                        ResultSet rs = ps.executeQuery();
+                        ResultSetMetaData md = rs.getMetaData();
+                        while (rs.next()) {
+                            n = new String[md.getColumnCount() + 1];
+                            for (int i = 1; i < md.getColumnCount() + 1; i++) {
+                                n[i - 1] = rs.getString(i);
                             }
+
+                            //At this point, the search is valid, so we can clear the display once and then leave it alone so it does not constantly clear
+                            if (!searchValid) {
+                                searchValid = true;
+                                itemDisplay.removeAll();
+                                items.clear();
+                                itemDisplay.repaint();
+                            }
+
+                            String itemName = n[0];
+
+                            imageLayout.weightx = 0.5;
+                            imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                            imageLayout.gridx = x;
+                            imageLayout.gridy = y;
+                            if (x == 4) {
+                                x = 0;
+                                y++;
+                            } else {
+                                x++;
+                            }
+
+                            if (n[1] == null) {
+                                JButton item = new JButton(itemName);
+                                item.setBackground(thistle);
+                                items.add(item);
+                                items.get(l).addActionListener(select);
+                                itemDisplay.add(items.get(l), imageLayout);
+                            } else {
+                                try {
+                                    Blob itemBlob = null;
+                                    itemBlob = rs.getBlob("ItemImage");
+                                    byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
+                                    ItemIcon itemIcon = new ItemIcon(b);
+                                    Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                                    itemIcon = new ItemIcon(itemImage);
+                                    JButton item = new JButton(itemName, itemIcon);
+                                    item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                                    item.setHorizontalTextPosition(SwingConstants.CENTER);
+                                    item.setBackground(thistle);
+                                    items.add(item);
+                                    items.get(l).addActionListener(select);
+                                    itemDisplay.add(items.get(l), imageLayout);
+                                } catch (IOException ex) {
+                                    JButton item = new JButton(itemName);
+                                    item.setBackground(thistle);
+                                    items.add(item);
+                                    items.get(l).addActionListener(select);
+                                    itemDisplay.add(items.get(l), imageLayout);
+                                    System.out.println("Invalid Image");
+                                }
+                            }
+                            l++;
                         }
-                        l++;
+                        itemDisplay.validate();
                     }
-                    itemDisplay.validate();
+                } catch (SQLException ex) {
+                    searchError.setText("Invalid Search");
                 }
-            } catch (SQLException ex) {
-                searchError.setText("Invalid Search");
             }
         });
-        panel.add(searchButton);
+
+        refreshButton = new JButton("Refresh");
+        refreshButton.setBounds(20, 60, 110, 30);
+        refreshButton.setBackground(thistle);
+        refreshButton.addActionListener((e) -> {
+            updateData();
+        });
+        panel.add(refreshButton);
 
         igneousButton = new JButton("Igneous");
-        igneousButton.setBounds(140, 60, 110, 30);
+        igneousButton.setBounds(135, 60, 110, 30);
+        igneousButton.setBackground(thistle);
         igneousButton.addActionListener((e) -> {
             GridBagConstraints imageLayout = new GridBagConstraints();
             imageLayout.insets = new Insets(2, 2, 2, 2);
@@ -370,6 +453,7 @@ public class CustomerView extends State {
 
                         if (n[1] == null) {
                             JButton item = new JButton(itemName);
+                            item.setBackground(thistle);
                             items.add(item);
                             items.get(l).addActionListener(select);
                             itemDisplay.add(items.get(l), imageLayout);
@@ -378,16 +462,23 @@ public class CustomerView extends State {
                                 Blob itemBlob = null;
                                 itemBlob = rs.getBlob("ItemImage");
                                 byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                                ItemIcon itemImage = new ItemIcon(b);
-                                JButton item = new JButton(itemName, itemImage);
+                                ItemIcon itemIcon = new ItemIcon(b);
+                                Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                                itemIcon = new ItemIcon(itemImage);
+                                JButton item = new JButton(itemName, itemIcon);
+                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                                item.setHorizontalTextPosition(SwingConstants.CENTER);
+                                item.setBackground(thistle);
                                 items.add(item);
                                 items.get(l).addActionListener(select);
                                 itemDisplay.add(items.get(l), imageLayout);
                             } catch (IOException ex) {
                                 JButton item = new JButton(itemName);
+                                item.setBackground(thistle);
                                 items.add(item);
                                 items.get(l).addActionListener(select);
                                 itemDisplay.add(items.get(l), imageLayout);
+                                System.out.println("Invalid Image");
                             }
                         }
                         l++;
@@ -401,7 +492,8 @@ public class CustomerView extends State {
         panel.add(igneousButton);
 
         sedimentaryButton = new JButton("Sedimentary");
-        sedimentaryButton.setBounds(25, 95, 110, 30);
+        sedimentaryButton.setBounds(20, 95, 110, 30);
+        sedimentaryButton.setBackground(thistle);
         sedimentaryButton.addActionListener((e) -> {
             GridBagConstraints imageLayout = new GridBagConstraints();
             imageLayout.insets = new Insets(2, 2, 2, 2);
@@ -440,6 +532,7 @@ public class CustomerView extends State {
 
                         if (n[1] == null) {
                             JButton item = new JButton(itemName);
+                            item.setBackground(thistle);
                             items.add(item);
                             items.get(l).addActionListener(select);
                             itemDisplay.add(items.get(l), imageLayout);
@@ -448,16 +541,23 @@ public class CustomerView extends State {
                                 Blob itemBlob = null;
                                 itemBlob = rs.getBlob("ItemImage");
                                 byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                                ItemIcon itemImage = new ItemIcon(b);
-                                JButton item = new JButton(itemName, itemImage);
+                                ItemIcon itemIcon = new ItemIcon(b);
+                                Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                                itemIcon = new ItemIcon(itemImage);
+                                JButton item = new JButton(itemName, itemIcon);
+                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                                item.setHorizontalTextPosition(SwingConstants.CENTER);
+                                item.setBackground(thistle);
                                 items.add(item);
                                 items.get(l).addActionListener(select);
                                 itemDisplay.add(items.get(l), imageLayout);
                             } catch (IOException ex) {
                                 JButton item = new JButton(itemName);
+                                item.setBackground(thistle);
                                 items.add(item);
                                 items.get(l).addActionListener(select);
                                 itemDisplay.add(items.get(l), imageLayout);
+                                System.out.println("Invalid Image");
                             }
                         }
                         l++;
@@ -471,7 +571,8 @@ public class CustomerView extends State {
         panel.add(sedimentaryButton);
 
         metamorphicButton = new JButton("Metamorphic");
-        metamorphicButton.setBounds(140, 95, 110, 30);
+        metamorphicButton.setBounds(135, 95, 110, 30);
+        metamorphicButton.setBackground(thistle);
         metamorphicButton.addActionListener((e) -> {
             GridBagConstraints imageLayout = new GridBagConstraints();
             imageLayout.insets = new Insets(2, 2, 2, 2);
@@ -510,6 +611,7 @@ public class CustomerView extends State {
 
                         if (n[1] == null) {
                             JButton item = new JButton(itemName);
+                            item.setBackground(thistle);
                             items.add(item);
                             items.get(l).addActionListener(select);
                             itemDisplay.add(items.get(l), imageLayout);
@@ -518,16 +620,23 @@ public class CustomerView extends State {
                                 Blob itemBlob = null;
                                 itemBlob = rs.getBlob("ItemImage");
                                 byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                                ItemIcon itemImage = new ItemIcon(b);
-                                JButton item = new JButton(itemName, itemImage);
+                                ItemIcon itemIcon = new ItemIcon(b);
+                                Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                                itemIcon = new ItemIcon(itemImage);
+                                JButton item = new JButton(itemName, itemIcon);
+                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                                item.setHorizontalTextPosition(SwingConstants.CENTER);
+                                item.setBackground(thistle);
                                 items.add(item);
                                 items.get(l).addActionListener(select);
                                 itemDisplay.add(items.get(l), imageLayout);
                             } catch (IOException ex) {
                                 JButton item = new JButton(itemName);
+                                item.setBackground(thistle);
                                 items.add(item);
                                 items.get(l).addActionListener(select);
                                 itemDisplay.add(items.get(l), imageLayout);
+                                System.out.println("Invalid Image");
                             }
                         }
                         l++;
@@ -541,50 +650,50 @@ public class CustomerView extends State {
         panel.add(metamorphicButton);
 
         cardNumberEntry = new JLabel("Card Number");
-        cardNumberEntry.setBounds(42, 140, 200, 15);
+        cardNumberEntry.setBounds(32, 140, 200, 15);
         panel.add(cardNumberEntry);
 
         cardNumber = new JTextField("");
-        cardNumber.setBounds(42, 157, 200, 20);
+        cardNumber.setBounds(32, 157, 200, 20);
         panel.add(cardNumber);
 
         cvvEntry = new JLabel("Card Verify Value");
-        cvvEntry.setBounds(42, 190, 200, 15);
+        cvvEntry.setBounds(32, 190, 200, 15);
         panel.add(cvvEntry);
 
         cardCVV = new JTextField("");
-        cardCVV.setBounds(42, 207, 200, 20);
+        cardCVV.setBounds(32, 207, 200, 20);
         panel.add(cardCVV);
 
         cardExpireYear = new JLabel("Expire Year");
-        cardExpireYear.setBounds(65, 240, 100, 15);
+        cardExpireYear.setBounds(60, 240, 100, 15);
         panel.add(cardExpireYear);
 
         int yearsForList = currentDate.getYear();
 
         String[] expireYear = {"" + (yearsForList - 7), "" + (yearsForList - 6), "" + (yearsForList - 5), "" + (yearsForList - 4), "" + (yearsForList - 3), "" + (yearsForList - 2), "" + (yearsForList - 1), "" + yearsForList, "" + (yearsForList + 1), "" + (yearsForList + 2), "" + (yearsForList + 3), "" + (yearsForList + 4), "" + (yearsForList + 5), "" + (yearsForList + 6), "" + (yearsForList + 7), ""};
         cardExpirationYear = new JComboBox(expireYear);
-        cardExpirationYear.setBounds(70, 255, 55, 20);
+        cardExpirationYear.setBounds(65, 255, 55, 20);
         cardExpirationYear.setSelectedIndex(7);
         panel.add(cardExpirationYear);
 
         cardExpireMonth = new JLabel("Expire Month");
-        cardExpireMonth.setBounds(155, 240, 110, 15);
+        cardExpireMonth.setBounds(150, 240, 110, 15);
         panel.add(cardExpireMonth);
 
         String[] expireMonth = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
         cardExpirationMonth = new JComboBox(expireMonth);
-        cardExpirationMonth.setBounds(165, 255, 55, 20);
+        cardExpirationMonth.setBounds(160, 255, 55, 20);
         cardExpirationMonth.setSelectedIndex(0);
         panel.add(cardExpirationMonth);
 
         cardError = new JLabel("");
-        cardError.setBounds(130, 140, 200, 15);
+        cardError.setBounds(120, 140, 200, 15);
         cardError.setForeground(Color.red);
         panel.add(cardError);
 
         cvvError = new JLabel("");
-        cvvError.setBounds(145, 190, 200, 15);
+        cvvError.setBounds(135, 190, 200, 15);
         cvvError.setForeground(Color.red);
         panel.add(cvvError);
 
@@ -595,20 +704,115 @@ public class CustomerView extends State {
         panel.add(expirationError);
 
         discountEntry = new JLabel("Discount Code");
-        discountEntry.setBounds(42, 290, 200, 15);
+        discountEntry.setBounds(32, 290, 200, 15);
         panel.add(discountEntry);
 
         discountCode = new JTextField("");
-        discountCode.setBounds(42, 307, 200, 20);
+        discountCode.setBounds(32, 307, 200, 20);
         panel.add(discountCode);
 
+        discountCode.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                discountError.setText("");
+                if (!discountCode.getText().equals("")) {
+                    String n[];
+                    discountID = 0;
+                    discountValid = true;
+                    startDate = null;
+                    expireDate = null;
+                    discountLevel = -1;
+                    discountInventoryID = 0;
+                    discountType = -1;
+                    discountPercent = 0;
+                    discountAmount = 0;
+                    try {
+                        String query = "SELECT DiscountID, DiscountLevel, InventoryID, DiscountType, DiscountPercentage, DiscountDollarAmount, StartDate, ExpirationDate FROM Discounts WHERE DiscountCode = '" + discountCode.getText() + "';";
+                        ps = con.prepareStatement(query);
+                        ResultSet rs = ps.executeQuery();
+
+                        while (rs.next()) {
+                            discountID = rs.getInt("DiscountID");
+                            String start = rs.getString("StartDate");
+                            if (start != null) {
+                                startDate = rs.getDate("StartDate");
+                            }
+                            expireDate = rs.getDate("ExpirationDate");
+                            if (expireDate == null) {
+                                discountValid = false;
+                                discountError.setText("Bad Expire Date");
+                                break;
+                            }
+                            String id = rs.getString("InventoryID");
+                            String level = rs.getString("DiscountLevel");
+                            if (level != null) {
+                                discountLevel = Integer.parseInt(level);
+                                if (discountLevel == 1) {
+                                    if (id != null) {
+                                        discountInventoryID = Integer.parseInt(id);
+                                    } else {
+                                        discountValid = false;
+                                        discountError.setText("Invalid Discount");
+                                        break;
+                                    }
+                                }
+                            } else {
+                                discountValid = false;
+                                discountError.setText("Invalid Discount");
+                                break;
+                            }
+                            discountType = rs.getInt("DiscountType");
+                            String percentDiscounted = rs.getString("DiscountPercentage");
+                            String amountDiscounted = rs.getString("DiscountDollarAmount");
+                            if (percentDiscounted != null && discountType == 0) {
+                                discountPercent = Double.parseDouble(percentDiscounted);
+                            }
+                            if (amountDiscounted != null && discountType == 1) {
+                                discountAmount = Double.parseDouble(amountDiscounted);
+                            }
+                        }
+
+                        int currentYear = currentDate.getYear();
+                        int currentMonth = currentDate.getMonthValue();
+                        int currentDay = currentDate.getDayOfMonth();
+
+                        Date current = Date.valueOf(LocalDate.of(currentYear, currentMonth, currentDay));
+
+                        if (startDate != null) {
+                            boolean isBetween = current.after(startDate) && current.before(expireDate);
+                            if (!isBetween) {
+                                discountValid = false;
+                            }
+                        }
+
+                        if (discountLevel != 0) {
+                            boolean discountAppliable = false;
+                            for (int i = 0; i < cart.size(); i++) {
+                                if (discountInventoryID == cart.get(i).inventoryID) {
+                                    discountAppliable = true;
+                                    break;
+                                }
+                            }
+                            if (!discountAppliable) {
+                                discountValid = false;
+                                discountError.setText("Not Applicable");
+                            }
+                        }
+                    } catch (SQLException ex) {
+                        discountValid = false;
+                        discountError.setText("Invalid Code");
+                    }
+                }
+            }
+        });
+
         discountError = new JLabel("");
-        discountError.setBounds(130, 290, 200, 15);
+        discountError.setBounds(120, 290, 200, 15);
         discountError.setForeground(Color.red);
         panel.add(discountError);
 
         checkout = new JButton("Checkout");
-        checkout.setBounds(83, 345, 125, 50);
+        checkout.setBounds(27, 345, 100, 50);
+        checkout.setBackground(thistle);
         checkout.addActionListener((e) -> {
             cardError.setText("");
             cvvError.setText("");
@@ -618,7 +822,6 @@ public class CustomerView extends State {
             if (itemsSelected > 0) {
                 validateCard();
                 if (!discountCode.getText().equals("")) {
-                    validateDiscount();
                     if (cardValid && discountValid) {
                         Thread createCheckout = new Thread(customerCheckout);
                         createCheckout.start();
@@ -633,23 +836,41 @@ public class CustomerView extends State {
         });
         panel.add(checkout);
 
+        clearCart = new JButton("Clear Cart");
+        clearCart.setBounds(136, 345, 100, 50);
+        clearCart.setBackground(thistle);
+        clearCart.addActionListener((e) -> {
+            inventory.setPreferredSize(new Dimension(625, 0));
+            jp.remove(cartPanel);
+            cartVisible = false;
+            cart.clear();
+            jp.validate();
+        });
+        panel.add(clearCart);
+
         //This button logs the user out, returning them to the login menu.
         logOut = new JButton("Log Out");
-        logOut.setBounds(95, 410, 100, 50);
+        logOut.setBounds(28, 410, 207, 50);
+        logOut.setBackground(thistle);
         logOut.addActionListener((e) -> {
+            inventory.setPreferredSize(new Dimension(625, 0));
+            jp.remove(cartPanel);
+            cartVisible = false;
+            cart.clear();
+            jp.validate();
+
             itemsSelected = 0;
             itemSelected = 0;
 
             itemsName.setVisible(false);
-            itemsName.setBounds(75, 60, 200, 15);
             itemsDescription.setVisible(false);
-            itemsDescription.setBounds(11, 80, 250, 60);
+            itemRockOrGem.setVisible(false);
+            itemGrainSize.setVisible(false);
+            itemGrainShape.setVisible(false);
+            itemHeft.setVisible(false);
+            itemHardness.setVisible(false);
             price.setVisible(false);
-            price.setBounds(panel.getWidth() / 8, 150, 200, 15);
             quantity.setVisible(false);
-            quantity.setBounds(panel.getWidth() / 8, 165, 200, 15);
-            confirm.setVisible(false);
-            cancel.setVisible(false);
             addToCart.setVisible(false);
             returnToSearch.setVisible(false);
             searchBarEntry.setVisible(true);
@@ -669,11 +890,12 @@ public class CustomerView extends State {
             discountEntry.setVisible(true);
             discountCode.setVisible(true);
             discountError.setText("");
-            searchButton.setVisible(true);
+            refreshButton.setVisible(true);
             igneousButton.setVisible(true);
             sedimentaryButton.setVisible(true);
             metamorphicButton.setVisible(true);
             checkout.setVisible(true);
+            clearCart.setVisible(true);
             logOut.setVisible(true);
 
             //A switch to the login view
@@ -747,97 +969,8 @@ public class CustomerView extends State {
         }
     }
 
-    void validateDiscount() {
-        String n[];
-        discountID = 0;
-        discountValid = true;
-        startDate = null;
-        expireDate = null;
-        discountLevel = -1;
-        discountInventoryID = 0;
-        discountType = -1;
-        discountPercent = 0;
-        discountAmount = 0;
-        try {
-            String query = "SELECT DiscountID, DiscountLevel, InventoryID, DiscountType, DiscountPercentage, DiscountDollarAmount, StartDate, ExpirationDate FROM Discounts WHERE DiscountCode = '" + discountCode.getText() + "';";
-            ps = con.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                discountID = rs.getInt("DiscountID");
-                String start = rs.getString("StartDate");
-                if (start != null) {
-                    startDate = rs.getDate("StartDate");
-                }
-                expireDate = rs.getDate("ExpirationDate");
-                if (expireDate == null) {
-                    discountValid = false;
-                    discountError.setText("Bad Expire Date");
-                    break;
-                }
-                String id = rs.getString("InventoryID");
-                String level = rs.getString("DiscountLevel");
-                if (level != null) {
-                    discountLevel = Integer.parseInt(level);
-                    if (discountLevel == 1) {
-                        if (id != null) {
-                            discountInventoryID = Integer.parseInt(id);
-                        } else {
-                            discountValid = false;
-                            discountError.setText("Invalid Discount");
-                            break;
-                        }
-                    }
-                } else {
-                    discountValid = false;
-                    discountError.setText("Invalid Discount");
-                    break;
-                }
-                discountType = rs.getInt("DiscountType");
-                String percentDiscounted = rs.getString("DiscountPercentage");
-                String amountDiscounted = rs.getString("DiscountDollarAmount");
-                if (percentDiscounted != null && discountType == 0) {
-                    discountPercent = Double.parseDouble(percentDiscounted);
-                }
-                if (amountDiscounted != null && discountType == 1) {
-                    discountAmount = Double.parseDouble(amountDiscounted);
-                }
-            }
-
-            int currentYear = currentDate.getYear();
-            int currentMonth = currentDate.getMonthValue();
-            int currentDay = currentDate.getDayOfMonth();
-
-            Date current = Date.valueOf(LocalDate.of(currentYear, currentMonth, currentDay));
-
-            if (startDate != null) {
-                boolean isBetween = current.after(startDate) && current.before(expireDate);
-                if (!isBetween) {
-                    discountValid = false;
-                }
-            }
-
-            if (discountLevel != 0) {
-                boolean discountAppliable = false;
-                for (int i = 0; i < cart.size(); i++) {
-                    if (discountInventoryID == cart.get(i).inventoryID) {
-                        discountAppliable = true;
-                        break;
-                    }
-                }
-                if (!discountAppliable) {
-                    discountValid = false;
-                    discountError.setText("Not Applicable");
-                }
-            }
-        } catch (SQLException e) {
-            discountValid = false;
-            discountError.setText("Invalid Code");
-            e.printStackTrace();
-        }
-    }
-
     void updateData() {
+        Color thistle = Color.decode("#D5CBE2");
         GridBagConstraints imageLayout = new GridBagConstraints();
         imageLayout.insets = new Insets(2, 2, 2, 2);
         int x = 0;
@@ -875,6 +1008,7 @@ public class CustomerView extends State {
 
                     if (e[1] == null) {
                         JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
                         items.add(item);
                         items.get(l).addActionListener(select);
                         itemDisplay.add(items.get(l), imageLayout);
@@ -883,16 +1017,23 @@ public class CustomerView extends State {
                             Blob itemBlob = null;
                             itemBlob = rs.getBlob("ItemImage");
                             byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                            ItemIcon itemImage = new ItemIcon(b);
-                            JButton item = new JButton(itemName, itemImage);
+                            ItemIcon itemIcon = new ItemIcon(b);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                            itemIcon = new ItemIcon(itemImage);
+                            JButton item = new JButton(itemName, itemIcon);
+                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                            item.setHorizontalTextPosition(SwingConstants.CENTER);
+                            item.setBackground(thistle);
                             items.add(item);
                             items.get(l).addActionListener(select);
                             itemDisplay.add(items.get(l), imageLayout);
                         } catch (IOException ex) {
                             JButton item = new JButton(itemName);
+                            item.setBackground(thistle);
                             items.add(item);
                             items.get(l).addActionListener(select);
                             itemDisplay.add(items.get(l), imageLayout);
+                            System.out.println("Invalid Image");
                         }
                     }
                     l++;
@@ -901,6 +1042,19 @@ public class CustomerView extends State {
             }
         } catch (SQLException ex) {
             System.out.println(ex);
+        }
+    }
+
+    Object[][] getCartData() {
+        try {
+            Object[][] cartData = new Object[cart.size()][3];
+            for (int i = 0; i < cart.size(); i++) {
+                cartData[i] = new String[]{cart.get(i).itemName, cart.get(i).quantity + "", "$" + f.format(cart.get(i).itemCost * cart.get(i).quantity)};
+            }
+            return cartData;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
         }
     }
 
@@ -920,6 +1074,7 @@ public class CustomerView extends State {
 
             sb.append("<h2>Customer Name: ").append(LoginView.person.get(LoginView.currentPerson).nameFirst + " " + LoginView.person.get(LoginView.currentPerson).nameLast.charAt(0)).append(".</h2>");
             sb.append("<h2>Phone Number:  ").append(LoginView.person.get(LoginView.currentPerson).phonePrimary).append("</h2>");
+            sb.append("<h2>Card Expiration Date:  ").append(cardExpirationMonth.getSelectedItem() + "/" + cardExpirationYear.getSelectedItem()).append("</h2>");
 
             sb.append("<table>");
 
@@ -1019,18 +1174,17 @@ public class CustomerView extends State {
 
             String html = sb.toString();
 
-            String documentsDirectory = System.getProperty("user.home") + File.separator + "Documents";
-            String targetDirectory = documentsDirectory + File.separator + "GeoGeniuses";
-            File directory = new File(targetDirectory);
+            String documentsDirectory = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+            File directory = new File(documentsDirectory);
             if (!directory.exists()) {
                 boolean created = directory.mkdirs();
                 if (!created) {
-                    System.out.println("Directory Not Established: " + targetDirectory);
+                    System.out.println("Directory Not Established: " + documentsDirectory);
                     return;
                 }
             }
 
-            String filePath = targetDirectory + File.separator + "purchase.html";
+            String filePath = documentsDirectory + File.separator + "purchase.html";
 
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
@@ -1072,7 +1226,7 @@ public class CustomerView extends State {
                     rs = ps.executeQuery();
                     rs.next();
                     int quantity = rs.getInt("Quantity");
-                    
+
                     statement = "UPDATE Inventory SET Quantity = " + (quantity - cart.get(i).quantity) + " WHERE InventoryID = " + cart.get(i).inventoryID + ";";
                     preparedStatement = con.prepareStatement(statement);
                     preparedStatement.execute();
@@ -1101,7 +1255,15 @@ public class CustomerView extends State {
                     preparedStatement.execute();
                     cart.clear();
                     Thread logonData = new Thread(LoginView.logonInfo);
-                logonData.start();
+                    logonData.start();
+
+                    inventory.setPreferredSize(new Dimension(625, 0));
+                    jp.remove(cartPanel);
+                    cartVisible = false;
+
+                    itemsSelected = 0;
+
+                    updateData();
                 }
             } catch (IOException e) {
                 System.out.println(e);
@@ -1116,13 +1278,13 @@ public class CustomerView extends State {
 
         Page page = document.getPages().add();
 
-        page.getParagraphs().add(new TextFragment("Searching - Please enter a valid item descriptor and press 'search' to search"
+        page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
                 + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
                 + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
                 + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
+                + "\n\nClear Cart Button - This button removes all items from the cart and hides the table"
                 + "\n\nLogout Button - The log out button returns the user to the login menu"
                 + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
-                + "\n\nConfirm/Cancel - A preventative measure to keep the user from automatically buying $500 rubies when trying to observe them"
                 + "\n\nAdd to Cart - A button allowing the user to add an item to their cart (confirm button required), can be clicked multiple times"
                 + "\n\nReturn - A button that returns the user to search/purchase options"
                 + "\n\nCard Data - You must enter a valid card number (Visa/Mastercard) and Card Verification Value (CVV), the card year cannot be five years expired"

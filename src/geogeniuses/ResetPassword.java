@@ -39,6 +39,7 @@ public class ResetPassword extends State {
     ResetPassword() {
 
         Color lightCyan = Color.decode("#DFFDFF");
+        Color thistle = Color.decode("#D5CBE2");
         jp.setBackground(lightCyan);
 
         securityQuestion1 = new JLabel("");
@@ -113,6 +114,7 @@ public class ResetPassword extends State {
 
         confirmAnswersButton = new JButton("Confirm Answers");
         confirmAnswersButton.setBounds(225, 400, 150, 50);
+        confirmAnswersButton.setBackground(thistle);
         confirmAnswersButton.addActionListener((e) -> {
             boolean validUser = true;
             answerError1.setText("");
@@ -173,6 +175,7 @@ public class ResetPassword extends State {
 
         confirmNewPasswordButton = new JButton("Confirm Password");
         confirmNewPasswordButton.setBounds(225, 400, 150, 50);
+        confirmNewPasswordButton.setBackground(thistle);
         confirmNewPasswordButton.addActionListener((e) -> {
             NewPassword();
         }
@@ -181,6 +184,7 @@ public class ResetPassword extends State {
 
         JButton returnButton = new JButton("Return");
         returnButton.setBounds(500, 400, 100, 50);
+        returnButton.setBackground(thistle);
         returnButton.addActionListener((e) -> {
             // Hides password and validate password fields
             HideFields();

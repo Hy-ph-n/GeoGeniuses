@@ -24,6 +24,8 @@ public class LoginView extends State {
     JTextField logName;
     JPasswordField logPassword;
 
+    JLabel logonError;
+
     boolean loginValid = true;
 
     static boolean resetPassword = true;
@@ -36,6 +38,8 @@ public class LoginView extends State {
         load();
 
         Color lightCyan = Color.decode("#DFFDFF");
+        Color thistle = Color.decode("#D5CBE2");
+        Color royalPurple = Color.decode("#8062A7");
 
         jf.setBackground(lightCyan);
         jp.setBackground(lightCyan);
@@ -63,9 +67,14 @@ public class LoginView extends State {
         logPassword.setEchoChar('*');
         jp.add(logPassword);
 
+        logonError = new JLabel("");
+        logonError.setBounds(475, 42, 200, 15);
+        logonError.setForeground(Color.red);
+        jp.add(logonError);
+
         JLabel help = new JLabel("Help");
         help.setBounds(745, 0, 50, 20);
-        help.setForeground(Color.blue);
+        help.setForeground(royalPurple);
         jp.add(help);
 
         help.addMouseListener(new MouseAdapter() {
@@ -76,11 +85,13 @@ public class LoginView extends State {
         });
 
         JButton loginButton = new JButton("Login");
-        loginButton.setBounds(310, 140, 130, 50);
+        loginButton.setBounds(310, 130, 130, 50);
+        loginButton.setBackground(thistle);
         loginButton.addActionListener((e) -> {
             String positionTitle = "None";
             String loginName = logName.getText();
             String loginPassword = new String(logPassword.getPassword());
+            logonError.setText("");
             if (!loginName.isEmpty() && !loginPassword.isEmpty()) {
                 if (loginValid) {
                     try {
@@ -92,9 +103,11 @@ public class LoginView extends State {
 
                         //A for loop that will test to see if the name and password match up with a manager or customer.
                         if (!positionTitle.equals("None")) {
+                            boolean validPerson = false;
                             for (int i = 0; i < logon.size(); i++) {
                                 try {
                                     if (loginName.equals(logon.get(i).logonName) && loginPassword.equals(logon.get(i).password) && person.get(i).personDeleted != 1) {
+                                        validPerson = true;
 
                                         SetPersonID(loginName);
 
@@ -141,9 +154,14 @@ public class LoginView extends State {
                                     System.out.println(ex);
                                 }
                             }
+                            if (!validPerson) {
+                                logonError.setText("Invalid Credentials");
+                                logPassword.setText("");
+                            }
                         }
                     } catch (SQLException ex) {
-                        System.out.println(ex);
+                        logonError.setText("User not found");
+                        logPassword.setText("");
                     }
                 }
             }
@@ -152,16 +170,14 @@ public class LoginView extends State {
         jp.add(loginButton);
 
         JButton guestButton = new JButton("Guest Login");
-        guestButton.setBounds(310, 190, 130, 20);
+        guestButton.setBounds(310, 205, 130, 50);
+        guestButton.setBackground(thistle);
         guestButton.addActionListener((e) -> {
             //Resets the login name and login password fields to their default states
             logName.setText("");
             logPassword.setText("");
+            logonError.setText("");
 
-            CustomerView.itemsName.setBounds(CustomerView.panel.getWidth() / 8, 150, 200, 15);
-            CustomerView.itemsDescription.setBounds(11, 175, 250, 60);
-            CustomerView.price.setBounds(CustomerView.panel.getWidth() / 8, 300, 200, 15);
-            CustomerView.quantity.setBounds(CustomerView.panel.getWidth() / 8, 315, 200, 15);
             CustomerView.searchBarEntry.setVisible(true);
             CustomerView.searchBar.setVisible(true);
             CustomerView.cardNumberEntry.setVisible(false);
@@ -175,6 +191,7 @@ public class LoginView extends State {
             CustomerView.discountEntry.setVisible(false);
             CustomerView.discountCode.setVisible(false);
             CustomerView.checkout.setVisible(false);
+            CustomerView.clearCart.setVisible(false);
 
             //Updates the inventory for the customer
             ((CustomerView) customerView).updateData();
@@ -190,10 +207,12 @@ public class LoginView extends State {
         jp.add(guestButton);
 
         JButton registerButton = new JButton("Register");
-        registerButton.setBounds(310, 250, 130, 50);
+        registerButton.setBounds(310, 280, 130, 50);
+        registerButton.setBackground(thistle);
         registerButton.addActionListener((e) -> {
             logName.setText("");
             logPassword.setText("");
+            logonError.setText("");
 
             jf.setTitle("Register");
             jp.setVisible(false);
@@ -206,7 +225,8 @@ public class LoginView extends State {
         jp.add(registerButton);
 
         JButton resetPasswordButton = new JButton("Reset Password");
-        resetPasswordButton.setBounds(310, 360, 130, 50);
+        resetPasswordButton.setBounds(310, 355, 130, 50);
+        resetPasswordButton.setBackground(thistle);
         resetPasswordButton.addActionListener((e) -> {
             resetPassword = true;
             String loginName = logName.getText();
@@ -216,6 +236,7 @@ public class LoginView extends State {
                 if (resetPassword) {
                     logName.setText("");
                     logPassword.setText("");
+                    logonError.setText("");
                     ResetPassword.currentPerson = LoginView.currentPerson;
                     ResetPassword.CollectQuestions();
 
@@ -325,7 +346,7 @@ public class LoginView extends State {
         try {
             Blob imgBlob = null;
 
-            String query = "SELECT InventoryID, ItemName, ItemDescription, CategoryID, RetailPrice, Cost, Quantity, RestockThreshold, ItemImage, Discontinued FROM Inventory";
+            String query = "SELECT InventoryID, ItemName, ItemDescription, CategoryID, StoneOrGemstone, GrainSize, GrainShape, Heft, SemiOrPrecious, Hardness, RetailPrice, Cost, Quantity, RestockThreshold, Discontinued FROM Inventory";
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData md = rs.getMetaData();
@@ -340,21 +361,32 @@ public class LoginView extends State {
                 String itemName = e[1];
                 String itemDescription = e[2];
                 int categoryID = Integer.parseInt(e[3]);
-                double retailPrice = Double.parseDouble(e[4]);
-                double cost = Double.parseDouble(e[5]);
-                int quantity = Integer.parseInt(e[6]);
-                int restockThreshold = Integer.parseInt(e[7]);
-                byte[] b = null;
-                int discontinued = Integer.parseInt(e[9]);
+                int stoneOrGemstone = Integer.parseInt(e[4]);
+                String grainSize = null;
+                if (e[5] != null) {
+                    grainSize = e[5];
+                }
+                String grainShape = null;
+                if (e[6] != null) {
+                    grainShape = e[6];
+                }
+                String heft = null;
+                if (e[7] != null) {
+                    heft = e[7];
+                }
+                String semiOrPrecious = null;
+                if (e[8] != null) {
+                    semiOrPrecious = e[8];
+                }
+                double hardness = Double.parseDouble(e[9]);
+                double retailPrice = Double.parseDouble(e[10]);
+                double cost = Double.parseDouble(e[11]);
+                int quantity = Integer.parseInt(e[12]);
+                int restockThreshold = Integer.parseInt(e[13]);
+                int discontinued = Integer.parseInt(e[14]);
 
-                //try {
-                //imgBlob = rs.getBlob(e[8]);
-                //b = imgBlob.getBinaryStream(1, imgBlob.length()).readAllBytes();
-                //} catch (IOException ex) {
-                //System.out.println(ex);
-                //}
                 //Adds everything
-                inventory.add(new Inventory(inventoryID, itemName, itemDescription, categoryID, retailPrice, cost, quantity, restockThreshold, b, discontinued));
+                inventory.add(new Inventory(inventoryID, itemName, itemDescription, categoryID, stoneOrGemstone, grainSize, grainShape, heft, semiOrPrecious, hardness, retailPrice, cost, quantity, restockThreshold, discontinued));
             }
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -363,7 +395,6 @@ public class LoginView extends State {
 
     static void SetPersonID(String logonName) {
         try {
-            System.out.println("Running");
             String query = "SELECT PersonID FROM Logon WHERE LogonName = '" + logonName + "';";
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();

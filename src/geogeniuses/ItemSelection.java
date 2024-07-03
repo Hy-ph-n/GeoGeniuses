@@ -27,21 +27,73 @@ public class ItemSelection extends State implements ActionListener {
         } catch (SQLException e) {
             System.out.println(e);
         }
-        CustomerView.itemsName.setText(LoginView.inventory.get(CustomerView.itemSelected).itemName);
+        Inventory inventory = LoginView.inventory.get(CustomerView.itemSelected);
+        CustomerView.itemsName.setText(inventory.itemName);
         CustomerView.itemsName.setVisible(true);
-        CustomerView.itemsDescription.setText(LoginView.inventory.get(CustomerView.itemSelected).itemDescription);
+        CustomerView.itemsDescription.setText(inventory.itemDescription);
         CustomerView.itemsDescription.setVisible(true);
-        CustomerView.price.setText("Price: $" + LoginView.inventory.get(CustomerView.itemSelected).retailPrice);
+        CustomerView.itemGrainSize.setVisible(false);
+        CustomerView.itemGrainShape.setVisible(false);
+        CustomerView.itemHeft.setVisible(false);
+        int yValue = 300;
+        if (inventory.stoneOrGemstone == 0) {
+            CustomerView.itemRockOrGem.setLocation(CustomerView.itemRockOrGem.getX(), yValue += 15);
+            if (inventory.categoryID == 1) {
+                CustomerView.itemRockOrGem.setText("Igneous Rock");
+            } else if (inventory.categoryID == 2) {
+                CustomerView.itemRockOrGem.setText("Sedimentary Rock");
+            } else if (inventory.categoryID == 3) {
+                CustomerView.itemRockOrGem.setText("Metamorphic Rock");
+            }
+            if (inventory.grainSize != null) {
+                CustomerView.itemGrainSize.setLocation(CustomerView.itemGrainSize.getX(), yValue += 15);
+                if (Integer.parseInt(inventory.grainSize) == 0) {
+                    CustomerView.itemGrainSize.setText("Rough Grained Rock");
+                } else if (Integer.parseInt(inventory.grainSize) == 0) {
+                    CustomerView.itemGrainSize.setText("Fine Grained Rock");
+                }
+                CustomerView.itemGrainSize.setVisible(true);
+            }
+            if (inventory.grainShape != null) {
+                CustomerView.itemGrainShape.setLocation(CustomerView.itemGrainShape.getX(), yValue += 15);
+                CustomerView.itemGrainShape.setText("Grain Shape: " + inventory.grainShape);
+                CustomerView.itemGrainShape.setVisible(true);
+            }
+        } else if (inventory.stoneOrGemstone == 1) {
+            CustomerView.itemRockOrGem.setLocation(CustomerView.itemRockOrGem.getX(), yValue += 15);
+            if (Integer.parseInt(inventory.semiOrPrecious) == 0) {
+                CustomerView.itemRockOrGem.setText("Semi-Precious Gemstone");
+            } else if (Integer.parseInt(inventory.semiOrPrecious) == 1) {
+                CustomerView.itemRockOrGem.setText("Precious Gemstone");
+            }
+            CustomerView.itemRockOrGem.setVisible(true);
+        }
+        CustomerView.itemHardness.setLocation(CustomerView.itemHardness.getX(), yValue += 15);
+        CustomerView.itemHardness.setText("Hardness: " + inventory.hardness);
+        CustomerView.itemHardness.setVisible(true);
+        CustomerView.price.setLocation(CustomerView.price.getX(), yValue += 15);
+        CustomerView.price.setText("Price: $" + inventory.retailPrice);
         CustomerView.price.setVisible(true);
-        CustomerView.quantity.setText("Quantity: " + LoginView.inventory.get(CustomerView.itemSelected).quantity);
+        CustomerView.quantity.setLocation(CustomerView.quantity.getX(), yValue += 15);
+        if (CustomerView.cart.size() == 0) {
+            CustomerView.quantity.setText("Quantity: " + inventory.quantity);
+        } else {
+            boolean itemFound = false;
+            for (int i = 0; i < CustomerView.cart.size(); i++) {
+                if (CustomerView.cart.get(i).inventoryID == inventory.inventoryID) {
+                    CustomerView.quantity.setText("Quantity: " + (inventory.quantity - CustomerView.cart.get(i).quantity));
+                    itemFound = true;
+                }
+            }
+            if (!itemFound) {
+                CustomerView.quantity.setText("Quantity: " + inventory.quantity);
+            }
+        }
         CustomerView.quantity.setVisible(true);
         if (LoginView.currentPerson != 0) {
-            CustomerView.confirm.setVisible(true);
-            CustomerView.cancel.setVisible(true);
             CustomerView.addToCart.setVisible(true);
+            CustomerView.addToCart.setEnabled(true);
             CustomerView.returnToSearch.setVisible(true);
-            CustomerView.searchBarEntry.setVisible(false);
-            CustomerView.searchBar.setVisible(false);
             CustomerView.searchError.setText("");
             CustomerView.cardNumberEntry.setVisible(false);
             CustomerView.cardNumber.setVisible(false);
@@ -57,14 +109,9 @@ public class ItemSelection extends State implements ActionListener {
             CustomerView.discountEntry.setVisible(false);
             CustomerView.discountCode.setVisible(false);
             CustomerView.discountError.setText("");
-            CustomerView.searchButton.setVisible(false);
-            CustomerView.igneousButton.setVisible(false);
-            CustomerView.sedimentaryButton.setVisible(false);
-            CustomerView.metamorphicButton.setVisible(false);
             CustomerView.checkout.setVisible(false);
+            CustomerView.clearCart.setVisible(false);
             CustomerView.logOut.setVisible(false);
-            CustomerView.confirm.setSelected(false);
-            CustomerView.cancel.setSelected(true);
         }
     }
 

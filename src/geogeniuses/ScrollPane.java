@@ -6,14 +6,16 @@ import javax.swing.JScrollPane;
 
 public class ScrollPane extends JScrollPane {
     
+    Color lightCyan = Color.decode("#DFFDFF");
+    
     ScrollPane() {
-        setBackground(Color.BLUE);
+        setBackground(lightCyan);
         setOpaque(true);
     }
     
     ScrollPane(Component view) {
         super(view);
-        getViewport().setBackground(Color.BLUE);
+        getViewport().setBackground(lightCyan);
         getViewport().setOpaque(true);
     }
     

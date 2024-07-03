@@ -30,9 +30,9 @@ public class Register extends State {
     int questionID1;
     int questionID2;
     int questionID3;
-    JLabel securityQuestion1;
-    JLabel securityQuestion2;
-    JLabel securityQuestion3;
+    JComboBox securityQuestion1;
+    JComboBox securityQuestion2;
+    JComboBox securityQuestion3;
 
     JTextField securityAnswer1;
     JTextField securityAnswer2;
@@ -71,6 +71,7 @@ public class Register extends State {
     Register() {
 
         Color lightCyan = Color.decode("#DFFDFF");
+        Color thistle = Color.decode("#D5CBE2");
         jp.setBackground(lightCyan);
 
         JLabel pleaseRegister = new JLabel("Login Name");
@@ -157,16 +158,16 @@ public class Register extends State {
         postfix.setBounds(720, 79, 55, 20);
         jp.add(postfix);
 
-        securityQuestion1 = new JLabel("");
-        securityQuestion1.setBounds(90, 300, 200, 15);
+        securityQuestion1 = new JComboBox();
+        securityQuestion1.setBounds(90, 295, 200, 20);
         jp.add(securityQuestion1);
 
-        securityQuestion2 = new JLabel("");
-        securityQuestion2.setBounds(300, 300, 200, 15);
+        securityQuestion2 = new JComboBox();
+        securityQuestion2.setBounds(300, 295, 200, 20);
         jp.add(securityQuestion2);
 
-        securityQuestion3 = new JLabel("");
-        securityQuestion3.setBounds(510, 300, 200, 15);
+        securityQuestion3 = new JComboBox();
+        securityQuestion3.setBounds(510, 295, 200, 20);
         jp.add(securityQuestion3);
 
         securityAnswer1 = new JTextField("");
@@ -464,6 +465,7 @@ public class Register extends State {
 
         JButton registerButton = new JButton("Register");
         registerButton.setBounds(200, 375, 100, 50);
+        registerButton.setBackground(thistle);
         registerButton.addActionListener((e) -> {
             createNewAccount();
         }
@@ -472,12 +474,10 @@ public class Register extends State {
 
         JButton returnButton = new JButton("Return");
         returnButton.setBounds(500, 375, 100, 50);
+        returnButton.setBackground(thistle);
         returnButton.addActionListener((e) -> {
             //Resets all entries to their default states
             Reset();
-
-            // Randomizes questions for the next user
-            randomizeQuestions();
 
             //A switch to the login view
             jf.setTitle("Login");
@@ -490,16 +490,18 @@ public class Register extends State {
         );
         jp.add(returnButton);
 
-        randomizeQuestions();
+        includeQuestions();
     }
 
-    void randomizeQuestions() {
+    void includeQuestions() {
         String e[];
         Random rand = new Random();
-        int random = rand.nextInt(3) + 1;
+        boolean question1Update = true;
+        boolean question2Update = true;
+        boolean question3Update = true;
 
         try {
-            String query = "SELECT QuestionID, QuestionPrompt FROM SecurityQuestions WHERE SetID = " + random + ";";
+            String query = "SELECT QuestionID, QuestionPrompt FROM SecurityQuestions;";
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData md = rs.getMetaData();
@@ -509,20 +511,24 @@ public class Register extends State {
                     e[i - 1] = rs.getString(i);
                 }
 
-                if (securityQuestion1.getText().equals("")) {
-                    //Sets up the question id and security question
-                    questionID1 = Integer.parseInt(e[0]);
-                    securityQuestion1.setText(e[1]);
-                } else if (securityQuestion2.getText().equals("")) {
-                    //Sets up the question id and security question
-                    questionID2 = Integer.parseInt(e[0]);
-                    securityQuestion2.setText(e[1]);
-                } else if (securityQuestion3.getText().equals("")) {
-                    //Sets up the question id and security question
-                    questionID3 = Integer.parseInt(e[0]);
-                    securityQuestion3.setText(e[1]);
+                if (question1Update) {
+                    //Sets up the security question
+                    securityQuestion1.addItem(e[1]);
+                    question1Update = false;
+                } else if (question2Update) {
+                    //Sets up the security question
+                    securityQuestion2.addItem(e[1]);
+                    question2Update = false;
+                } else if (question3Update) {
+                    //Sets up the security question
+                    securityQuestion3.addItem(e[1]);
+                    question1Update = true;
+                    question2Update = true;
                 }
             }
+            securityQuestion1.setSelectedIndex(0);
+            securityQuestion2.setSelectedIndex(0);
+            securityQuestion3.setSelectedIndex(0);
         } catch (SQLException ex) {
             System.out.println(ex);
         }
@@ -780,6 +786,32 @@ public class Register extends State {
         if (answer1.isEmpty() || answer2.isEmpty() || answer3.isEmpty()) {
             valid = false;
             answerError.setText("Answer ALL security questions");
+        } else {
+            try {
+                String query = "SELECT QuestionID FROM SecurityQuestions WHERE QuestionPrompt = ?;";
+                ps = con.prepareStatement(query);
+                ps.setString(1, securityQuestion1.getSelectedItem().toString());
+                ResultSet rs = ps.executeQuery();
+                rs.next();
+                questionID1 = rs.getInt("QuestionID");
+                
+                query = "SELECT QuestionID FROM SecurityQuestions WHERE QuestionPrompt = ?;";
+                ps = con.prepareStatement(query);
+                ps.setString(1, securityQuestion2.getSelectedItem().toString());
+                rs = ps.executeQuery();
+                rs.next();
+                questionID2 = rs.getInt("QuestionID");
+                
+                query = "SELECT QuestionID FROM SecurityQuestions WHERE QuestionPrompt = ?;";
+                ps = con.prepareStatement(query);
+                ps.setString(1, securityQuestion3.getSelectedItem().toString());
+                rs = ps.executeQuery();
+                rs.next();
+                questionID3 = rs.getInt("QuestionID");
+            } catch (SQLException ex) {
+                valid = false;
+                System.out.println(ex);
+            }
         }
 
         if (valid) {
@@ -826,9 +858,6 @@ public class Register extends State {
 
             LoginView.person.add(new Person(personID, title, registrationFirstName, registrationMiddleName, registrationLastName, suffix, address1, address2, address3, city, zipCode, state, email, phonePrimary, phoneSecondary, image, 0));
             LoginView.logon.add(new Logon(personID, registrationLogonName, registrationPassword));
-
-            // Randomizes questions for the next user
-            randomizeQuestions();
 
             //Resets all entries to their default states
             Reset();
@@ -883,9 +912,9 @@ public class Register extends State {
         questionID1 = 0;
         questionID2 = 0;
         questionID3 = 0;
-        securityQuestion1.setText("");
-        securityQuestion2.setText("");
-        securityQuestion3.setText("");
+        securityQuestion1.setSelectedItem(0);
+        securityQuestion2.setSelectedItem(0);
+        securityQuestion3.setSelectedItem(0);
         securityAnswer1.setText("");
         securityAnswer2.setText("");
         securityAnswer3.setText("");

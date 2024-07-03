@@ -1,7 +1,6 @@
 package geogeniuses;
 
 import static geogeniuses.State.con;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
@@ -26,6 +25,9 @@ public class GeoGeniuses extends State {
         } catch (SQLException e) {
             System.out.println(e);
         }
+        
+        Thread connection = new Thread(ConnectionStatus);
+        connection.start();
 
         //The login state is now in main
         State.loginView = new LoginView();
