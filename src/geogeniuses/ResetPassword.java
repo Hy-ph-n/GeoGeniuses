@@ -31,8 +31,8 @@ public class ResetPassword extends State {
     JPasswordField passwordValidationField;
     JLabel validationError;
 
-    JButton confirmAnswersButton;
-    JButton confirmNewPasswordButton;
+    static JButton confirmAnswersButton;
+    static JButton confirmNewPasswordButton;
 
     static int currentPerson = LoginView.currentPerson;
 
@@ -191,6 +191,12 @@ public class ResetPassword extends State {
 
             //Resets all entries to their default states
             Reset();
+            
+            jp.remove(connectionStatus);
+            connectionStatus = new JLabel("");
+            connectionStatus.setBounds(5, 445, 200, 15);
+            connectionStatus.setForeground(Color.red);
+            loginView.jp.add(connectionStatus);
 
             // Sets the current person back to nothing
             currentPerson = 0;

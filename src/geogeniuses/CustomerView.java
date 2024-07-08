@@ -52,6 +52,8 @@ public class CustomerView extends State {
     static JLabel itemGrainShape;
     static JLabel itemHeft;
     static JLabel itemHardness;
+    static JLabel stoneSize;
+    static JLabel stoneWeight;
     static JLabel price;
     static JLabel quantity;
 
@@ -67,9 +69,9 @@ public class CustomerView extends State {
     static JLabel cardNumberEntry;
     static JTextField cardNumber;
     static JLabel cardError;
-    static JLabel cvvEntry;
-    static JTextField cardCVV;
-    static JLabel cvvError;
+    static JLabel securityCodeEntry;
+    static JTextField cardSecurityCode;
+    static JLabel cardSecurityError;
     static JLabel cardExpireYear;
     static JComboBox cardExpirationYear;
     static JLabel cardExpireMonth;
@@ -126,7 +128,7 @@ public class CustomerView extends State {
         panel.add(itemsName);
 
         itemsDescription = new JTextArea("");
-        itemsDescription.setBounds(11, 175, 250, 60);
+        itemsDescription.setBounds(11, 175, 250, 105);
         itemsDescription.setEnabled(false);
         itemsDescription.setDisabledTextColor(Color.black);
         itemsDescription.setLineWrap(true);
@@ -136,43 +138,55 @@ public class CustomerView extends State {
         panel.add(itemsDescription);
 
         itemRockOrGem = new JLabel("");
-        itemRockOrGem.setBounds(panel.getWidth() / 8, 300, 200, 15);
+        itemRockOrGem.setBounds(panel.getWidth() / 8, 265, 200, 15);
         itemRockOrGem.setHorizontalAlignment(SwingConstants.CENTER);
         itemRockOrGem.setVisible(false);
         panel.add(itemRockOrGem);
 
         itemGrainSize = new JLabel("");
-        itemGrainSize.setBounds(panel.getWidth() / 8, 315, 200, 15);
+        itemGrainSize.setBounds(panel.getWidth() / 8, 280, 200, 15);
         itemGrainSize.setHorizontalAlignment(SwingConstants.CENTER);
         itemGrainSize.setVisible(false);
         panel.add(itemGrainSize);
 
         itemGrainShape = new JLabel("");
-        itemGrainShape.setBounds(panel.getWidth() / 8, 330, 200, 15);
+        itemGrainShape.setBounds(panel.getWidth() / 8, 295, 200, 15);
         itemGrainShape.setHorizontalAlignment(SwingConstants.CENTER);
         itemGrainShape.setVisible(false);
         panel.add(itemGrainShape);
 
         itemHeft = new JLabel("");
-        itemHeft.setBounds(panel.getWidth() / 8, 315, 200, 15);
+        itemHeft.setBounds(panel.getWidth() / 8, 280, 200, 15);
         itemHeft.setHorizontalAlignment(SwingConstants.CENTER);
         itemHeft.setVisible(false);
         panel.add(itemHeft);
 
         itemHardness = new JLabel("");
-        itemHardness.setBounds(panel.getWidth() / 8, 330, 200, 15);
+        itemHardness.setBounds(panel.getWidth() / 8, 295, 200, 15);
         itemHardness.setHorizontalAlignment(SwingConstants.CENTER);
         itemHardness.setVisible(false);
         panel.add(itemHardness);
 
+        stoneSize = new JLabel("");
+        stoneSize.setBounds(panel.getWidth() / 8, 310, 200, 15);
+        stoneSize.setHorizontalAlignment(SwingConstants.CENTER);
+        stoneSize.setVisible(false);
+        panel.add(stoneSize);
+
+        stoneWeight = new JLabel("");
+        stoneWeight.setBounds(panel.getWidth() / 8, 325, 200, 15);
+        stoneWeight.setHorizontalAlignment(SwingConstants.CENTER);
+        stoneWeight.setVisible(false);
+        panel.add(stoneWeight);
+
         price = new JLabel("");
-        price.setBounds(panel.getWidth() / 8, 345, 200, 15);
+        price.setBounds(panel.getWidth() / 8, 340, 200, 15);
         price.setHorizontalAlignment(SwingConstants.CENTER);
         price.setVisible(false);
         panel.add(price);
 
         quantity = new JLabel("");
-        quantity.setBounds(panel.getWidth() / 8, 360, 200, 15);
+        quantity.setBounds(panel.getWidth() / 8, 355, 200, 15);
         quantity.setHorizontalAlignment(SwingConstants.CENTER);
         quantity.setVisible(false);
         panel.add(quantity);
@@ -235,6 +249,8 @@ public class CustomerView extends State {
             itemGrainShape.setVisible(false);
             itemHeft.setVisible(false);
             itemHardness.setVisible(false);
+            stoneSize.setVisible(false);
+            stoneWeight.setVisible(false);
             price.setVisible(false);
             quantity.setVisible(false);
             addToCart.setVisible(false);
@@ -245,14 +261,14 @@ public class CustomerView extends State {
             searchError.setText("");
             cardNumberEntry.setVisible(true);
             cardNumber.setVisible(true);
-            cvvEntry.setVisible(true);
-            cardCVV.setVisible(true);
+            securityCodeEntry.setVisible(true);
+            cardSecurityCode.setVisible(true);
             cardExpireYear.setVisible(true);
             cardExpirationYear.setVisible(true);
             cardExpireMonth.setVisible(true);
             cardExpirationMonth.setVisible(true);
             cardError.setText("");
-            cvvError.setText("");
+            cardSecurityError.setText("");
             expirationError.setText("");
             discountEntry.setVisible(true);
             discountCode.setVisible(true);
@@ -314,7 +330,7 @@ public class CustomerView extends State {
         panel.add(searchBar);
 
         searchError = new JLabel("");
-        searchError.setBounds(125, 10, 200, 15);
+        searchError.setBounds(120, 10, 200, 15);
         searchError.setForeground(Color.red);
         panel.add(searchError);
 
@@ -325,82 +341,59 @@ public class CustomerView extends State {
                 int x = 0;
                 int y = 0;
                 String n[];
-                try {
-                    if (!con.isClosed()) {
-                        //The boolean searchValid prevents the display from being cleared until the result set retrieves at least one value
-                        boolean searchValid = false;
-                        int l = 0;
-                        ItemSelection select = new ItemSelection(items);
-                        //Using 'like' means that as long as the character is present, the character being anything from 'Obsidian' to 'a'
-                        //then the search will select it.
-                        String query = "SELECT ItemName, ItemImage FROM Inventory WHERE ItemName LIKE '%" + searchBar.getText() + "%';";
-                        ps = con.prepareStatement(query);
-                        ResultSet rs = ps.executeQuery();
-                        ResultSetMetaData md = rs.getMetaData();
-                        while (rs.next()) {
-                            n = new String[md.getColumnCount() + 1];
-                            for (int i = 1; i < md.getColumnCount() + 1; i++) {
-                                n[i - 1] = rs.getString(i);
-                            }
+                itemDisplay.removeAll();
+                items.clear();
+                itemDisplay.repaint();
+                ItemSelection select = new ItemSelection(items);
+                String searchText = searchBar.getText().trim().toLowerCase();
+                for (int i = 0; i < LoginView.inventory.size(); i++) {
+                    String compareName = LoginView.inventory.get(i).itemName.toLowerCase();
+                    if (compareName.contains(searchText)) {
+                        String itemName = LoginView.inventory.get(i).itemName;
 
-                            //At this point, the search is valid, so we can clear the display once and then leave it alone so it does not constantly clear
-                            if (!searchValid) {
-                                searchValid = true;
-                                itemDisplay.removeAll();
-                                items.clear();
-                                itemDisplay.repaint();
-                            }
+                        imageLayout.weightx = 0.5;
+                        imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                        imageLayout.gridx = x;
+                        imageLayout.gridy = y;
 
-                            String itemName = n[0];
+                        if (x == 4) {
+                            x = 0;
+                            y++;
+                        } else {
+                            x++;
+                        }
 
-                            imageLayout.weightx = 0.5;
-                            imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                            imageLayout.gridx = x;
-                            imageLayout.gridy = y;
-                            if (x == 4) {
-                                x = 0;
-                                y++;
-                            } else {
-                                x++;
-                            }
-
-                            if (n[1] == null) {
+                        if (LoginView.inventory.get(i).itemImage == null) {
+                            JButton item = new JButton(itemName);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                        } else {
+                            try {
+                                byte[] b = LoginView.inventory.get(i).itemImage;
+                                ItemIcon itemIcon = new ItemIcon(b);
+                                Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                                itemIcon = new ItemIcon(itemImage);
+                                JButton item = new JButton(itemName, itemIcon);
+                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                                item.setHorizontalTextPosition(SwingConstants.CENTER);
+                                item.setBackground(thistle);
+                                item.addActionListener(select);
+                                items.add(item);
+                                itemDisplay.add(item, imageLayout);
+                            } catch (Exception ex) {
                                 JButton item = new JButton(itemName);
                                 item.setBackground(thistle);
+                                item.addActionListener(select);
                                 items.add(item);
-                                items.get(l).addActionListener(select);
-                                itemDisplay.add(items.get(l), imageLayout);
-                            } else {
-                                try {
-                                    Blob itemBlob = null;
-                                    itemBlob = rs.getBlob("ItemImage");
-                                    byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                                    ItemIcon itemIcon = new ItemIcon(b);
-                                    Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
-                                    itemIcon = new ItemIcon(itemImage);
-                                    JButton item = new JButton(itemName, itemIcon);
-                                    item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                                    item.setHorizontalTextPosition(SwingConstants.CENTER);
-                                    item.setBackground(thistle);
-                                    items.add(item);
-                                    items.get(l).addActionListener(select);
-                                    itemDisplay.add(items.get(l), imageLayout);
-                                } catch (IOException ex) {
-                                    JButton item = new JButton(itemName);
-                                    item.setBackground(thistle);
-                                    items.add(item);
-                                    items.get(l).addActionListener(select);
-                                    itemDisplay.add(items.get(l), imageLayout);
-                                    System.out.println("Invalid Image");
-                                }
+                                itemDisplay.add(item, imageLayout);
+                                System.out.println("Invalid Image");
                             }
-                            l++;
                         }
-                        itemDisplay.validate();
                     }
-                } catch (SQLException ex) {
-                    searchError.setText("Invalid Search");
                 }
+                itemDisplay.validate();
             }
         });
 
@@ -421,74 +414,57 @@ public class CustomerView extends State {
             imageLayout.insets = new Insets(2, 2, 2, 2);
             int x = 0;
             int y = 0;
-            String n[];
-            try {
-                if (!con.isClosed()) {
-                    itemDisplay.removeAll();
-                    items.clear();
-                    itemDisplay.repaint();
-                    int l = 0;
-                    ItemSelection select = new ItemSelection(items);
-                    String query = "SELECT ItemName, ItemImage FROM Inventory WHERE CategoryID = 1;";
-                    ps = con.prepareStatement(query);
-                    ResultSet rs = ps.executeQuery();
-                    ResultSetMetaData md = rs.getMetaData();
-                    while (rs.next()) {
-                        n = new String[md.getColumnCount() + 1];
-                        for (int i = 1; i < md.getColumnCount() + 1; i++) {
-                            n[i - 1] = rs.getString(i);
-                        }
+            itemDisplay.removeAll();
+            items.clear();
+            itemDisplay.repaint();
+            ItemSelection select = new ItemSelection(items);
+            for (int i = 0; i < LoginView.inventory.size(); i++) {
+                if (LoginView.inventory.get(i).categoryID == 1) {
+                    String itemName = LoginView.inventory.get(i).itemName;
 
-                        String itemName = n[0];
+                    imageLayout.weightx = 0.5;
+                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                    imageLayout.gridx = x;
+                    imageLayout.gridy = y;
 
-                        imageLayout.weightx = 0.5;
-                        imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                        imageLayout.gridx = x;
-                        imageLayout.gridy = y;
-                        if (x == 4) {
-                            x = 0;
-                            y++;
-                        } else {
-                            x++;
-                        }
+                    if (x == 4) {
+                        x = 0;
+                        y++;
+                    } else {
+                        x++;
+                    }
 
-                        if (n[1] == null) {
+                    if (LoginView.inventory.get(i).itemImage == null) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } else {
+                        try {
+                            byte[] b = LoginView.inventory.get(i).itemImage;
+                            ItemIcon itemIcon = new ItemIcon(b);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                            itemIcon = new ItemIcon(itemImage);
+                            JButton item = new JButton(itemName, itemIcon);
+                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                            item.setHorizontalTextPosition(SwingConstants.CENTER);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                        } catch (Exception ex) {
                             JButton item = new JButton(itemName);
                             item.setBackground(thistle);
+                            item.addActionListener(select);
                             items.add(item);
-                            items.get(l).addActionListener(select);
-                            itemDisplay.add(items.get(l), imageLayout);
-                        } else {
-                            try {
-                                Blob itemBlob = null;
-                                itemBlob = rs.getBlob("ItemImage");
-                                byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                                ItemIcon itemIcon = new ItemIcon(b);
-                                Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
-                                itemIcon = new ItemIcon(itemImage);
-                                JButton item = new JButton(itemName, itemIcon);
-                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                                item.setHorizontalTextPosition(SwingConstants.CENTER);
-                                item.setBackground(thistle);
-                                items.add(item);
-                                items.get(l).addActionListener(select);
-                                itemDisplay.add(items.get(l), imageLayout);
-                            } catch (IOException ex) {
-                                JButton item = new JButton(itemName);
-                                item.setBackground(thistle);
-                                items.add(item);
-                                items.get(l).addActionListener(select);
-                                itemDisplay.add(items.get(l), imageLayout);
-                                System.out.println("Invalid Image");
-                            }
+                            itemDisplay.add(item, imageLayout);
+                            System.out.println("Invalid Image");
                         }
-                        l++;
                     }
-                    itemDisplay.validate();
                 }
-            } catch (SQLException ex) {
-                System.out.println(ex);
             }
+            itemDisplay.validate();
         });
         panel.add(igneousButton);
 
@@ -500,74 +476,57 @@ public class CustomerView extends State {
             imageLayout.insets = new Insets(2, 2, 2, 2);
             int x = 0;
             int y = 0;
-            String n[];
-            try {
-                if (!con.isClosed()) {
-                    itemDisplay.removeAll();
-                    items.clear();
-                    itemDisplay.repaint();
-                    int l = 0;
-                    ItemSelection select = new ItemSelection(items);
-                    String query = "SELECT ItemName, ItemImage FROM Inventory WHERE CategoryID = 2;";
-                    ps = con.prepareStatement(query);
-                    ResultSet rs = ps.executeQuery();
-                    ResultSetMetaData md = rs.getMetaData();
-                    while (rs.next()) {
-                        n = new String[md.getColumnCount() + 1];
-                        for (int i = 1; i < md.getColumnCount() + 1; i++) {
-                            n[i - 1] = rs.getString(i);
-                        }
+            itemDisplay.removeAll();
+            items.clear();
+            itemDisplay.repaint();
+            ItemSelection select = new ItemSelection(items);
+            for (int i = 0; i < LoginView.inventory.size(); i++) {
+                if (LoginView.inventory.get(i).categoryID == 2) {
+                    String itemName = LoginView.inventory.get(i).itemName;
 
-                        String itemName = n[0];
+                    imageLayout.weightx = 0.5;
+                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                    imageLayout.gridx = x;
+                    imageLayout.gridy = y;
 
-                        imageLayout.weightx = 0.5;
-                        imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                        imageLayout.gridx = x;
-                        imageLayout.gridy = y;
-                        if (x == 4) {
-                            x = 0;
-                            y++;
-                        } else {
-                            x++;
-                        }
+                    if (x == 4) {
+                        x = 0;
+                        y++;
+                    } else {
+                        x++;
+                    }
 
-                        if (n[1] == null) {
+                    if (LoginView.inventory.get(i).itemImage == null) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } else {
+                        try {
+                            byte[] b = LoginView.inventory.get(i).itemImage;
+                            ItemIcon itemIcon = new ItemIcon(b);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                            itemIcon = new ItemIcon(itemImage);
+                            JButton item = new JButton(itemName, itemIcon);
+                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                            item.setHorizontalTextPosition(SwingConstants.CENTER);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                        } catch (Exception ex) {
                             JButton item = new JButton(itemName);
                             item.setBackground(thistle);
+                            item.addActionListener(select);
                             items.add(item);
-                            items.get(l).addActionListener(select);
-                            itemDisplay.add(items.get(l), imageLayout);
-                        } else {
-                            try {
-                                Blob itemBlob = null;
-                                itemBlob = rs.getBlob("ItemImage");
-                                byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                                ItemIcon itemIcon = new ItemIcon(b);
-                                Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
-                                itemIcon = new ItemIcon(itemImage);
-                                JButton item = new JButton(itemName, itemIcon);
-                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                                item.setHorizontalTextPosition(SwingConstants.CENTER);
-                                item.setBackground(thistle);
-                                items.add(item);
-                                items.get(l).addActionListener(select);
-                                itemDisplay.add(items.get(l), imageLayout);
-                            } catch (IOException ex) {
-                                JButton item = new JButton(itemName);
-                                item.setBackground(thistle);
-                                items.add(item);
-                                items.get(l).addActionListener(select);
-                                itemDisplay.add(items.get(l), imageLayout);
-                                System.out.println("Invalid Image");
-                            }
+                            itemDisplay.add(item, imageLayout);
+                            System.out.println("Invalid Image");
                         }
-                        l++;
                     }
-                    itemDisplay.validate();
                 }
-            } catch (SQLException ex) {
-                System.out.println(ex);
             }
+            itemDisplay.validate();
         });
         panel.add(sedimentaryButton);
 
@@ -579,74 +538,57 @@ public class CustomerView extends State {
             imageLayout.insets = new Insets(2, 2, 2, 2);
             int x = 0;
             int y = 0;
-            String n[];
-            try {
-                if (!con.isClosed()) {
-                    itemDisplay.removeAll();
-                    items.clear();
-                    itemDisplay.repaint();
-                    int l = 0;
-                    ItemSelection select = new ItemSelection(items);
-                    String query = "SELECT ItemName, ItemImage FROM Inventory WHERE CategoryID = 3;";
-                    ps = con.prepareStatement(query);
-                    ResultSet rs = ps.executeQuery();
-                    ResultSetMetaData md = rs.getMetaData();
-                    while (rs.next()) {
-                        n = new String[md.getColumnCount() + 1];
-                        for (int i = 1; i < md.getColumnCount() + 1; i++) {
-                            n[i - 1] = rs.getString(i);
-                        }
+            itemDisplay.removeAll();
+            items.clear();
+            itemDisplay.repaint();
+            ItemSelection select = new ItemSelection(items);
+            for (int i = 0; i < LoginView.inventory.size(); i++) {
+                if (LoginView.inventory.get(i).categoryID == 3) {
+                    String itemName = LoginView.inventory.get(i).itemName;
 
-                        String itemName = n[0];
+                    imageLayout.weightx = 0.5;
+                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                    imageLayout.gridx = x;
+                    imageLayout.gridy = y;
 
-                        imageLayout.weightx = 0.5;
-                        imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                        imageLayout.gridx = x;
-                        imageLayout.gridy = y;
-                        if (x == 4) {
-                            x = 0;
-                            y++;
-                        } else {
-                            x++;
-                        }
+                    if (x == 4) {
+                        x = 0;
+                        y++;
+                    } else {
+                        x++;
+                    }
 
-                        if (n[1] == null) {
+                    if (LoginView.inventory.get(i).itemImage == null) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } else {
+                        try {
+                            byte[] b = LoginView.inventory.get(i).itemImage;
+                            ItemIcon itemIcon = new ItemIcon(b);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                            itemIcon = new ItemIcon(itemImage);
+                            JButton item = new JButton(itemName, itemIcon);
+                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                            item.setHorizontalTextPosition(SwingConstants.CENTER);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                        } catch (Exception ex) {
                             JButton item = new JButton(itemName);
                             item.setBackground(thistle);
+                            item.addActionListener(select);
                             items.add(item);
-                            items.get(l).addActionListener(select);
-                            itemDisplay.add(items.get(l), imageLayout);
-                        } else {
-                            try {
-                                Blob itemBlob = null;
-                                itemBlob = rs.getBlob("ItemImage");
-                                byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                                ItemIcon itemIcon = new ItemIcon(b);
-                                Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
-                                itemIcon = new ItemIcon(itemImage);
-                                JButton item = new JButton(itemName, itemIcon);
-                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                                item.setHorizontalTextPosition(SwingConstants.CENTER);
-                                item.setBackground(thistle);
-                                items.add(item);
-                                items.get(l).addActionListener(select);
-                                itemDisplay.add(items.get(l), imageLayout);
-                            } catch (IOException ex) {
-                                JButton item = new JButton(itemName);
-                                item.setBackground(thistle);
-                                items.add(item);
-                                items.get(l).addActionListener(select);
-                                itemDisplay.add(items.get(l), imageLayout);
-                                System.out.println("Invalid Image");
-                            }
+                            itemDisplay.add(item, imageLayout);
+                            System.out.println("Invalid Image");
                         }
-                        l++;
                     }
-                    itemDisplay.validate();
                 }
-            } catch (SQLException ex) {
-                System.out.println(ex);
             }
+            itemDisplay.validate();
         });
         panel.add(metamorphicButton);
 
@@ -658,13 +600,25 @@ public class CustomerView extends State {
         cardNumber.setBounds(32, 157, 200, 20);
         panel.add(cardNumber);
 
-        cvvEntry = new JLabel("Card Verify Value");
-        cvvEntry.setBounds(32, 190, 200, 15);
-        panel.add(cvvEntry);
+        cardNumber.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                validateCard();
+            }
+        });
 
-        cardCVV = new JTextField("");
-        cardCVV.setBounds(32, 207, 200, 20);
-        panel.add(cardCVV);
+        securityCodeEntry = new JLabel("Security Code");
+        securityCodeEntry.setBounds(32, 190, 200, 15);
+        panel.add(securityCodeEntry);
+
+        cardSecurityCode = new JTextField("");
+        cardSecurityCode.setBounds(32, 207, 200, 20);
+        panel.add(cardSecurityCode);
+
+        cardSecurityCode.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                validateCard();
+            }
+        });
 
         cardExpireYear = new JLabel("Expire Year");
         cardExpireYear.setBounds(60, 240, 100, 15);
@@ -672,11 +626,15 @@ public class CustomerView extends State {
 
         int yearsForList = currentDate.getYear();
 
-        String[] expireYear = {"" + (yearsForList - 7), "" + (yearsForList - 6), "" + (yearsForList - 5), "" + (yearsForList - 4), "" + (yearsForList - 3), "" + (yearsForList - 2), "" + (yearsForList - 1), "" + yearsForList, "" + (yearsForList + 1), "" + (yearsForList + 2), "" + (yearsForList + 3), "" + (yearsForList + 4), "" + (yearsForList + 5), "" + (yearsForList + 6), "" + (yearsForList + 7), ""};
+        String[] expireYear = {"" + (yearsForList - 7), "" + (yearsForList - 6), "" + (yearsForList - 5), "" + (yearsForList - 4), "" + (yearsForList - 3), "" + (yearsForList - 2), "" + (yearsForList - 1), "" + yearsForList, "" + (yearsForList + 1), "" + (yearsForList + 2), "" + (yearsForList + 3), "" + (yearsForList + 4), "" + (yearsForList + 5), "" + (yearsForList + 6), "" + (yearsForList + 7)};
         cardExpirationYear = new JComboBox(expireYear);
         cardExpirationYear.setBounds(65, 255, 55, 20);
         cardExpirationYear.setSelectedIndex(7);
         panel.add(cardExpirationYear);
+
+        cardExpirationYear.addActionListener((e) -> {
+            validateCard();
+        });
 
         cardExpireMonth = new JLabel("Expire Month");
         cardExpireMonth.setBounds(150, 240, 110, 15);
@@ -693,10 +651,10 @@ public class CustomerView extends State {
         cardError.setForeground(Color.red);
         panel.add(cardError);
 
-        cvvError = new JLabel("");
-        cvvError.setBounds(135, 190, 200, 15);
-        cvvError.setForeground(Color.red);
-        panel.add(cvvError);
+        cardSecurityError = new JLabel("");
+        cardSecurityError.setBounds(120, 190, 200, 15);
+        cardSecurityError.setForeground(Color.red);
+        panel.add(cardSecurityError);
 
         expirationError = new JLabel("");
         expirationError.setBounds(CustomerView.panel.getWidth() / 8, 275, 200, 15);
@@ -816,12 +774,11 @@ public class CustomerView extends State {
         checkout.setBackground(thistle);
         checkout.addActionListener((e) -> {
             cardError.setText("");
-            cvvError.setText("");
+            cardSecurityError.setText("");
             expirationError.setText("");
             discountError.setText("");
             discountValid = false;
             if (itemsSelected > 0) {
-                validateCard();
                 if (!discountCode.getText().equals("")) {
                     if (cardValid && discountValid) {
                         Thread createCheckout = new Thread(customerCheckout);
@@ -846,7 +803,7 @@ public class CustomerView extends State {
             cartVisible = false;
             cart.clear();
             jp.validate();
-            
+
             itemsSelected = 0;
         });
         panel.add(clearCart);
@@ -872,6 +829,8 @@ public class CustomerView extends State {
             itemGrainShape.setVisible(false);
             itemHeft.setVisible(false);
             itemHardness.setVisible(false);
+            stoneSize.setVisible(false);
+            stoneWeight.setVisible(false);
             price.setVisible(false);
             quantity.setVisible(false);
             addToCart.setVisible(false);
@@ -882,14 +841,14 @@ public class CustomerView extends State {
             searchError.setText("");
             cardNumberEntry.setVisible(true);
             cardNumber.setVisible(true);
-            cvvEntry.setVisible(true);
-            cardCVV.setVisible(true);
+            securityCodeEntry.setVisible(true);
+            cardSecurityCode.setVisible(true);
             cardExpireYear.setVisible(true);
             cardExpirationYear.setVisible(true);
             cardExpireMonth.setVisible(true);
             cardExpirationMonth.setVisible(true);
             cardError.setText("");
-            cvvError.setText("");
+            cardSecurityError.setText("");
             expirationError.setText("");
             discountEntry.setVisible(true);
             discountCode.setVisible(true);
@@ -901,6 +860,12 @@ public class CustomerView extends State {
             checkout.setVisible(true);
             clearCart.setVisible(true);
             logOut.setVisible(true);
+
+            jp.remove(connectionStatus);
+            connectionStatus = new JLabel("");
+            connectionStatus.setBounds(5, 445, 200, 15);
+            connectionStatus.setForeground(Color.red);
+            loginView.jp.add(connectionStatus);
 
             //A switch to the login view
             LoginView.currentPerson = 0;
@@ -920,23 +885,31 @@ public class CustomerView extends State {
         boolean cardNotExpired = false;
         int currentYear = currentDate.getYear();
         cardValid = false;
+        cardError.setText("");
+        cardSecurityError.setText("");
+        expirationError.setText("");
 
         String visa = "^4[0-9]{12}(?:[0-9]{3})?$";
-        String americanExpress = "^3[47][0-9]{0,}$.";
-        String masterCard = "^(5[1-5]|222[1-9]|22[3-9]|2[3-6]|27[01]|2720)[0-9]{0,}$.";
-        String cvv = "^[0-9]{3,4}$";
+        String americanExpress = "^3[47][0-9]{13}$";
+        String masterCard = "^(5[1-5][0-9]{14}|(222[1-9]|22[3-9]|2[3-6]|27[01]|2720)[0-9]{12})$";
+        String securityCode = "^[0-9]{3}$";
 
         Pattern p = Pattern.compile(visa);
         Matcher m = p.matcher(cardNumber.getText());
 
-        if (!m.matches()) {
-            p = Pattern.compile(americanExpress);
-            m = p.matcher(cardNumber.getText());
+        if (!cardNumber.getText().equals("")) {
+
             if (!m.matches()) {
-                p = Pattern.compile(masterCard);
+                p = Pattern.compile(americanExpress);
                 m = p.matcher(cardNumber.getText());
                 if (!m.matches()) {
-                    cardError.setText("Invalid Card Number");
+                    p = Pattern.compile(masterCard);
+                    m = p.matcher(cardNumber.getText());
+                    if (!m.matches()) {
+                        cardError.setText("Invalid Card Number");
+                    } else {
+                        cardNum = true;
+                    }
                 } else {
                     cardNum = true;
                 }
@@ -944,15 +917,19 @@ public class CustomerView extends State {
                 cardNum = true;
             }
         } else {
-            cardNum = true;
+            cardError.setText("Card number required");
         }
 
-        p = Pattern.compile(cvv);
-        m = p.matcher(cardCVV.getText());
-        if (m.matches()) {
-            cvvValid = true;
+        if (!cardSecurityCode.getText().equals("")) {
+            p = Pattern.compile(securityCode);
+            m = p.matcher(cardSecurityCode.getText());
+            if (m.matches()) {
+                cvvValid = true;
+            } else {
+                cardSecurityError.setText("Invalid Security Code");
+            }
         } else {
-            cvvError.setText("Invalid CVV");
+            cardSecurityError.setText("Required");
         }
 
         int year = Integer.valueOf((String) cardExpirationYear.getSelectedItem());
@@ -979,74 +956,55 @@ public class CustomerView extends State {
         imageLayout.insets = new Insets(2, 2, 2, 2);
         int x = 0;
         int y = 0;
-        String e[];
-        try {
-            if (!con.isClosed()) {
-                itemDisplay.removeAll();
-                items.clear();
-                itemDisplay.repaint();
-                int l = 0;
-                ItemSelection select = new ItemSelection(items);
-                String query = "SELECT ItemName, ItemImage FROM Inventory;";
-                ps = con.prepareStatement(query);
-                ResultSet rs = ps.executeQuery();
-                ResultSetMetaData md = rs.getMetaData();
-                while (rs.next()) {
-                    e = new String[md.getColumnCount() + 1];
-                    for (int i = 1; i < md.getColumnCount() + 1; i++) {
-                        e[i - 1] = rs.getString(i);
-                    }
+        itemDisplay.removeAll();
+        items.clear();
+        itemDisplay.repaint();
+        ItemSelection select = new ItemSelection(items);
+        for (int i = 0; i < LoginView.inventory.size(); i++) {
+            String itemName = LoginView.inventory.get(i).itemName;
 
-                    String itemName = e[0];
+            imageLayout.weightx = 0.5;
+            imageLayout.fill = GridBagConstraints.HORIZONTAL;
+            imageLayout.gridx = x;
+            imageLayout.gridy = y;
 
-                    imageLayout.weightx = 0.5;
-                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                    imageLayout.gridx = x;
-                    imageLayout.gridy = y;
-                    if (x == 4) {
-                        x = 0;
-                        y++;
-                    } else {
-                        x++;
-                    }
-
-                    if (e[1] == null) {
-                        JButton item = new JButton(itemName);
-                        item.setBackground(thistle);
-                        items.add(item);
-                        items.get(l).addActionListener(select);
-                        itemDisplay.add(items.get(l), imageLayout);
-                    } else {
-                        try {
-                            Blob itemBlob = null;
-                            itemBlob = rs.getBlob("ItemImage");
-                            byte[] b = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                            ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
-                            itemIcon = new ItemIcon(itemImage);
-                            JButton item = new JButton(itemName, itemIcon);
-                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                            item.setHorizontalTextPosition(SwingConstants.CENTER);
-                            item.setBackground(thistle);
-                            items.add(item);
-                            items.get(l).addActionListener(select);
-                            itemDisplay.add(items.get(l), imageLayout);
-                        } catch (IOException ex) {
-                            JButton item = new JButton(itemName);
-                            item.setBackground(thistle);
-                            items.add(item);
-                            items.get(l).addActionListener(select);
-                            itemDisplay.add(items.get(l), imageLayout);
-                            System.out.println("Invalid Image");
-                        }
-                    }
-                    l++;
-                }
-                itemDisplay.validate();
+            if (x == 4) {
+                x = 0;
+                y++;
+            } else {
+                x++;
             }
-        } catch (SQLException ex) {
-            System.out.println(ex);
+
+            if (LoginView.inventory.get(i).itemImage == null) {
+                JButton item = new JButton(itemName);
+                item.setBackground(thistle);
+                item.addActionListener(select);
+                items.add(item);
+                itemDisplay.add(item, imageLayout);
+            } else {
+                try {
+                    byte[] b = LoginView.inventory.get(i).itemImage;
+                    ItemIcon itemIcon = new ItemIcon(b);
+                    Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                    itemIcon = new ItemIcon(itemImage);
+                    JButton item = new JButton(itemName, itemIcon);
+                    item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                    item.setHorizontalTextPosition(SwingConstants.CENTER);
+                    item.setBackground(thistle);
+                    item.addActionListener(select);
+                    items.add(item);
+                    itemDisplay.add(item, imageLayout);
+                } catch (Exception ex) {
+                    JButton item = new JButton(itemName);
+                    item.setBackground(thistle);
+                    item.addActionListener(select);
+                    items.add(item);
+                    itemDisplay.add(item, imageLayout);
+                    System.out.println("Invalid Image");
+                }
+            }
         }
+        itemDisplay.validate();
     }
 
     Object[][] getCartData() {
@@ -1215,7 +1173,7 @@ public class CustomerView extends State {
                 preparedStatement.setDate(4, dateNow);
                 preparedStatement.setString(5, cardNumber.getText());
                 preparedStatement.setString(6, cardExpirationMonth.getSelectedItem() + "/" + cardExpirationYear.getSelectedItem());
-                preparedStatement.setString(7, cardCVV.getText() + "");
+                preparedStatement.setString(7, cardSecurityCode.getText() + "");
                 preparedStatement.execute();
 
                 String query = "SELECT OrderID FROM Orders ORDER BY OrderID DESC LIMIT 1";
@@ -1282,23 +1240,23 @@ public class CustomerView extends State {
 
         if (LoginView.currentPerson == 0) {
             page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
-                + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
-                + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
-                + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
-                + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
-                + "\n\nLogout Button - The log out button returns the user to the login menu"));
+                    + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
+                    + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
+                    + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
+                    + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
+                    + "\n\nLogout Button - The log out button returns the user to the login menu"));
         } else {
-        page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
-                + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
-                + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
-                + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
-                + "\n\nClear Cart Button - This button removes all items from the cart and hides the table"
-                + "\n\nLogout Button - The log out button returns the user to the login menu"
-                + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
-                + "\n\nAdd to Cart - A button allowing the user to add an item to their cart (confirm button required), can be clicked multiple times"
-                + "\n\nReturn - A button that returns the user to search/purchase options"
-                + "\n\nCard Data - You must enter a valid card number (Visa/Mastercard) and Card Verification Value (CVV), the card year cannot be five years expired"
-                + "\n\nDiscount Code (NOT REQUIRED) - You must enter a valid discount code if you wish to save money"));
+            page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
+                    + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
+                    + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
+                    + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
+                    + "\n\nClear Cart Button - This button removes all items from the cart and hides the table"
+                    + "\n\nLogout Button - The log out button returns the user to the login menu"
+                    + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
+                    + "\n\nAdd to Cart - A button allowing the user to add an item to their cart (confirm button required), can be clicked multiple times"
+                    + "\n\nReturn - A button that returns the user to search/purchase options"
+                    + "\n\nCard Data - You must enter a valid card number (Visa/Mastercard) and Card Verification Value (CVV), the card year cannot be five years expired"
+                    + "\n\nDiscount Code (NOT REQUIRED) - You must enter a valid discount code if you wish to save money"));
         }
 
         document.save("help.pdf");

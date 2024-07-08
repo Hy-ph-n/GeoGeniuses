@@ -18,14 +18,10 @@ public class ItemSelection extends State implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent event) {
         String itemName = event.getActionCommand();
-        try {
-            String query = "SELECT InventoryID FROM Inventory WHERE ItemName = '" + itemName + "';";
-            PreparedStatement ps = GeoGeniuses.con.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            CustomerView.itemSelected = Integer.parseInt(rs.getString(1)) - 1;
-        } catch (SQLException e) {
-            System.out.println(e);
+        for (int i = 0; i < LoginView.inventory.size(); i++) {
+            if (LoginView.inventory.get(i).itemName.equals(itemName)) {
+                CustomerView.itemSelected = LoginView.inventory.get(i).inventoryID - 1;
+            }
         }
         Inventory inventory = LoginView.inventory.get(CustomerView.itemSelected);
         CustomerView.itemsName.setText(inventory.itemName);
@@ -35,9 +31,8 @@ public class ItemSelection extends State implements ActionListener {
         CustomerView.itemGrainSize.setVisible(false);
         CustomerView.itemGrainShape.setVisible(false);
         CustomerView.itemHeft.setVisible(false);
-        int yValue = 300;
+        int yValue = 265;
         if (inventory.stoneOrGemstone == 0) {
-            CustomerView.itemRockOrGem.setLocation(CustomerView.itemRockOrGem.getX(), yValue += 15);
             if (inventory.categoryID == 1) {
                 CustomerView.itemRockOrGem.setText("Igneous Rock");
             } else if (inventory.categoryID == 2) {
@@ -60,7 +55,6 @@ public class ItemSelection extends State implements ActionListener {
                 CustomerView.itemGrainShape.setVisible(true);
             }
         } else if (inventory.stoneOrGemstone == 1) {
-            CustomerView.itemRockOrGem.setLocation(CustomerView.itemRockOrGem.getX(), yValue += 15);
             if (Integer.parseInt(inventory.semiOrPrecious) == 0) {
                 CustomerView.itemRockOrGem.setText("Semi-Precious Gemstone");
             } else if (Integer.parseInt(inventory.semiOrPrecious) == 1) {
@@ -71,6 +65,17 @@ public class ItemSelection extends State implements ActionListener {
         CustomerView.itemHardness.setLocation(CustomerView.itemHardness.getX(), yValue += 15);
         CustomerView.itemHardness.setText("Hardness: " + inventory.hardness);
         CustomerView.itemHardness.setVisible(true);
+        CustomerView.stoneSize.setLocation(CustomerView.stoneSize.getX(), yValue += 15);
+        CustomerView.stoneWeight.setLocation(CustomerView.stoneWeight.getX(), yValue += 15);
+        if (inventory.stoneOrGemstone == 0) {
+            CustomerView.stoneSize.setText("Size: " + inventory.stoneSize + " centimeters");
+            CustomerView.stoneWeight.setText("Weight: " + inventory.stoneWeight + " grams");
+        } else if (inventory.stoneOrGemstone == 1) {
+            CustomerView.stoneSize.setText("Size: " + inventory.stoneSize + " millimeters");
+            CustomerView.stoneWeight.setText("Weight: " + inventory.stoneWeight + " carats");
+        }
+        CustomerView.stoneSize.setVisible(true);
+        CustomerView.stoneWeight.setVisible(true);
         CustomerView.price.setLocation(CustomerView.price.getX(), yValue += 15);
         CustomerView.price.setText("Price: $" + inventory.retailPrice);
         CustomerView.price.setVisible(true);
@@ -97,14 +102,14 @@ public class ItemSelection extends State implements ActionListener {
             CustomerView.searchError.setText("");
             CustomerView.cardNumberEntry.setVisible(false);
             CustomerView.cardNumber.setVisible(false);
-            CustomerView.cvvEntry.setVisible(false);
-            CustomerView.cardCVV.setVisible(false);
+            CustomerView.securityCodeEntry.setVisible(false);
+            CustomerView.cardSecurityCode.setVisible(false);
             CustomerView.cardExpireYear.setVisible(false);
             CustomerView.cardExpirationYear.setVisible(false);
             CustomerView.cardExpireMonth.setVisible(false);
             CustomerView.cardExpirationMonth.setVisible(false);
             CustomerView.cardError.setText("");
-            CustomerView.cvvError.setText("");
+            CustomerView.cardSecurityError.setText("");
             CustomerView.expirationError.setText("");
             CustomerView.discountEntry.setVisible(false);
             CustomerView.discountCode.setVisible(false);
@@ -114,5 +119,4 @@ public class ItemSelection extends State implements ActionListener {
             CustomerView.logOut.setVisible(false);
         }
     }
-
 }

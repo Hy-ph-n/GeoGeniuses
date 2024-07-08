@@ -67,6 +67,8 @@ public class Register extends State {
 
     JComboBox prefix;
     JComboBox postfix;
+    
+    static JButton registerButton;
 
     Register() {
 
@@ -356,6 +358,7 @@ public class Register extends State {
                                             }
                                         }
                                     } catch (SQLException ex) {
+                                        System.out.println(ex);
                                     }
                                 } else if (registrationLogonName.length() < 8) {
                                     loginValid = false;
@@ -463,7 +466,7 @@ public class Register extends State {
         }
         );
 
-        JButton registerButton = new JButton("Register");
+        registerButton = new JButton("Register");
         registerButton.setBounds(200, 375, 100, 50);
         registerButton.setBackground(thistle);
         registerButton.addActionListener((e) -> {
@@ -478,6 +481,12 @@ public class Register extends State {
         returnButton.addActionListener((e) -> {
             //Resets all entries to their default states
             Reset();
+            
+            jp.remove(connectionStatus);
+            connectionStatus = new JLabel("");
+            connectionStatus.setBounds(5, 445, 200, 15);
+            connectionStatus.setForeground(Color.red);
+            loginView.jp.add(connectionStatus);
 
             //A switch to the login view
             jf.setTitle("Login");
@@ -794,14 +803,14 @@ public class Register extends State {
                 ResultSet rs = ps.executeQuery();
                 rs.next();
                 questionID1 = rs.getInt("QuestionID");
-                
+
                 query = "SELECT QuestionID FROM SecurityQuestions WHERE QuestionPrompt = ?;";
                 ps = con.prepareStatement(query);
                 ps.setString(1, securityQuestion2.getSelectedItem().toString());
                 rs = ps.executeQuery();
                 rs.next();
                 questionID2 = rs.getInt("QuestionID");
-                
+
                 query = "SELECT QuestionID FROM SecurityQuestions WHERE QuestionPrompt = ?;";
                 ps = con.prepareStatement(query);
                 ps.setString(1, securityQuestion3.getSelectedItem().toString());
@@ -855,13 +864,14 @@ public class Register extends State {
 
             passError.setText("");
             byte[] image = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09};
+            String positionTitle = "Customer";
 
             LoginView.person.add(new Person(personID, title, registrationFirstName, registrationMiddleName, registrationLastName, suffix, address1, address2, address3, city, zipCode, state, email, phonePrimary, phoneSecondary, image, 0));
-            LoginView.logon.add(new Logon(personID, registrationLogonName, registrationPassword));
+            LoginView.logon.add(new Logon(personID, registrationLogonName, registrationPassword, positionTitle));
 
             //Resets all entries to their default states
             Reset();
-            
+
             //Sets the person id so that the customer view will work
             LoginView.SetPersonID(registrationLogonName);
 

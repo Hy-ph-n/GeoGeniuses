@@ -12,6 +12,8 @@ abstract class State {
     
     JPanel jp = new JPanel(null);
     
+    static JLabel connectionStatus = new JLabel("");
+    
     static Connection con = null;
     
     static PreparedStatement ps = null;

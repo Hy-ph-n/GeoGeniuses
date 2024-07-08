@@ -4,6 +4,8 @@ package geogeniuses;
 import com.aspose.pdf.Document;
 import com.aspose.pdf.Page;
 import com.aspose.pdf.TextFragment;
+import static geogeniuses.CustomerView.panel;
+import static geogeniuses.State.connectionStatus;
 import java.sql.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -28,6 +30,7 @@ public class LoginView extends State {
 
     boolean loginValid = true;
 
+    static JButton resetPasswordButton;
     static boolean resetPassword = true;
 
     LoginView() {
@@ -49,6 +52,11 @@ public class LoginView extends State {
         jp.setLayout(null);
         jp.setBounds(0, 0, 600, 700);
         jf.add(jp);
+
+        connectionStatus = new JLabel("");
+        connectionStatus.setBounds(5, 445, 200, 15);
+        connectionStatus.setForeground(Color.red);
+        jp.add(connectionStatus);
 
         JLabel pleaseLogin = new JLabel("Login Name");
         pleaseLogin.setBounds(275, 25, pleaseLogin.getPreferredSize().width, pleaseLogin.getPreferredSize().height);
@@ -88,79 +96,73 @@ public class LoginView extends State {
         loginButton.setBounds(310, 130, 130, 50);
         loginButton.setBackground(thistle);
         loginButton.addActionListener((e) -> {
-            String positionTitle = "None";
             String loginName = logName.getText();
             String loginPassword = new String(logPassword.getPassword());
             logonError.setText("");
             if (!loginName.isEmpty() && !loginPassword.isEmpty()) {
                 if (loginValid) {
-                    try {
-                        String query = "SELECT PersonID, PositionTitle FROM Logon WHERE LogonName = '" + loginName + "';";
-                        ps = con.prepareStatement(query);
-                        ResultSet rs = ps.executeQuery();
-                        rs.next();
-                        positionTitle = rs.getString("PositionTitle");
+                    //A for loop that will test to see if the name and password match up with a manager or customer.
+                    boolean validPerson = false;
+                    for (int i = 0; i < logon.size(); i++) {
+                        try {
+                            if (loginName.equals(logon.get(i).logonName) && loginPassword.equals(logon.get(i).password) && person.get(i).personDeleted != 1) {
+                                validPerson = true;
 
-                        //A for loop that will test to see if the name and password match up with a manager or customer.
-                        if (!positionTitle.equals("None")) {
-                            boolean validPerson = false;
-                            for (int i = 0; i < logon.size(); i++) {
-                                try {
-                                    if (loginName.equals(logon.get(i).logonName) && loginPassword.equals(logon.get(i).password) && person.get(i).personDeleted != 1) {
-                                        validPerson = true;
+                                String positionTitle = logon.get(i).positionTitle;
 
-                                        SetPersonID(loginName);
+                                SetPersonID(loginName);
 
-                                        //Resets the login name and login password fields to their default states
-                                        logName.setText("");
-                                        logPassword.setText("");
-
-                                        if (positionTitle.equals("Manager")) {
-                                            //A switch to the the manager's view
-                                            //jf.setTitle("Manager View");
-                                            //jp.setVisible(false);
-                                            //jf.remove(jp);
-                                            //jf.setBounds(jf.getX(), jf.getY(), 1216, 610);
-                                            //jf.add(managerView.jp);
-                                            //managerView.jp.setVisible(true);
-                                            JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Manager", JOptionPane.INFORMATION_MESSAGE);
-                                        }
-
-                                        if (positionTitle.equals("Employee")) {
-                                            //A switch to the the employee's view
-                                            //jf.setTitle("Employee View");
-                                            //jp.setVisible(false);
-                                            //jf.remove(jp);
-                                            //jf.setBounds(jf.getX(), jf.getY(), 1216, 610);
-                                            //jf.add(employeeView.jp);
-                                            //employeeView.jp.setVisible(true);
-                                            JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Employee", JOptionPane.INFORMATION_MESSAGE);
-                                        }
-
-                                        if (positionTitle.equals("Customer")) {
-                                            //Updates the inventory for the customer
-                                            ((CustomerView) customerView).updateData();
-                                            //A switch to the customer's view
-                                            jf.setTitle("Customer View");
-                                            jp.setVisible(false);
-                                            jf.remove(jp);
-                                            jf.add(customerView.jp);
-                                            jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
-                                            customerView.jp.setVisible(true);
-                                        }
-
-                                    }
-                                } catch (IndexOutOfBoundsException ex) {
-                                    System.out.println(ex);
-                                }
-                            }
-                            if (!validPerson) {
-                                logonError.setText("Invalid Credentials");
+                                //Resets the login name and login password fields to their default states
+                                logName.setText("");
                                 logPassword.setText("");
+
+                                if (positionTitle.equals("Manager")) {
+                                    //A switch to the the manager's view
+                                    //jf.setTitle("Manager View");
+                                    //jp.setVisible(false);
+                                    //jf.remove(jp);
+                                    //jf.setBounds(jf.getX(), jf.getY(), 1216, 610);
+                                    //jf.add(managerView.jp);
+                                    //managerView.jp.setVisible(true);
+                                    JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Manager", JOptionPane.INFORMATION_MESSAGE);
+                                }
+
+                                if (positionTitle.equals("Employee")) {
+                                    //A switch to the the employee's view
+                                    //jf.setTitle("Employee View");
+                                    //jp.setVisible(false);
+                                    //jf.remove(jp);
+                                    //jf.setBounds(jf.getX(), jf.getY(), 1216, 610);
+                                    //jf.add(employeeView.jp);
+                                    //employeeView.jp.setVisible(true);
+                                    JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Employee", JOptionPane.INFORMATION_MESSAGE);
+                                }
+
+                                if (positionTitle.equals("Customer")) {
+                                    jp.remove(connectionStatus);
+                                    connectionStatus = new JLabel("");
+                                    connectionStatus.setBounds(5, 465, 200, 15);
+                                    connectionStatus.setForeground(Color.red);
+                                    panel.add(connectionStatus);
+
+                                    //Updates the inventory for the customer
+                                    ((CustomerView) customerView).updateData();
+                                    //A switch to the customer's view
+                                    jf.setTitle("Customer View");
+                                    jp.setVisible(false);
+                                    jf.remove(jp);
+                                    jf.add(customerView.jp);
+                                    jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
+                                    customerView.jp.setVisible(true);
+                                }
+
                             }
+                        } catch (IndexOutOfBoundsException ex) {
+                            System.out.println(ex);
                         }
-                    } catch (SQLException ex) {
-                        logonError.setText("User not found");
+                    }
+                    if (!validPerson) {
+                        logonError.setText("Invalid Credentials");
                         logPassword.setText("");
                     }
                 }
@@ -182,8 +184,10 @@ public class LoginView extends State {
             CustomerView.searchBar.setVisible(true);
             CustomerView.cardNumberEntry.setVisible(false);
             CustomerView.cardNumber.setVisible(false);
-            CustomerView.cvvEntry.setVisible(false);
-            CustomerView.cardCVV.setVisible(false);
+            CustomerView.securityCodeEntry.setVisible(false);
+            CustomerView.cardSecurityCode.setVisible(false);
+            CustomerView.cardError.setVisible(false);
+            CustomerView.cardSecurityError.setVisible(false);
             CustomerView.cardExpireYear.setVisible(false);
             CustomerView.cardExpirationYear.setVisible(false);
             CustomerView.cardExpireMonth.setVisible(false);
@@ -193,8 +197,12 @@ public class LoginView extends State {
             CustomerView.checkout.setVisible(false);
             CustomerView.clearCart.setVisible(false);
 
-            //Updates the inventory for the customer
-            ((CustomerView) customerView).updateData();
+            jp.remove(connectionStatus);
+            connectionStatus = new JLabel("");
+            connectionStatus.setBounds(5, 465, 200, 15);
+            connectionStatus.setForeground(Color.red);
+            panel.add(connectionStatus);
+
             //A switch to the customer's view
             jf.setTitle("Customer View");
             jp.setVisible(false);
@@ -214,6 +222,12 @@ public class LoginView extends State {
             logPassword.setText("");
             logonError.setText("");
 
+            jp.remove(connectionStatus);
+            connectionStatus = new JLabel("");
+            connectionStatus.setBounds(5, 470, 200, 15);
+            connectionStatus.setForeground(Color.red);
+            registerView.jp.add(connectionStatus);
+
             jf.setTitle("Register");
             jp.setVisible(false);
             jf.remove(jp);
@@ -224,12 +238,18 @@ public class LoginView extends State {
         );
         jp.add(registerButton);
 
-        JButton resetPasswordButton = new JButton("Reset Password");
+        resetPasswordButton = new JButton("Reset Password");
         resetPasswordButton.setBounds(310, 355, 130, 50);
         resetPasswordButton.setBackground(thistle);
         resetPasswordButton.addActionListener((e) -> {
             resetPassword = true;
             String loginName = logName.getText();
+
+            jp.remove(connectionStatus);
+            connectionStatus = new JLabel("");
+            connectionStatus.setBounds(5, 465, 200, 15);
+            connectionStatus.setForeground(Color.red);
+            resetPasswordView.jp.add(connectionStatus);
 
             if (!loginName.isEmpty()) {
                 SetPersonID(loginName);
@@ -318,7 +338,7 @@ public class LoginView extends State {
     static Runnable logonInfo = () -> {
         String e[];
         try {
-            String query = "SELECT PersonID, LogonName, Password FROM Logon";
+            String query = "SELECT PersonID, LogonName, Password, PositionTitle FROM Logon";
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData md = rs.getMetaData();
@@ -332,9 +352,10 @@ public class LoginView extends State {
                 int personID = Integer.parseInt(e[0]);
                 String logonName = e[1];
                 String password = e[2];
+                String positionTitle = e[3];
 
                 //Adds everything
-                logon.add(new Logon(personID, logonName, password));
+                logon.add(new Logon(personID, logonName, password, positionTitle));
             }
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -343,10 +364,11 @@ public class LoginView extends State {
 
     static Runnable inventoryInfo = () -> {
         String e[];
+        int number = 0;
         try {
             Blob imgBlob = null;
 
-            String query = "SELECT InventoryID, ItemName, ItemDescription, CategoryID, StoneOrGemstone, GrainSize, GrainShape, Heft, SemiOrPrecious, Hardness, RetailPrice, Cost, Quantity, RestockThreshold, Discontinued FROM Inventory";
+            String query = "SELECT InventoryID, ItemName, ItemDescription, CategoryID, StoneOrGemstone, GrainSize, GrainShape, Heft, SemiOrPrecious, Hardness, StoneSize, StoneWeight, RetailPrice, Cost, Quantity, RestockThreshold, ItemImage, Discontinued FROM Inventory";
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData md = rs.getMetaData();
@@ -379,31 +401,38 @@ public class LoginView extends State {
                     semiOrPrecious = e[8];
                 }
                 double hardness = Double.parseDouble(e[9]);
-                double retailPrice = Double.parseDouble(e[10]);
-                double cost = Double.parseDouble(e[11]);
-                int quantity = Integer.parseInt(e[12]);
-                int restockThreshold = Integer.parseInt(e[13]);
-                int discontinued = Integer.parseInt(e[14]);
+                double stoneSize = Double.parseDouble(e[10]);
+                double stoneWeight = Double.parseDouble(e[11]);
+                double retailPrice = Double.parseDouble(e[12]);
+                double cost = Double.parseDouble(e[13]);
+                int quantity = Integer.parseInt(e[14]);
+                int restockThreshold = Integer.parseInt(e[15]);
+                Blob itemBlob = null;
+                byte[] itemImage = null;
+                if (e[16] != null) {
+                    itemBlob = rs.getBlob("ItemImage");
+                    try {
+                        itemImage = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
+                    } catch (IOException ex) {
+                        System.out.println(ex);
+                    }
+                }
+                int discontinued = Integer.parseInt(e[17]);
 
                 //Adds everything
-                inventory.add(new Inventory(inventoryID, itemName, itemDescription, categoryID, stoneOrGemstone, grainSize, grainShape, heft, semiOrPrecious, hardness, retailPrice, cost, quantity, restockThreshold, discontinued));
+                inventory.add(new Inventory(inventoryID, itemName, itemDescription, categoryID, stoneOrGemstone, grainSize, grainShape, heft, semiOrPrecious, hardness, stoneSize, stoneWeight, retailPrice, cost, quantity, restockThreshold, itemImage, discontinued));
             }
         } catch (SQLException ex) {
             System.out.println(ex);
+            System.out.println(number);
         }
     };
 
     static void SetPersonID(String logonName) {
-        try {
-            String query = "SELECT PersonID FROM Logon WHERE LogonName = '" + logonName + "';";
-            ps = con.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            currentPerson = Integer.parseInt(rs.getString(1));
-        } catch (SQLException e) {
-            resetPassword = false;
-        } catch (Exception e) {
-            resetPassword = false;
+        for (int i = 0; i < person.size(); i++) {
+            if (logon.get(i).logonName.equals(logonName)) {
+                currentPerson = logon.get(i).personID;
+            }
         }
     }
 

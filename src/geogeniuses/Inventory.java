@@ -12,13 +12,16 @@ public class Inventory {
     String heft;
     String semiOrPrecious;
     double hardness;
+    double stoneSize;
+    double stoneWeight;
     double retailPrice;
     double cost;
     int quantity;
     int restockThreshold;
+    byte[] itemImage;
     int discontinued;
 
-    Inventory(int inventoryID, String itemName, String itemDescription, int categoryID, int stoneOrGemstone, String grainSize, String grainShape, String heft, String semiOrPrecious, double hardness, double retailPrice, double cost, int quantity, int restockThreshold, int discontinued) {
+    Inventory(int inventoryID, String itemName, String itemDescription, int categoryID, int stoneOrGemstone, String grainSize, String grainShape, String heft, String semiOrPrecious, double hardness, double stoneSize, double stoneWeight, double retailPrice, double cost, int quantity, int restockThreshold, byte[] itemImage, int discontinued) {
         this.inventoryID = inventoryID;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
@@ -29,10 +32,13 @@ public class Inventory {
         this.heft = heft;
         this.semiOrPrecious = semiOrPrecious;
         this.hardness = hardness;
+        this.stoneSize = stoneSize;
+        this.stoneWeight = stoneWeight;
         this.retailPrice = retailPrice;
         this.cost = cost;
         this.quantity = quantity;
         this.restockThreshold = restockThreshold;
+        this.itemImage = itemImage;
         this.discontinued = discontinued;
     }
 
