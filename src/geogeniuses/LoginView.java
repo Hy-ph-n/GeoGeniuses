@@ -300,6 +300,7 @@ public class LoginView extends State {
 
     Runnable personInfo = () -> {
         String e[];
+        person.clear();
         try {
             String query = "SELECT PersonID, Title, NameFirst, NameMiddle, NameLast, Suffix, Address1, Address2, Address3, City, Zipcode, State, Email, PhonePrimary, PhoneSecondary, PersonDeleted FROM Person";
             ps = con.prepareStatement(query);
@@ -339,6 +340,7 @@ public class LoginView extends State {
 
     static Runnable logonInfo = () -> {
         String e[];
+        logon.clear();
         try {
             String query = "SELECT PersonID, LogonName, Password, PositionTitle FROM Logon";
             ps = con.prepareStatement(query);
@@ -367,6 +369,7 @@ public class LoginView extends State {
     static Runnable inventoryInfo = () -> {
         String e[];
         int number = 0;
+        inventory.clear();
         try {
             Blob imgBlob = null;
 
