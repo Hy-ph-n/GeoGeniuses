@@ -685,12 +685,8 @@ public class CustomerView extends State {
         checkout.setBounds(27, 345, 100, 50);
         checkout.setBackground(thistle);
         checkout.addActionListener((e) -> {
-            cardError.setText("");
-            cardSecurityError.setText("");
-            expirationError.setText("");
-            discountError.setText("");
-            discountValid = false;
             if (itemsSelected > 0) {
+                validateCard();
                 if (!discountCode.getText().equals("")) {
                     validateDiscount();
                     if (cardValid && discountValid) {
@@ -763,9 +759,11 @@ public class CustomerView extends State {
             cardError.setText("");
             cardSecurityError.setText("");
             expirationError.setText("");
+            cardValid = false;
             discountEntry.setVisible(true);
             discountCode.setVisible(true);
             discountError.setText("");
+            discountValid = false;
             refreshButton.setVisible(true);
             igneousButton.setVisible(true);
             sedimentaryButton.setVisible(true);

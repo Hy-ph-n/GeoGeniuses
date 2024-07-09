@@ -40,7 +40,7 @@ public class GeoGeniuses extends State {
     }
 
     static Runnable ConnectionStatus = () -> {
-        connectionTimer = new Timer(3000, new ActionListener() {
+        connectionTimer = new Timer(5000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
