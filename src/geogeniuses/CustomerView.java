@@ -686,9 +686,7 @@ public class CustomerView extends State {
         checkout.setBackground(thistle);
         checkout.addActionListener((e) -> {
             if (itemsSelected > 0) {
-                validateCard();
                 if (!discountCode.getText().equals("")) {
-                    validateDiscount();
                     if (cardValid && discountValid) {
                         Thread createCheckout = new Thread(customerCheckout);
                         createCheckout.start();
@@ -759,11 +757,9 @@ public class CustomerView extends State {
             cardError.setText("");
             cardSecurityError.setText("");
             expirationError.setText("");
-            cardValid = false;
             discountEntry.setVisible(true);
             discountCode.setVisible(true);
             discountError.setText("");
-            discountValid = false;
             refreshButton.setVisible(true);
             igneousButton.setVisible(true);
             sedimentaryButton.setVisible(true);
@@ -807,7 +803,6 @@ public class CustomerView extends State {
 
         Pattern p = Pattern.compile(visa);
         Matcher m = p.matcher(cardNumber.getText());
-
         if (!m.matches()) {
             p = Pattern.compile(americanExpress);
             m = p.matcher(cardNumber.getText());

@@ -186,8 +186,6 @@ public class LoginView extends State {
             CustomerView.cardNumber.setVisible(false);
             CustomerView.securityCodeEntry.setVisible(false);
             CustomerView.cardSecurityCode.setVisible(false);
-            CustomerView.cardError.setVisible(false);
-            CustomerView.cardSecurityError.setVisible(false);
             CustomerView.cardExpireYear.setVisible(false);
             CustomerView.cardExpirationYear.setVisible(false);
             CustomerView.cardExpireMonth.setVisible(false);
