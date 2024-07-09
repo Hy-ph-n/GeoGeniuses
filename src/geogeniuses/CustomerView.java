@@ -1212,6 +1212,7 @@ public class CustomerView extends State {
                 cartVisible = false;
                 cart.clear();
                 jp.validate();
+                validateDiscount();
 
                 itemsSelected = 0;
                 Thread inventoryData = new Thread(LoginView.inventoryInfo);
