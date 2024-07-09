@@ -808,19 +808,14 @@ public class CustomerView extends State {
         Pattern p = Pattern.compile(visa);
         Matcher m = p.matcher(cardNumber.getText());
 
-        if (!cardNumber.getText().equals("")) {
-
+        if (!m.matches()) {
+            p = Pattern.compile(americanExpress);
+            m = p.matcher(cardNumber.getText());
             if (!m.matches()) {
-                p = Pattern.compile(americanExpress);
+                p = Pattern.compile(masterCard);
                 m = p.matcher(cardNumber.getText());
                 if (!m.matches()) {
-                    p = Pattern.compile(masterCard);
-                    m = p.matcher(cardNumber.getText());
-                    if (!m.matches()) {
-                        cardError.setText("Invalid Card Number");
-                    } else {
-                        cardNum = true;
-                    }
+                    cardError.setText("Invalid Card Number");
                 } else {
                     cardNum = true;
                 }
@@ -828,19 +823,15 @@ public class CustomerView extends State {
                 cardNum = true;
             }
         } else {
-            cardError.setText("Card number required");
+            cardNum = true;
         }
 
-        if (!cardSecurityCode.getText().equals("")) {
-            p = Pattern.compile(securityCode);
-            m = p.matcher(cardSecurityCode.getText());
-            if (m.matches()) {
-                cvvValid = true;
-            } else {
-                cardSecurityError.setText("Invalid Security Code");
-            }
+        p = Pattern.compile(securityCode);
+        m = p.matcher(cardSecurityCode.getText());
+        if (m.matches()) {
+            cvvValid = true;
         } else {
-            cardSecurityError.setText("Required");
+            cardSecurityError.setText("Invalid Security Code");
         }
 
         int year = Integer.valueOf((String) cardExpirationYear.getSelectedItem());
