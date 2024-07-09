@@ -203,6 +203,8 @@ public class LoginView extends State {
             connectionStatus.setForeground(Color.red);
             panel.add(connectionStatus);
 
+            //Updates the inventory for the customer
+            ((CustomerView) customerView).updateData();
             //A switch to the customer's view
             jf.setTitle("Customer View");
             jp.setVisible(false);
