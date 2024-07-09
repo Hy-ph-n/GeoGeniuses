@@ -686,7 +686,9 @@ public class CustomerView extends State {
         checkout.setBackground(thistle);
         checkout.addActionListener((e) -> {
             if (itemsSelected > 0) {
+                validateCard();
                 if (!discountCode.getText().equals("")) {
+                    validateDiscount();
                     if (cardValid && discountValid) {
                         Thread createCheckout = new Thread(customerCheckout);
                         createCheckout.start();
