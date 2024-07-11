@@ -862,81 +862,48 @@ public class CustomerView extends State {
             discountType = -1;
             discountPercent = 0;
             discountAmount = 0;
-            try {
-                String query = "SELECT DiscountID, DiscountLevel, InventoryID, DiscountType, DiscountPercentage, DiscountDollarAmount, StartDate, ExpirationDate FROM Discounts WHERE DiscountCode = '" + discountCode.getText() + "';";
-                ps = con.prepareStatement(query);
-                ResultSet rs = ps.executeQuery();
-
-                while (rs.next()) {
-                    discountID = rs.getInt("DiscountID");
-                    String start = rs.getString("StartDate");
-                    if (start != null) {
-                        startDate = rs.getDate("StartDate");
+            for (int i = 0; i < LoginView.discount.size(); i++) {
+                if (discountCode.getText().equals(LoginView.discount.get(i).discountCode)) {
+                    discountID = LoginView.discount.get(i).discountID;
+                    if (LoginView.discount.get(i).startDate != null) {
+                        startDate = new java.sql.Date(LoginView.discount.get(i).startDate.getTime());
                     }
-                    expireDate = rs.getDate("ExpirationDate");
-                    if (expireDate == null) {
-                        discountValid = false;
-                        discountError.setText("Bad Expire Date");
+                    expireDate = new java.sql.Date(LoginView.discount.get(i).expirationDate.getTime());
+                    discountLevel = LoginView.discount.get(i).discountLevel;
+                    if (discountLevel == 1) {
+                        discountInventoryID = LoginView.discount.get(i).inventoryID;
+                    }
+                    discountType = LoginView.discount.get(i).discountType;
+                    discountPercent = LoginView.discount.get(i).discountPercentage;
+                    discountAmount = LoginView.discount.get(i).discountDollarAmount;
+                }
+            }
+
+            int currentYear = currentDate.getYear();
+            int currentMonth = currentDate.getMonthValue();
+            int currentDay = currentDate.getDayOfMonth();
+
+            Date current = Date.valueOf(LocalDate.of(currentYear, currentMonth, currentDay));
+
+            if (startDate != null) {
+                boolean isBetween = current.after(startDate) && current.before(expireDate);
+                if (!isBetween) {
+                    discountValid = false;
+                }
+            }
+
+            if (discountLevel != 0) {
+                boolean discountAppliable = false;
+                for (int i = 0; i < cart.size(); i++) {
+                    if (discountInventoryID == cart.get(i).inventoryID) {
+                        discountAppliable = true;
                         break;
                     }
-                    String id = rs.getString("InventoryID");
-                    String level = rs.getString("DiscountLevel");
-                    if (level != null) {
-                        discountLevel = Integer.parseInt(level);
-                        if (discountLevel == 1) {
-                            if (id != null) {
-                                discountInventoryID = Integer.parseInt(id);
-                            } else {
-                                discountValid = false;
-                                discountError.setText("Invalid Discount");
-                                break;
-                            }
-                        }
-                    } else {
-                        discountValid = false;
-                        discountError.setText("Invalid Discount");
-                        break;
-                    }
-                    discountType = rs.getInt("DiscountType");
-                    String percentDiscounted = rs.getString("DiscountPercentage");
-                    String amountDiscounted = rs.getString("DiscountDollarAmount");
-                    if (percentDiscounted != null && discountType == 0) {
-                        discountPercent = Double.parseDouble(percentDiscounted);
-                    }
-                    if (amountDiscounted != null && discountType == 1) {
-                        discountAmount = Double.parseDouble(amountDiscounted);
-                    }
                 }
-
-                int currentYear = currentDate.getYear();
-                int currentMonth = currentDate.getMonthValue();
-                int currentDay = currentDate.getDayOfMonth();
-
-                Date current = Date.valueOf(LocalDate.of(currentYear, currentMonth, currentDay));
-
-                if (startDate != null) {
-                    boolean isBetween = current.after(startDate) && current.before(expireDate);
-                    if (!isBetween) {
-                        discountValid = false;
-                    }
+                if (!discountAppliable) {
+                    discountValid = false;
+                    discountError.setText("Not Applicable");
                 }
-
-                if (discountLevel != 0) {
-                    boolean discountAppliable = false;
-                    for (int i = 0; i < cart.size(); i++) {
-                        if (discountInventoryID == cart.get(i).inventoryID) {
-                            discountAppliable = true;
-                            break;
-                        }
-                    }
-                    if (!discountAppliable) {
-                        discountValid = false;
-                        discountError.setText("Not Applicable");
-                    }
-                }
-            } catch (SQLException ex) {
-                discountValid = false;
-                discountError.setText("Invalid Code");
             }
         }
     }
@@ -1177,35 +1144,36 @@ public class CustomerView extends State {
                     query = "SELECT Quantity FROM Inventory WHERE InventoryID = " + cart.get(i).inventoryID + ";";
                     ps = con.prepareStatement(query);
                     rs = ps.executeQuery();
-                    rs.next();
-                    int quantity = rs.getInt("Quantity");
+                    if (rs.next()) {
+                        int quantity = rs.getInt("Quantity");
 
-                    statement = "UPDATE Inventory SET Quantity = " + (quantity - cart.get(i).quantity) + " WHERE InventoryID = " + cart.get(i).inventoryID + ";";
-                    preparedStatement = con.prepareStatement(statement);
-                    preparedStatement.execute();
+                        statement = "UPDATE Inventory SET Quantity = " + (quantity - cart.get(i).quantity) + " WHERE InventoryID = " + cart.get(i).inventoryID + ";";
+                        preparedStatement = con.prepareStatement(statement);
+                        preparedStatement.execute();
 
-                    statement = "INSERT INTO OrderDetails (OrderID, InventoryID, DiscountID, Quantity)"
-                            + "VALUES (?, ?, ?, ?)";
-                    preparedStatement = con.prepareStatement(statement);
-                    preparedStatement.setInt(1, orderID);
-                    preparedStatement.setInt(2, cart.get(i).inventoryID);
-                    if (discountValid) {
-                        if (discountLevel == 0) {
-                            preparedStatement.setInt(3, discountID);
-                        } else if (discountLevel == 1) {
-                            if (discountInventoryID == cart.get(i).inventoryID) {
+                        statement = "INSERT INTO OrderDetails (OrderID, InventoryID, DiscountID, Quantity)"
+                                + "VALUES (?, ?, ?, ?)";
+                        preparedStatement = con.prepareStatement(statement);
+                        preparedStatement.setInt(1, orderID);
+                        preparedStatement.setInt(2, cart.get(i).inventoryID);
+                        if (discountValid) {
+                            if (discountLevel == 0) {
                                 preparedStatement.setInt(3, discountID);
+                            } else if (discountLevel == 1) {
+                                if (discountInventoryID == cart.get(i).inventoryID) {
+                                    preparedStatement.setInt(3, discountID);
+                                } else {
+                                    preparedStatement.setString(3, null);
+                                }
                             } else {
                                 preparedStatement.setString(3, null);
                             }
                         } else {
                             preparedStatement.setString(3, null);
                         }
-                    } else {
-                        preparedStatement.setString(3, null);
+                        preparedStatement.setInt(4, cart.get(i).quantity);
+                        preparedStatement.execute();
                     }
-                    preparedStatement.setInt(4, cart.get(i).quantity);
-                    preparedStatement.execute();
                 }
                 inventory.setPreferredSize(new Dimension(625, 0));
                 jp.remove(cartPanel);
@@ -1222,6 +1190,7 @@ public class CustomerView extends State {
             }
         } catch (Exception ex) {
             System.out.println(ex);
+            ex.printStackTrace();
         }
     };
 

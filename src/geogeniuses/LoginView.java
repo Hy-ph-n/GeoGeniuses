@@ -16,10 +16,11 @@ import java.util.ArrayList;
 
 public class LoginView extends State {
 
-    //Creates an arraylist of people and items.
+    //Creates an arraylist of people, items, and discounts
     static ArrayList<Person> person = new ArrayList();
     static ArrayList<Logon> logon = new ArrayList();
     static ArrayList<Inventory> inventory = new ArrayList();
+    static ArrayList<Discount> discount = new ArrayList();
 
     static int currentPerson = 0;
 
@@ -289,6 +290,9 @@ public class LoginView extends State {
 
                 Thread inventoryData = new Thread(inventoryInfo);
                 inventoryData.start();
+
+                Thread discountData = new Thread(discountInfo);
+                discountData.start();
             }
 
         } catch (SQLException ex) {
@@ -428,6 +432,41 @@ public class LoginView extends State {
         } catch (SQLException ex) {
             System.out.println(ex);
             System.out.println(number);
+        }
+    };
+
+    static Runnable discountInfo = () -> {
+        String e[];
+        discount.clear();
+        try {
+            String query = "SELECT DiscountID, DiscountCode, DiscountLevel, InventoryID, DiscountType, DiscountPercentage, DiscountDollarAmount, StartDate, ExpirationDate FROM Discounts";
+            ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData md = rs.getMetaData();
+            while (rs.next()) {
+                e = new String[md.getColumnCount() + 1];
+                for (int i = 1; i < md.getColumnCount() + 1; i++) {
+                    e[i - 1] = rs.getString(i);
+                }
+
+                int discountID = Integer.parseInt(e[0]);
+                String discountCode = e[1];
+                int discountLevel = Integer.parseInt(e[2]);
+                int inventoryID = 0;
+                if (discountLevel == 1) {
+                    inventoryID = Integer.parseInt(e[3]);
+                }
+                int discountType = Integer.parseInt(e[4]);
+                double discountPercentage = Double.parseDouble(e[5]);
+                double discountDollarAmount = Double.parseDouble(e[6]);
+                Date startDate = rs.getDate("StartDate");
+                Date expirationDate = rs.getDate("ExpirationDate");
+
+                //Adds everything
+                discount.add(new Discount(discountID, discountCode, discountLevel, inventoryID, discountType, discountPercentage, discountDollarAmount, startDate, expirationDate));
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
         }
     };
 
