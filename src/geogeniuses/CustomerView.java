@@ -643,7 +643,7 @@ public class CustomerView extends State {
         String[] expireMonth = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
         cardExpirationMonth = new JComboBox(expireMonth);
         cardExpirationMonth.setBounds(160, 255, 55, 20);
-        cardExpirationMonth.setSelectedIndex(0);
+        cardExpirationMonth.setSelectedIndex(currentDate.getMonthValue() - 1);
         panel.add(cardExpirationMonth);
 
         cardError = new JLabel("");
@@ -689,7 +689,7 @@ public class CustomerView extends State {
                 validateCard();
                 if (!discountCode.getText().equals("")) {
                     validateDiscount();
-                    if (cardValid && discountValid) {
+                    if (cardValid) {
                         Thread createCheckout = new Thread(customerCheckout);
                         createCheckout.start();
                     }
@@ -1185,6 +1185,16 @@ public class CustomerView extends State {
                 itemsSelected = 0;
                 Thread inventoryData = new Thread(LoginView.inventoryInfo);
                 inventoryData.start();
+                
+                cardNumber.setText("");
+                cardSecurityCode.setText("");
+                discountCode.setText("");
+                cardError.setText("");
+                cardSecurityError.setText("");
+                cardExpirationYear.setSelectedIndex(7);
+                cardExpirationMonth.setSelectedIndex(currentDate.getMonthValue() - 1);
+                
+                JOptionPane.showMessageDialog(null, "Order details saved in documents and displayed in browser", "Purchase Successful!!!", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 System.out.println(e);
             }
