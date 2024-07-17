@@ -67,7 +67,7 @@ public class Register extends State {
 
     JComboBox prefix;
     JComboBox postfix;
-    
+
     static JButton registerButton;
 
     Register() {
@@ -346,19 +346,12 @@ public class Register extends State {
                                 //If statement ensuring the login name is not less than 8 characters or more than 20
                                 if (registrationLogonName.length() >= 8 && registrationLogonName.length() <= 20) {
                                     //This try statement contains a query that will test if the login name already exists.
-                                    try {
-                                        String query = "SELECT LogonName FROM Logon";
-                                        ps = con.prepareStatement(query);
-                                        ResultSet rs = ps.executeQuery();
-                                        while (rs.next()) {
-                                            String logN = rs.getString(1);
-                                            if (registrationLogonName.toUpperCase().equals(logN.toUpperCase())) {
-                                                logNameError.setText("Already in use");
-                                                loginValid = false;
-                                            }
+                                    for (int i = 0; i < LoginView.inventory.size(); i++) {
+                                        String logN = LoginView.inventory.get(i).itemName;
+                                        if (registrationLogonName.toUpperCase().equals(logN.toUpperCase())) {
+                                            logNameError.setText("Already in use");
+                                            loginValid = false;
                                         }
-                                    } catch (SQLException ex) {
-                                        System.out.println(ex);
                                     }
                                 } else if (registrationLogonName.length() < 8) {
                                     loginValid = false;
@@ -383,9 +376,11 @@ public class Register extends State {
                     logNameError.setText("Username required");
                 }
             }
-        });
+        }
+        );
 
         registerPassword.addKeyListener(new KeyAdapter() {
+
             public void keyReleased(KeyEvent e) {
                 passwordValid = true;
                 String registrationPassword = new String(registerPassword.getPassword());
@@ -481,7 +476,7 @@ public class Register extends State {
         returnButton.addActionListener((e) -> {
             //Resets all entries to their default states
             Reset();
-            
+
             jp.remove(connectionStatus);
             connectionStatus = new JLabel("");
             connectionStatus.setBounds(5, 445, 200, 15);
