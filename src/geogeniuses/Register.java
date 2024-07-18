@@ -346,8 +346,8 @@ public class Register extends State {
                                 //If statement ensuring the login name is not less than 8 characters or more than 20
                                 if (registrationLogonName.length() >= 8 && registrationLogonName.length() <= 20) {
                                     //This try statement contains a query that will test if the login name already exists.
-                                    for (int i = 0; i < LoginView.inventory.size(); i++) {
-                                        String logN = LoginView.inventory.get(i).itemName;
+                                    for (int i = 0; i < LoginView.logon.size(); i++) {
+                                        String logN = LoginView.logon.get(i).logonName;
                                         if (registrationLogonName.toUpperCase().equals(logN.toUpperCase())) {
                                             logNameError.setText("Already in use");
                                             loginValid = false;
