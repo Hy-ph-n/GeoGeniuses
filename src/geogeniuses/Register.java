@@ -870,6 +870,12 @@ public class Register extends State {
             //Sets the person id so that the customer view will work
             LoginView.SetPersonID(registrationLogonName);
 
+            for (int l = 0; l < LoginView.person.size(); l++) {
+                if (LoginView.currentPerson == LoginView.person.get(l).personID) {
+                    CustomerView.personDetails = l;
+                }
+            }
+
             //Updates the inventory for the customer
             ((CustomerView) customerView).updateData();
             //A switch to the customer's view

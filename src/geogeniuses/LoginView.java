@@ -140,6 +140,12 @@ public class LoginView extends State {
                                 }
 
                                 if (positionTitle.equals("Customer")) {
+                                    for (int l = 0; l < person.size(); l++) {
+                                        if (currentPerson == person.get(l).personID) {
+                                            CustomerView.personDetails = l;
+                                        }
+                                    }
+
                                     jp.remove(connectionStatus);
                                     connectionStatus = new JLabel("");
                                     connectionStatus.setBounds(5, 465, 200, 15);

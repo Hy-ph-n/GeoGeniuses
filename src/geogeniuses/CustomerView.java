@@ -28,8 +28,11 @@ public class CustomerView extends State {
 
     ArrayList<JButton> items = new ArrayList();
 
-    //The order arraylist will track orders.
+    //The cart arraylist will track items waiting to be purchased.
     static ArrayList<Cart> cart = new ArrayList();
+    
+    //The personDetails integer will contain the current user's arraylist index value
+    static int personDetails = 0;
 
     //The decimal format is now listed properly.
     DecimalFormat f = new DecimalFormat("#,###.00");
@@ -992,8 +995,8 @@ public class CustomerView extends State {
             sb.append("<head></head>");
             sb.append("<body>");
 
-            sb.append("<h2>Customer Name: ").append(LoginView.person.get(LoginView.currentPerson).nameFirst + " " + LoginView.person.get(LoginView.currentPerson).nameLast.charAt(0)).append(".</h2>");
-            sb.append("<h2>Phone Number:  ").append(LoginView.person.get(LoginView.currentPerson).phonePrimary).append("</h2>");
+            sb.append("<h2>Customer Name: ").append(LoginView.person.get(personDetails).nameFirst + " " + LoginView.person.get(personDetails).nameLast.charAt(0)).append(".</h2>");
+            sb.append("<h2>Phone Number:  ").append(LoginView.person.get(personDetails).phonePrimary).append("</h2>");
             sb.append("<h2>Card Expiration Date:  ").append(cardExpirationMonth.getSelectedItem() + "/" + cardExpirationYear.getSelectedItem()).append("</h2>");
 
             sb.append("<table>");
