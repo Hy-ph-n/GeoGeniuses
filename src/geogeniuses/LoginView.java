@@ -4,8 +4,6 @@ package geogeniuses;
 import com.aspose.pdf.Document;
 import com.aspose.pdf.Page;
 import com.aspose.pdf.TextFragment;
-import static geogeniuses.CustomerView.panel;
-import static geogeniuses.State.connectionStatus;
 import java.sql.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -13,14 +11,18 @@ import java.io.File;
 import java.io.IOException;
 import javax.swing.*;
 import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 
 public class LoginView extends State {
 
     //Creates an arraylist of people, items, and discounts
     static ArrayList<Person> person = new ArrayList();
     static ArrayList<Logon> logon = new ArrayList();
+    static ArrayList<SecurityQuestion> securityQuestions = new ArrayList();
     static ArrayList<Inventory> inventory = new ArrayList();
     static ArrayList<Discount> discount = new ArrayList();
+    static ArrayList<Orders> orders = new ArrayList();
+    static ArrayList<OrderDetails> orderDetails = new ArrayList();
 
     static int currentPerson = 0;
 
@@ -118,25 +120,36 @@ public class LoginView extends State {
                                 logPassword.setText("");
 
                                 if (positionTitle.equals("Manager")) {
-                                    //A switch to the the manager's view
-                                    //jf.setTitle("Manager View");
-                                    //jp.setVisible(false);
-                                    //jf.remove(jp);
-                                    //jf.setBounds(jf.getX(), jf.getY(), 1216, 610);
-                                    //jf.add(managerView.jp);
-                                    //managerView.jp.setVisible(true);
-                                    JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Manager", JOptionPane.INFORMATION_MESSAGE);
-                                }
+                                    jp.remove(connectionStatus);
+                                    connectionStatus = new JLabel("");
+                                    connectionStatus.setBounds(0, 0, 200, 15);
+                                    connectionStatus.setForeground(Color.red);
+                                    ManagerView.panel.add(connectionStatus);
 
-                                if (positionTitle.equals("Employee")) {
-                                    //A switch to the the employee's view
-                                    //jf.setTitle("Employee View");
-                                    //jp.setVisible(false);
-                                    //jf.remove(jp);
-                                    //jf.setBounds(jf.getX(), jf.getY(), 1216, 610);
-                                    //jf.add(employeeView.jp);
-                                    //employeeView.jp.setVisible(true);
-                                    JOptionPane.showMessageDialog(null, "Hi", "Type of Account: Employee", JOptionPane.INFORMATION_MESSAGE);
+                                    ManagerView.searchForCustomer.setSelected(true);
+                                    ManagerView.searchForManager.setSelected(false);
+
+                                    CustomerView.panel.setPreferredSize(new Dimension(265, 610));
+                                    CustomerView.cartPanel.setPreferredSize(new Dimension(265, 610));
+                                    CustomerView.cartPanel.setBounds(0, 0, 267, 570);
+                                    CustomerView.cartjs.setBounds(0, 0, CustomerView.cartPanel.getWidth(), CustomerView.cartPanel.getHeight());
+                                    CustomerView.logOut.setVisible(false);
+
+                                    ManagerView.includeQuestions();
+
+                                    for (int l = 0; l < person.size(); l++) {
+                                        if (currentPerson == person.get(l).personID) {
+                                            ManagerView.managerDetails = l;
+                                        }
+                                    }
+
+                                    //A switch to the the manager's view
+                                    jf.setTitle("Manager View");
+                                    jp.setVisible(false);
+                                    jf.remove(jp);
+                                    jf.setBounds(jf.getX(), jf.getY(), 390, 610);
+                                    jf.add(managerView.jp);
+                                    managerView.jp.setVisible(true);
                                 }
 
                                 if (positionTitle.equals("Customer")) {
@@ -150,7 +163,7 @@ public class LoginView extends State {
                                     connectionStatus = new JLabel("");
                                     connectionStatus.setBounds(5, 465, 200, 15);
                                     connectionStatus.setForeground(Color.red);
-                                    panel.add(connectionStatus);
+                                    CustomerView.panel.add(connectionStatus);
 
                                     //Updates the inventory for the customer
                                     ((CustomerView) customerView).updateData();
@@ -206,7 +219,7 @@ public class LoginView extends State {
             connectionStatus = new JLabel("");
             connectionStatus.setBounds(5, 465, 200, 15);
             connectionStatus.setForeground(Color.red);
-            panel.add(connectionStatus);
+            CustomerView.panel.add(connectionStatus);
 
             //Updates the inventory for the customer
             ((CustomerView) customerView).updateData();
@@ -228,6 +241,8 @@ public class LoginView extends State {
             logName.setText("");
             logPassword.setText("");
             logonError.setText("");
+
+            Register.includeQuestions();
 
             jp.remove(connectionStatus);
             connectionStatus = new JLabel("");
@@ -283,9 +298,6 @@ public class LoginView extends State {
     }
 
     void load() {
-        person.clear();
-        logon.clear();
-
         try {
             if (con != null & !con.isClosed()) {
                 Thread personData = new Thread(personInfo);
@@ -294,23 +306,31 @@ public class LoginView extends State {
                 Thread logonData = new Thread(logonInfo);
                 logonData.start();
 
+                Thread securityData = new Thread(securityInfo);
+                securityData.start();
+
                 Thread inventoryData = new Thread(inventoryInfo);
                 inventoryData.start();
 
                 Thread discountData = new Thread(discountInfo);
                 discountData.start();
-            }
 
+                Thread orderData = new Thread(orderInfo);
+                orderData.start();
+
+                Thread orderDetailsData = new Thread(orderDetailsInfo);
+                orderDetailsData.start();
+            }
         } catch (SQLException ex) {
             System.out.println(ex);
         }
     }
 
-    Runnable personInfo = () -> {
+    static Runnable personInfo = () -> {
         String e[];
         person.clear();
         try {
-            String query = "SELECT PersonID, Title, NameFirst, NameMiddle, NameLast, Suffix, Address1, Address2, Address3, City, Zipcode, State, Email, PhonePrimary, PhoneSecondary, PersonDeleted FROM Person";
+            String query = "SELECT PersonID, Title, NameFirst, NameMiddle, NameLast, Suffix, Address1, Address2, Address3, City, Zipcode, State, Email, PhonePrimary, PhoneSecondary, PersonDeleted FROM Person WHERE PersonDeleted = 0;";
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData md = rs.getMetaData();
@@ -341,6 +361,14 @@ public class LoginView extends State {
                 //Adds everything
                 person.add(new Person(personID, title, nameFirst, nameMiddle, nameLast, suffix, address1, address2, address3, city, zipCode, state, email, phonePrimary, phoneSecondary, null, personDeleted));
             }
+            if (ManagerView.updatedFromManagerPerson) {
+                ManagerView.updatedFromManagerPerson = false;
+                //Updates the person table for manager
+                ManagerView.personData = ManagerView.getPersonData();
+                DefaultTableModel ptable = (DefaultTableModel) ManagerView.personjt.getModel();
+                ptable.setDataVector(ManagerView.personData, ManagerView.personCol);
+                managerView.jp.repaint();
+            }
         } catch (SQLException ex) {
             System.out.println(ex);
         }
@@ -350,7 +378,7 @@ public class LoginView extends State {
         String e[];
         logon.clear();
         try {
-            String query = "SELECT PersonID, LogonName, Password, PositionTitle FROM Logon";
+            String query = "SELECT PersonID, LogonName, Password, FirstChallengeAnswer, SecondChallengeAnswer, ThirdChallengeAnswer, PositionTitle FROM Logon WHERE AccountDisabled = 0;";
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData md = rs.getMetaData();
@@ -364,10 +392,47 @@ public class LoginView extends State {
                 int personID = Integer.parseInt(e[0]);
                 String logonName = e[1];
                 String password = e[2];
-                String positionTitle = e[3];
+                String firstChallengeAnswer = e[3];
+                String secondChallengeAnswer = e[4];
+                String thirdChallengeAnswer = e[5];
+                String positionTitle = e[6];
 
                 //Adds everything
-                logon.add(new Logon(personID, logonName, password, positionTitle));
+                logon.add(new Logon(personID, logonName, password, firstChallengeAnswer, secondChallengeAnswer, thirdChallengeAnswer, positionTitle));
+            }
+            if (ManagerView.updatedFromManagerLogon) {
+                ManagerView.updatedFromManagerLogon = false;
+                //Updates the login table for manager
+                ManagerView.loginData = ManagerView.getLoginData();
+                DefaultTableModel ltable = (DefaultTableModel) ManagerView.loginjt.getModel();
+                ltable.setDataVector(ManagerView.loginData, ManagerView.loginCol);
+                managerView.jp.repaint();
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+        }
+    };
+
+    static Runnable securityInfo = () -> {
+        String e[];
+        securityQuestions.clear();
+        try {
+            String query = "SELECT QuestionID, QuestionPrompt FROM SecurityQuestions;";
+            ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData md = rs.getMetaData();
+            while (rs.next()) {
+                e = new String[md.getColumnCount() + 1];
+                for (int i = 1; i < md.getColumnCount() + 1; i++) {
+                    e[i - 1] = rs.getString(i);
+                }
+
+                //Several of the arrays positions need to be converted into forms that the arrayList can use.
+                int questionID = Integer.parseInt(e[0]);
+                String questionPrompt = e[1];
+
+                //Adds everything to the security questions arraylist
+                securityQuestions.add(new SecurityQuestion(questionID, questionPrompt));
             }
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -381,7 +446,7 @@ public class LoginView extends State {
         try {
             Blob imgBlob = null;
 
-            String query = "SELECT InventoryID, ItemName, ItemDescription, CategoryID, StoneOrGemstone, GrainSize, GrainShape, Heft, SemiOrPrecious, Hardness, StoneSize, StoneWeight, RetailPrice, Cost, Quantity, RestockThreshold, ItemImage, Discontinued FROM Inventory";
+            String query = "SELECT InventoryID, ItemName, ItemDescription, CategoryID, StoneOrGemstone, GrainSize, GrainShape, Heft, SemiOrPrecious, Hardness, StoneSize, StoneWeight, RetailPrice, Cost, Quantity, RestockThreshold, ItemImage, Discontinued FROM Inventory WHERE Discontinued = 0;";
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData md = rs.getMetaData();
@@ -430,10 +495,20 @@ public class LoginView extends State {
                         System.out.println(ex);
                     }
                 }
-                int discontinued = Integer.parseInt(e[17]);
 
                 //Adds everything
-                inventory.add(new Inventory(inventoryID, itemName, itemDescription, categoryID, stoneOrGemstone, grainSize, grainShape, heft, semiOrPrecious, hardness, stoneSize, stoneWeight, retailPrice, cost, quantity, restockThreshold, itemImage, discontinued));
+                inventory.add(new Inventory(inventoryID, itemName, itemDescription, categoryID, stoneOrGemstone, grainSize, grainShape, heft, semiOrPrecious, hardness, stoneSize, stoneWeight, retailPrice, cost, quantity, restockThreshold, itemImage));
+            }
+            if (ManagerView.updatedFromManager) {
+                ManagerView.updatedFromManager = false;
+                //Updates the inventory for the manager
+                ((ManagerView) managerView).updateData();
+                //Updates the discount items table for manager
+                ManagerView.discountitemsData = ManagerView.getDiscountItemsData();
+                DefaultTableModel ditable = (DefaultTableModel) ManagerView.discountitemsjt.getModel();
+                ditable.setDataVector(ManagerView.discountitemsData, ManagerView.discountitemsCol);
+                managerView.jp.repaint();
+
             }
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -445,7 +520,7 @@ public class LoginView extends State {
         String e[];
         discount.clear();
         try {
-            String query = "SELECT DiscountID, DiscountCode, DiscountLevel, InventoryID, DiscountType, DiscountPercentage, DiscountDollarAmount, StartDate, ExpirationDate FROM Discounts";
+            String query = "SELECT DiscountID, DiscountCode, Description, DiscountLevel, InventoryID, DiscountType, DiscountPercentage, DiscountDollarAmount, StartDate, ExpirationDate FROM Discounts";
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData md = rs.getMetaData();
@@ -457,19 +532,101 @@ public class LoginView extends State {
 
                 int discountID = Integer.parseInt(e[0]);
                 String discountCode = e[1];
-                int discountLevel = Integer.parseInt(e[2]);
+                String discountDescription = e[2];
+                int discountLevel = Integer.parseInt(e[3]);
                 int inventoryID = 0;
                 if (discountLevel == 1) {
-                    inventoryID = Integer.parseInt(e[3]);
+                    inventoryID = Integer.parseInt(e[4]);
                 }
-                int discountType = Integer.parseInt(e[4]);
-                double discountPercentage = Double.parseDouble(e[5]);
-                double discountDollarAmount = Double.parseDouble(e[6]);
+                int discountType = Integer.parseInt(e[5]);
+                double discountPercentage = Double.parseDouble(e[6]);
+                double discountDollarAmount = Double.parseDouble(e[7]);
                 Date startDate = rs.getDate("StartDate");
                 Date expirationDate = rs.getDate("ExpirationDate");
 
                 //Adds everything
-                discount.add(new Discount(discountID, discountCode, discountLevel, inventoryID, discountType, discountPercentage, discountDollarAmount, startDate, expirationDate));
+                discount.add(new Discount(discountID, discountCode, discountDescription, discountLevel, inventoryID, discountType, discountPercentage, discountDollarAmount, startDate, expirationDate));
+            }
+            if (ManagerView.updatedFromManager) {
+                ManagerView.updatedFromManager = false;
+                //Updates the discount table for manager
+                ManagerView.discountData = ManagerView.getDiscountData();
+                DefaultTableModel dstable = (DefaultTableModel) ManagerView.discountjt.getModel();
+                dstable.setDataVector(ManagerView.discountData, ManagerView.discountCol);
+                managerView.jp.repaint();
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+        }
+    };
+
+    static Runnable orderInfo = () -> {
+        String e[];
+        orders.clear();
+        try {
+            String query = "SELECT OrderID, DiscountID, PersonID, EmployeeID, OrderDate, CC_Number, ExpDate, CCV FROM Orders";
+            ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData md = rs.getMetaData();
+            while (rs.next()) {
+                e = new String[md.getColumnCount() + 1];
+                for (int i = 1; i < md.getColumnCount() + 1; i++) {
+                    e[i - 1] = rs.getString(i);
+                }
+
+                int orderID = Integer.parseInt(e[0]);
+                int discountID;
+                if (e[1] == null) {
+                    discountID = 0;
+                } else {
+                    discountID = Integer.parseInt(e[1]);
+                }
+                int personID = Integer.parseInt(e[2]);
+                int managerID;
+                if (e[3] == null) {
+                    managerID = 0;
+                } else {
+                    managerID = Integer.parseInt(e[3]);
+                }
+                Date orderDate = Date.valueOf(e[4]);
+                long ccNumber = Long.parseLong(e[5]);
+                String expDate = e[6];
+                int ccv = Integer.parseInt(e[7]);
+
+                //Adds everything
+                orders.add(new Orders(orderID, discountID, personID, managerID, orderDate, ccNumber, expDate, ccv));
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+        }
+    };
+
+    static Runnable orderDetailsInfo = () -> {
+        String e[];
+        orderDetails.clear();
+        try {
+            String query = "SELECT OrderID, InventoryID, DiscountID, Quantity FROM OrderDetails";
+            ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData md = rs.getMetaData();
+            while (rs.next()) {
+                e = new String[md.getColumnCount() + 1];
+                for (int i = 1; i < md.getColumnCount() + 1; i++) {
+                    e[i - 1] = rs.getString(i);
+                }
+
+                int orderID = Integer.parseInt(e[0]);
+                int inventoryID = Integer.parseInt(e[1]);
+                int discountID;
+                if (e[2] == null) {
+                    discountID = 0;
+                } else {
+                    discountID = Integer.parseInt(e[2]);
+                }
+                int quantity = Integer.parseInt(e[3]);
+
+                //Adds everything
+                orderDetails.add(new OrderDetails(orderID, inventoryID, discountID, quantity));
             }
         } catch (SQLException ex) {
             System.out.println(ex);

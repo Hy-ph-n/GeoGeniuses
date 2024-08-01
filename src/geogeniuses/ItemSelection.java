@@ -4,14 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
-import java.sql.*;
 
 public class ItemSelection extends State implements ActionListener {
 
     private ArrayList<JButton> items;
 
     public ItemSelection(ArrayList<JButton> items) {
-
         this.items = items;
     }
 
@@ -20,7 +18,7 @@ public class ItemSelection extends State implements ActionListener {
         String itemName = event.getActionCommand();
         for (int i = 0; i < LoginView.inventory.size(); i++) {
             if (LoginView.inventory.get(i).itemName.equals(itemName)) {
-                CustomerView.itemSelected = LoginView.inventory.get(i).inventoryID - 1;
+                CustomerView.itemSelected = i;
             }
         }
         Inventory inventory = LoginView.inventory.get(CustomerView.itemSelected);
@@ -32,19 +30,19 @@ public class ItemSelection extends State implements ActionListener {
         CustomerView.itemGrainShape.setVisible(false);
         CustomerView.itemHeft.setVisible(false);
         int yValue = 265;
+        if (inventory.categoryID == 1) {
+            CustomerView.itemRockOrGem.setText("Igneous Rock");
+        } else if (inventory.categoryID == 2) {
+            CustomerView.itemRockOrGem.setText("Sedimentary Rock");
+        } else if (inventory.categoryID == 3) {
+            CustomerView.itemRockOrGem.setText("Metamorphic Rock");
+        }
         if (inventory.stoneOrGemstone == 0) {
-            if (inventory.categoryID == 1) {
-                CustomerView.itemRockOrGem.setText("Igneous Rock");
-            } else if (inventory.categoryID == 2) {
-                CustomerView.itemRockOrGem.setText("Sedimentary Rock");
-            } else if (inventory.categoryID == 3) {
-                CustomerView.itemRockOrGem.setText("Metamorphic Rock");
-            }
             if (inventory.grainSize != null) {
                 CustomerView.itemGrainSize.setLocation(CustomerView.itemGrainSize.getX(), yValue += 15);
                 if (Integer.parseInt(inventory.grainSize) == 0) {
                     CustomerView.itemGrainSize.setText("Rough Grained Rock");
-                } else if (Integer.parseInt(inventory.grainSize) == 0) {
+                } else if (Integer.parseInt(inventory.grainSize) == 1) {
                     CustomerView.itemGrainSize.setText("Fine Grained Rock");
                 }
                 CustomerView.itemGrainSize.setVisible(true);
@@ -99,7 +97,6 @@ public class ItemSelection extends State implements ActionListener {
             CustomerView.addToCart.setVisible(true);
             CustomerView.addToCart.setEnabled(true);
             CustomerView.returnToSearch.setVisible(true);
-            CustomerView.searchError.setText("");
             CustomerView.cardNumberEntry.setVisible(false);
             CustomerView.cardNumber.setVisible(false);
             CustomerView.securityCodeEntry.setVisible(false);

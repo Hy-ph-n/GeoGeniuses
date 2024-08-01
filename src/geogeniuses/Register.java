@@ -3,12 +3,11 @@ package geogeniuses;
 import javax.swing.*;
 import javax.swing.JButton;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
 import java.sql.SQLException;
-import java.util.Random;
 
 public class Register extends State {
 
@@ -30,9 +29,9 @@ public class Register extends State {
     int questionID1;
     int questionID2;
     int questionID3;
-    JComboBox securityQuestion1;
-    JComboBox securityQuestion2;
-    JComboBox securityQuestion3;
+    static JComboBox securityQuestion1;
+    static JComboBox securityQuestion2;
+    static JComboBox securityQuestion3;
 
     JTextField securityAnswer1;
     JTextField securityAnswer2;
@@ -380,7 +379,6 @@ public class Register extends State {
         );
 
         registerPassword.addKeyListener(new KeyAdapter() {
-
             public void keyReleased(KeyEvent e) {
                 passwordValid = true;
                 String registrationPassword = new String(registerPassword.getPassword());
@@ -493,48 +491,28 @@ public class Register extends State {
         }
         );
         jp.add(returnButton);
-
-        includeQuestions();
     }
 
-    void includeQuestions() {
-        String e[];
-        Random rand = new Random();
+    static void includeQuestions() {
         boolean question1Update = true;
         boolean question2Update = true;
         boolean question3Update = true;
 
-        try {
-            String query = "SELECT QuestionID, QuestionPrompt FROM SecurityQuestions;";
-            ps = con.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-            ResultSetMetaData md = rs.getMetaData();
-            while (rs.next()) {
-                e = new String[md.getColumnCount() + 1];
-                for (int i = 1; i < md.getColumnCount() + 1; i++) {
-                    e[i - 1] = rs.getString(i);
-                }
-
-                if (question1Update) {
-                    //Sets up the security question
-                    securityQuestion1.addItem(e[1]);
-                    question1Update = false;
-                } else if (question2Update) {
-                    //Sets up the security question
-                    securityQuestion2.addItem(e[1]);
-                    question2Update = false;
-                } else if (question3Update) {
-                    //Sets up the security question
-                    securityQuestion3.addItem(e[1]);
-                    question1Update = true;
-                    question2Update = true;
-                }
+        for (int i = 0; i < LoginView.securityQuestions.size(); i++) {
+            if (question1Update) {
+                //Sets up the security question
+                securityQuestion1.addItem(LoginView.securityQuestions.get(i).questionPrompt);
+                question1Update = false;
+            } else if (question2Update) {
+                //Sets up the security question
+                securityQuestion2.addItem(LoginView.securityQuestions.get(i).questionPrompt);
+                question2Update = false;
+            } else if (question3Update) {
+                //Sets up the security question
+                securityQuestion3.addItem(LoginView.securityQuestions.get(i).questionPrompt);
+                question1Update = true;
+                question2Update = true;
             }
-            securityQuestion1.setSelectedIndex(0);
-            securityQuestion2.setSelectedIndex(0);
-            securityQuestion3.setSelectedIndex(0);
-        } catch (SQLException ex) {
-            System.out.println(ex);
         }
     }
 
@@ -544,6 +522,7 @@ public class Register extends State {
         boolean valid = true;
 
         passError.setBounds(500, 27, 400, 15);
+        passError.setText("");
         specialError.setText("");
         firstNameError.setText("");
         lastNameError.setText("");
@@ -740,10 +719,13 @@ public class Register extends State {
                 valid = false;
                 phoneError1.setText("Enter phone number");
             }
+        } else {
+            valid = false;
+            phoneError1.setText("Enter phone number");
         }
 
         //If statements for the secondary phone number (optional) will give warnings if an entry is made but not prevent new account creation
-        if (!secondary1.isEmpty() || !primary2.isEmpty() || !primary3.isEmpty()) {
+        if (!secondary1.isEmpty() || !secondary2.isEmpty() || !secondary3.isEmpty()) {
             boolean phoneValid = true;
             if (secondary1.length() != 3) {
                 phoneValid = false;
@@ -820,6 +802,7 @@ public class Register extends State {
 
         if (valid) {
             int personID = -1;
+            int logonID = -1;
             String title = prefix.getSelectedItem().toString();
             String suffix = postfix.getSelectedItem().toString();
             String address2 = addressField2.getText();
@@ -829,8 +812,7 @@ public class Register extends State {
                 String newPerson = "INSERT INTO Person (Title, NameFirst, NameMiddle, NameLast, Suffix, Address1, Address2, Address3, City, Zipcode, State, Email, PhonePrimary, PhoneSecondary, Image, PersonDeleted) "
                         + "VALUES ('" + title + "', '" + registrationFirstName + "', '" + registrationMiddleName + "', '" + registrationLastName + "', '" + suffix + "', '" + address1 + "', '" + address2 + "', '" + address3 + "', '" + city + "', '" + zipCode + "', '" + state + "', '" + email + "', '" + phonePrimary + "', '" + phoneSecondary + "', '" + null + "', " + 0 + ");";
                 ps = con.prepareStatement(newPerson);
-                int rows = ps.executeUpdate();
-                System.out.println("Rows affected: " + rows);
+                ps.executeUpdate();
 
                 String query = "SELECT MAX(PersonID) FROM Person;";
                 ps = con.prepareStatement(query);
@@ -851,18 +833,22 @@ public class Register extends State {
                 ps.setString(7, answer2.replaceAll("'", "''"));
                 ps.setInt(8, questionID3);
                 ps.setString(9, answer3.replaceAll("'", "''"));
-                rows = ps.executeUpdate();
-                System.out.println("Rows affected: " + rows);
+                ps.executeUpdate();
+
+                query = "SELECT MAX(LogonID) FROM Logon;";
+                ps = con.prepareStatement(query);
+                rs = ps.executeQuery();
+                rs.next();
+                logonID = Integer.parseInt(rs.getString(1));
             } catch (SQLException ex) {
                 System.out.println(ex);
             }
 
-            passError.setText("");
             byte[] image = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09};
             String positionTitle = "Customer";
 
             LoginView.person.add(new Person(personID, title, registrationFirstName, registrationMiddleName, registrationLastName, suffix, address1, address2, address3, city, zipCode, state, email, phonePrimary, phoneSecondary, image, 0));
-            LoginView.logon.add(new Logon(personID, registrationLogonName, registrationPassword, positionTitle));
+            LoginView.logon.add(new Logon(personID, registrationLogonName, registrationPassword, answer1, answer2, answer3, positionTitle));
 
             //Resets all entries to their default states
             Reset();
@@ -875,6 +861,12 @@ public class Register extends State {
                     CustomerView.personDetails = l;
                 }
             }
+
+            jp.remove(connectionStatus);
+            connectionStatus = new JLabel("");
+            connectionStatus.setBounds(5, 465, 200, 15);
+            connectionStatus.setForeground(Color.red);
+            CustomerView.panel.add(connectionStatus);
 
             //Updates the inventory for the customer
             ((CustomerView) customerView).updateData();

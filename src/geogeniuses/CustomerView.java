@@ -30,7 +30,7 @@ public class CustomerView extends State {
 
     //The cart arraylist will track items waiting to be purchased.
     static ArrayList<Cart> cart = new ArrayList();
-    
+
     //The personDetails integer will contain the current user's arraylist index value
     static int personDetails = 0;
 
@@ -46,7 +46,7 @@ public class CustomerView extends State {
     String[] cartCol;
     Object[][] cartData;
 
-    boolean cartVisible = false;
+    static boolean cartVisible = false;
 
     static JLabel itemsName;
     static JTextArea itemsDescription;
@@ -63,11 +63,10 @@ public class CustomerView extends State {
     //Items selected is just to ensure the user does not make an order without having bought anything
     static int itemsSelected = 0;
     //Item selected is used for data retrieval
-    static int itemSelected = -1;
+    static int itemSelected = 0;
 
     static JLabel searchBarEntry;
     static JTextField searchBar;
-    static JLabel searchError;
 
     static JLabel cardNumberEntry;
     static JTextField cardNumber;
@@ -109,7 +108,8 @@ public class CustomerView extends State {
     static JButton clearCart;
     static JButton logOut;
 
-    ScrollPane inventory;
+    static ScrollPane inventory;
+    static ScrollPane cartjs;
 
     CustomerView() {
 
@@ -199,41 +199,49 @@ public class CustomerView extends State {
         addToCart.setVisible(false);
         addToCart.setBackground(thistle);
         addToCart.addActionListener((e) -> {
-            boolean itemNotInCart = true;
-            boolean cartChange = false;
-            if (!cartVisible) {
-                inventory.setPreferredSize(new Dimension(360, 0));
-                jp.add(cartPanel);
-                cartVisible = true;
-                jp.validate();
-            }
-            itemsSelected++;
-            for (int i = 0; i < cart.size(); i++) {
-                Cart cartItem = cart.get(i);
-                if (LoginView.inventory.get(itemSelected).inventoryID == cartItem.inventoryID) {
-                    itemNotInCart = false;
-                    if ((LoginView.inventory.get(itemSelected).quantity - cartItem.quantity) > 0) {
-                        cartItem.quantity++;
-                        // Changes the data in the current cart index, the only difference being a change in quantity
-                        cart.set(i, cartItem);
-                        quantity.setText("Quantity: " + (LoginView.inventory.get(itemSelected).quantity - cartItem.quantity));
-                        cartChange = true;
-                        break;
+            if (LoginView.inventory.get(itemSelected).quantity > 0) {
+                boolean itemNotInCart = true;
+                boolean cartChange = false;
+                if (!cartVisible) {
+                    if (ManagerView.managerAsCustomer) {
+                        jf.setBounds(jf.getX(), jf.getY(), 1730, 610);
                     } else {
-                        addToCart.setEnabled(false);
+                        inventory.setPreferredSize(new Dimension(360, 0));
                     }
+                    jp.add(cartPanel);
+                    cartVisible = true;
+                    jp.validate();
                 }
-            } // If the selected item is not already in the cart, it gets added
-            if (itemNotInCart) {
-                cart.add(new Cart(LoginView.inventory.get(itemSelected).inventoryID, LoginView.inventory.get(itemSelected).itemName, LoginView.inventory.get(itemSelected).retailPrice, 1));
-                quantity.setText("Quantity: " + (LoginView.inventory.get(itemSelected).quantity - 1));
-                cartChange = true;
-            }
-            if (cartChange) {
-                cartData = getCartData();
-                DefaultTableModel carttable = (DefaultTableModel) cartjt.getModel();
-                carttable.setDataVector(cartData, cartCol);
-                jp.validate();
+                itemsSelected++;
+                for (int i = 0; i < cart.size(); i++) {
+                    Cart cartItem = cart.get(i);
+                    if (LoginView.inventory.get(itemSelected).inventoryID == cartItem.inventoryID) {
+                        itemNotInCart = false;
+                        if ((LoginView.inventory.get(itemSelected).quantity - cartItem.quantity) > 0) {
+                            cartItem.quantity++;
+                            // Changes the data in the current cart index, the only difference being a change in quantity
+                            cart.set(i, cartItem);
+                            quantity.setText("Quantity: " + (LoginView.inventory.get(itemSelected).quantity - cartItem.quantity));
+                            cartChange = true;
+                            break;
+                        } else {
+                            addToCart.setEnabled(false);
+                        }
+                    }
+                } // If the selected item is not already in the cart, it gets added
+                if (itemNotInCart) {
+                    cart.add(new Cart(LoginView.inventory.get(itemSelected).inventoryID, LoginView.inventory.get(itemSelected).itemName, LoginView.inventory.get(itemSelected).retailPrice, 1));
+                    quantity.setText("Quantity: " + (LoginView.inventory.get(itemSelected).quantity - 1));
+                    cartChange = true;
+                }
+                if (cartChange) {
+                    cartData = getCartData();
+                    DefaultTableModel carttable = (DefaultTableModel) cartjt.getModel();
+                    carttable.setDataVector(cartData, cartCol);
+                    jp.validate();
+                }
+            } else {
+                addToCart.setEnabled(false);
             }
         });
         panel.add(addToCart);
@@ -243,7 +251,7 @@ public class CustomerView extends State {
         returnToSearch.setVisible(false);
         returnToSearch.setBackground(thistle);
         returnToSearch.addActionListener((e) -> {
-            itemSelected = 0;
+            itemSelected = -1;
 
             itemsName.setVisible(false);
             itemsDescription.setVisible(false);
@@ -261,7 +269,6 @@ public class CustomerView extends State {
             returnToSearch.setVisible(false);
             searchBarEntry.setVisible(true);
             searchBar.setVisible(true);
-            searchError.setText("");
             cardNumberEntry.setVisible(true);
             cardNumber.setVisible(true);
             securityCodeEntry.setVisible(true);
@@ -282,7 +289,9 @@ public class CustomerView extends State {
             metamorphicButton.setVisible(true);
             checkout.setVisible(true);
             clearCart.setVisible(true);
-            logOut.setVisible(true);
+            if (!ManagerView.managerAsCustomer) {
+                logOut.setVisible(true);
+            }
         });
         panel.add(returnToSearch);
 
@@ -306,7 +315,7 @@ public class CustomerView extends State {
         cartjt.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         cartjt.setShowGrid(false);
         cartjt.setDefaultEditor(Object.class, null);
-        ScrollPane cartjs = new ScrollPane(cartjt);
+        cartjs = new ScrollPane(cartjt);
         cartjs.setBounds(0, 0, cartPanel.getWidth(), cartPanel.getHeight());
 
         cartPanel.add(cartjs);
@@ -331,11 +340,6 @@ public class CustomerView extends State {
         searchBar = new JTextField("");
         searchBar.setBounds(32, 32, 200, 20);
         panel.add(searchBar);
-
-        searchError = new JLabel("");
-        searchError.setBounds(120, 10, 200, 15);
-        searchError.setForeground(Color.red);
-        panel.add(searchError);
 
         searchBar.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
@@ -376,7 +380,7 @@ public class CustomerView extends State {
                             try {
                                 byte[] b = LoginView.inventory.get(i).itemImage;
                                 ItemIcon itemIcon = new ItemIcon(b);
-                                Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                                Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                                 itemIcon = new ItemIcon(itemImage);
                                 JButton item = new JButton(itemName, itemIcon);
                                 item.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -447,7 +451,7 @@ public class CustomerView extends State {
                         try {
                             byte[] b = LoginView.inventory.get(i).itemImage;
                             ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                             itemIcon = new ItemIcon(itemImage);
                             JButton item = new JButton(itemName, itemIcon);
                             item.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -509,7 +513,7 @@ public class CustomerView extends State {
                         try {
                             byte[] b = LoginView.inventory.get(i).itemImage;
                             ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                             itemIcon = new ItemIcon(itemImage);
                             JButton item = new JButton(itemName, itemIcon);
                             item.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -571,7 +575,7 @@ public class CustomerView extends State {
                         try {
                             byte[] b = LoginView.inventory.get(i).itemImage;
                             ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                             itemIcon = new ItemIcon(itemImage);
                             JButton item = new JButton(itemName, itemIcon);
                             item.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -710,6 +714,9 @@ public class CustomerView extends State {
         clearCart.setBounds(136, 345, 100, 50);
         clearCart.setBackground(thistle);
         clearCart.addActionListener((e) -> {
+            if (ManagerView.managerAsCustomer) {
+                jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
+            }
             inventory.setPreferredSize(new Dimension(625, 0));
             jp.remove(cartPanel);
             cartVisible = false;
@@ -732,7 +739,7 @@ public class CustomerView extends State {
             jp.validate();
 
             itemsSelected = 0;
-            itemSelected = 0;
+            itemSelected = -1;
 
             itemsName.setVisible(false);
             itemsDescription.setVisible(false);
@@ -750,7 +757,6 @@ public class CustomerView extends State {
             searchBarEntry.setVisible(true);
             searchBar.setVisible(true);
             searchBar.setText("");
-            searchError.setText("");
             cardNumberEntry.setVisible(true);
             cardNumber.setVisible(true);
             securityCodeEntry.setVisible(true);
@@ -946,7 +952,7 @@ public class CustomerView extends State {
                 try {
                     byte[] b = LoginView.inventory.get(i).itemImage;
                     ItemIcon itemIcon = new ItemIcon(b);
-                    Image itemImage = itemIcon.getImage().getScaledInstance(itemIcon.getIconWidth() / 17, itemIcon.getIconHeight() / 17, Image.SCALE_SMOOTH);
+                    Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                     itemIcon = new ItemIcon(itemImage);
                     JButton item = new JButton(itemName, itemIcon);
                     item.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -995,6 +1001,10 @@ public class CustomerView extends State {
             sb.append("<head></head>");
             sb.append("<body>");
 
+            if (ManagerView.managerAsCustomer) {
+                sb.append("<h2>Assissted Checkout</h2>");
+                sb.append("<h2>Manager Name: ").append(LoginView.person.get(ManagerView.managerDetails).nameFirst + " " + LoginView.person.get(ManagerView.managerDetails).nameLast.charAt(0)).append(".</h2>");
+            }
             sb.append("<h2>Customer Name: ").append(LoginView.person.get(personDetails).nameFirst + " " + LoginView.person.get(personDetails).nameLast.charAt(0)).append(".</h2>");
             sb.append("<h2>Phone Number:  ").append(LoginView.person.get(personDetails).phonePrimary).append("</h2>");
             sb.append("<h2>Card Expiration Date:  ").append(cardExpirationMonth.getSelectedItem() + "/" + cardExpirationYear.getSelectedItem()).append("</h2>");
@@ -1046,7 +1056,11 @@ public class CustomerView extends State {
                     }
                 }
 
-                discount = itemSubtotal - discount;
+                if (discountAmount > itemSubtotal) {
+                    discount = 0;
+                } else {
+                    discount = itemSubtotal - discount;
+                }
 
                 sb.append("<tr>");
                 sb.append("<td style=\"padding: 6px; border: 1px solid #ccc; text-align: left;\">Discount</td>");
@@ -1123,19 +1137,23 @@ public class CustomerView extends State {
 
                 String statement = "INSERT INTO Orders (DiscountID, PersonID, EmployeeID, OrderDate, CC_Number, ExpDate, CCV)"
                         + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-                PreparedStatement preparedStatement = con.prepareStatement(statement);
+                ps = con.prepareStatement(statement);
                 if (discountID == 0) {
-                    preparedStatement.setString(1, null);
+                    ps.setNull(1, java.sql.Types.INTEGER);
                 } else {
-                    preparedStatement.setInt(1, discountID);
+                    ps.setInt(1, discountID);
                 }
-                preparedStatement.setInt(2, LoginView.currentPerson);
-                preparedStatement.setString(3, null);
-                preparedStatement.setDate(4, dateNow);
-                preparedStatement.setString(5, cardNumber.getText());
-                preparedStatement.setString(6, cardExpirationMonth.getSelectedItem() + "/" + cardExpirationYear.getSelectedItem());
-                preparedStatement.setString(7, cardSecurityCode.getText() + "");
-                preparedStatement.execute();
+                ps.setInt(2, LoginView.currentPerson);
+                if (ManagerView.managerAsCustomer) {
+                    ps.setInt(3, LoginView.person.get(ManagerView.managerDetails).personID);
+                } else {
+                    ps.setNull(3, java.sql.Types.INTEGER);
+                }
+                ps.setDate(4, dateNow);
+                ps.setString(5, cardNumber.getText());
+                ps.setString(6, cardExpirationMonth.getSelectedItem() + "/" + cardExpirationYear.getSelectedItem());
+                ps.setString(7, cardSecurityCode.getText() + "");
+                ps.execute();
 
                 String query = "SELECT OrderID FROM Orders ORDER BY OrderID DESC LIMIT 1";
                 ps = con.prepareStatement(query);
@@ -1151,32 +1169,35 @@ public class CustomerView extends State {
                         int quantity = rs.getInt("Quantity");
 
                         statement = "UPDATE Inventory SET Quantity = " + (quantity - cart.get(i).quantity) + " WHERE InventoryID = " + cart.get(i).inventoryID + ";";
-                        preparedStatement = con.prepareStatement(statement);
-                        preparedStatement.execute();
+                        ps = con.prepareStatement(statement);
+                        ps.execute();
 
                         statement = "INSERT INTO OrderDetails (OrderID, InventoryID, DiscountID, Quantity)"
                                 + "VALUES (?, ?, ?, ?)";
-                        preparedStatement = con.prepareStatement(statement);
-                        preparedStatement.setInt(1, orderID);
-                        preparedStatement.setInt(2, cart.get(i).inventoryID);
+                        ps = con.prepareStatement(statement);
+                        ps.setInt(1, orderID);
+                        ps.setInt(2, cart.get(i).inventoryID);
                         if (discountValid) {
                             if (discountLevel == 0) {
-                                preparedStatement.setInt(3, discountID);
+                                ps.setInt(3, discountID);
                             } else if (discountLevel == 1) {
                                 if (discountInventoryID == cart.get(i).inventoryID) {
-                                    preparedStatement.setInt(3, discountID);
+                                    ps.setInt(3, discountID);
                                 } else {
-                                    preparedStatement.setString(3, null);
+                                    ps.setNull(3, java.sql.Types.INTEGER);
                                 }
                             } else {
-                                preparedStatement.setString(3, null);
+                                ps.setNull(3, java.sql.Types.INTEGER);
                             }
                         } else {
-                            preparedStatement.setString(3, null);
+                            ps.setNull(3, java.sql.Types.INTEGER);
                         }
-                        preparedStatement.setInt(4, cart.get(i).quantity);
-                        preparedStatement.execute();
+                        ps.setInt(4, cart.get(i).quantity);
+                        ps.execute();
                     }
+                }
+                if (ManagerView.managerAsCustomer) {
+                    jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
                 }
                 inventory.setPreferredSize(new Dimension(625, 0));
                 jp.remove(cartPanel);
@@ -1188,7 +1209,11 @@ public class CustomerView extends State {
                 itemsSelected = 0;
                 Thread inventoryData = new Thread(LoginView.inventoryInfo);
                 inventoryData.start();
-                
+                Thread orderData = new Thread(LoginView.orderInfo);
+                orderData.start();
+                Thread orderDetailsData = new Thread(LoginView.orderDetailsInfo);
+                orderDetailsData.start();
+
                 cardNumber.setText("");
                 cardSecurityCode.setText("");
                 discountCode.setText("");
@@ -1196,7 +1221,7 @@ public class CustomerView extends State {
                 cardSecurityError.setText("");
                 cardExpirationYear.setSelectedIndex(7);
                 cardExpirationMonth.setSelectedIndex(currentDate.getMonthValue() - 1);
-                
+
                 JOptionPane.showMessageDialog(null, "Order details saved in documents and displayed in browser", "Purchase Successful!!!", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 System.out.println(e);
@@ -1220,17 +1245,30 @@ public class CustomerView extends State {
                     + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
                     + "\n\nLogout Button - The log out button returns the user to the login menu"));
         } else {
-            page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
-                    + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
-                    + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
-                    + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
-                    + "\n\nClear Cart Button - This button removes all items from the cart and hides the table"
-                    + "\n\nLogout Button - The log out button returns the user to the login menu"
-                    + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
-                    + "\n\nAdd to Cart - A button allowing the user to add an item to their cart (confirm button required), can be clicked multiple times"
-                    + "\n\nReturn - A button that returns the user to search/purchase options"
-                    + "\n\nCard Data - You must enter a valid card number (Visa/Mastercard) and Card Verification Value (CVV), the card year cannot be five years expired"
-                    + "\n\nDiscount Code (NOT REQUIRED) - You must enter a valid discount code if you wish to save money"));
+            if (ManagerView.managerAsCustomer) {
+                page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
+                        + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
+                        + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
+                        + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
+                        + "\n\nClear Cart Button - This button removes all items from the cart and hides the table"
+                        + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
+                        + "\n\nAdd to Cart - A button allowing the user to add an item to their cart (confirm button required), can be clicked multiple times"
+                        + "\n\nReturn - A button that returns the user to search/purchase options"
+                        + "\n\nCard Data - You must enter a valid card number (Visa/Mastercard) and Card Verification Value (CVV), the card year cannot be five years expired"
+                        + "\n\nDiscount Code (NOT REQUIRED) - You must enter a valid discount code if you wish to save money"));
+            } else {
+                page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
+                        + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
+                        + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
+                        + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
+                        + "\n\nClear Cart Button - This button removes all items from the cart and hides the table"
+                        + "\n\nLogout Button - The log out button returns the user to the login menu"
+                        + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
+                        + "\n\nAdd to Cart - A button allowing the user to add an item to their cart (confirm button required), can be clicked multiple times"
+                        + "\n\nReturn - A button that returns the user to search/purchase options"
+                        + "\n\nCard Data - You must enter a valid card number (Visa/Mastercard) and Card Verification Value (CVV), the card year cannot be five years expired"
+                        + "\n\nDiscount Code (NOT REQUIRED) - You must enter a valid discount code if you wish to save money"));
+            }
         }
 
         document.save("help.pdf");

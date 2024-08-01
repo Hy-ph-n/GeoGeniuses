@@ -6,6 +6,7 @@ public class Discount {
     
     int discountID;
     String discountCode;
+    String discountDescription;
     int discountLevel;
     int inventoryID;
     int discountType;
@@ -14,9 +15,10 @@ public class Discount {
     Date startDate;
     Date expirationDate;
     
-    Discount(int discountID, String discountCode, int discountLevel, int inventoryID, int discountType, double discountPercentage, double discountDollarAmount, Date startDate, Date expirationDate) {
+    Discount(int discountID, String discountCode, String discountDescription, int discountLevel, int inventoryID, int discountType, double discountPercentage, double discountDollarAmount, Date startDate, Date expirationDate) {
         this.discountID = discountID;
         this.discountCode = discountCode;
+        this.discountDescription = discountDescription;
         this.discountLevel = discountLevel;
         this.inventoryID = inventoryID;
         this.discountType = discountType;
