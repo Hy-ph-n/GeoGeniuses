@@ -144,6 +144,9 @@ public class ManagerView extends State {
     boolean loginValid = true;
     boolean passwordValid = true;
 
+    //A boolean only used in the context of a delete operation
+    static int personDetailsSelected = -1;
+
     JTextField personsLoginName;
     JLabel personsLoginNameError;
     JPasswordField personsPassword;
@@ -392,6 +395,7 @@ public class ManagerView extends State {
                             if (LoginView.logon.get(i).positionTitle.equals("Customer")) {
                                 customersLogonNameError.setText("Customer found!");
                                 customersLogonNameError.setForeground(Color.GRAY);
+                                LoginView.personPosition = i;
 
                                 clearCustomerData();
 
@@ -455,6 +459,18 @@ public class ManagerView extends State {
                                 DefaultTableModel mdtable = (DefaultTableModel) managerdiscountjt.getModel();
                                 mdtable.setDataVector(managerDiscountData, managerDiscountCol);
                                 managerdiscountjs.setVisible(true);
+
+                                if (!CustomerView.cartList.get(LoginView.personPosition).isEmpty()) {
+                                    customerView.jp.add(CustomerView.cartPanel);
+                                    CustomerView.cartPanel.setVisible(true);
+                                    CustomerView.cartData = CustomerView.getCartData();
+                                    DefaultTableModel carttable = (DefaultTableModel) CustomerView.cartjt.getModel();
+                                    carttable.setDataVector(CustomerView.cartData, CustomerView.cartCol);
+                                    jp.validate();
+                                    jf.setBounds(jf.getX(), jf.getY(), 1730, 610);
+                                } else {
+                                    jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
+                                }
 
                                 //Updates the inventory for the customer
                                 ((CustomerView) customerView).updateData();
@@ -676,6 +692,7 @@ public class ManagerView extends State {
                         if (LoginView.logon.get(i).positionTitle.equals("Customer")) {
                             customersLogonNameError.setText("Customer found!");
                             customersLogonNameError.setForeground(Color.GRAY);
+                            LoginView.personPosition = i;
 
                             clearCustomerData();
 
@@ -741,9 +758,20 @@ public class ManagerView extends State {
                             mdtable.setDataVector(managerDiscountData, managerDiscountCol);
                             managerdiscountjs.setVisible(true);
 
+                            if (!CustomerView.cartList.get(LoginView.personPosition).isEmpty()) {
+                                customerView.jp.add(CustomerView.cartPanel);
+                                CustomerView.cartPanel.setVisible(true);
+                                CustomerView.cartData = CustomerView.getCartData();
+                                DefaultTableModel carttable = (DefaultTableModel) CustomerView.cartjt.getModel();
+                                carttable.setDataVector(CustomerView.cartData, CustomerView.cartCol);
+                                jp.validate();
+                                jf.setBounds(jf.getX(), jf.getY(), 1730, 610);
+                            } else {
+                                jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
+                            }
+
                             //Updates the inventory for the customer
                             ((CustomerView) customerView).updateData();
-                            jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
                             managerAsCustomer = true;
                             viewPanel.add(customerView.jp, BorderLayout.EAST);
                             jp.add(viewPanel);
@@ -785,6 +813,7 @@ public class ManagerView extends State {
                         if (customerSelected == LoginView.logon.get(i).personID && LoginView.logon.get(i).positionTitle.equals("Customer")) {
                             customersEmailError.setText("Customer found!");
                             customersEmailError.setForeground(Color.GRAY);
+                            LoginView.personPosition = i;
 
                             clearCustomerData();
 
@@ -849,9 +878,20 @@ public class ManagerView extends State {
                             mdtable.setDataVector(managerDiscountData, managerDiscountCol);
                             managerdiscountjs.setVisible(true);
 
+                            if (!CustomerView.cartList.get(LoginView.personPosition).isEmpty()) {
+                                customerView.jp.add(CustomerView.cartPanel);
+                                CustomerView.cartPanel.setVisible(true);
+                                CustomerView.cartData = CustomerView.getCartData();
+                                DefaultTableModel carttable = (DefaultTableModel) CustomerView.cartjt.getModel();
+                                carttable.setDataVector(CustomerView.cartData, CustomerView.cartCol);
+                                jp.validate();
+                                jf.setBounds(jf.getX(), jf.getY(), 1730, 610);
+                            } else {
+                                jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
+                            }
+
                             //Updates the inventory for the customer
                             ((CustomerView) customerView).updateData();
-                            jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
                             managerAsCustomer = true;
                             viewPanel.add(customerView.jp, BorderLayout.EAST);
                             jp.add(viewPanel);
@@ -903,6 +943,7 @@ public class ManagerView extends State {
                         if (customerSelected == LoginView.logon.get(i).personID && LoginView.logon.get(i).positionTitle.equals("Customer")) {
                             customersPhoneNumberError.setText("Customer found!");
                             customersPhoneNumberError.setForeground(Color.GRAY);
+                            LoginView.personPosition = i;
 
                             clearCustomerData();
 
@@ -967,9 +1008,20 @@ public class ManagerView extends State {
                             mdtable.setDataVector(managerDiscountData, managerDiscountCol);
                             managerdiscountjs.setVisible(true);
 
+                            if (!CustomerView.cartList.get(LoginView.personPosition).isEmpty()) {
+                                customerView.jp.add(CustomerView.cartPanel);
+                                CustomerView.cartPanel.setVisible(true);
+                                CustomerView.cartData = CustomerView.getCartData();
+                                DefaultTableModel carttable = (DefaultTableModel) CustomerView.cartjt.getModel();
+                                carttable.setDataVector(CustomerView.cartData, CustomerView.cartCol);
+                                jp.validate();
+                                jf.setBounds(jf.getX(), jf.getY(), 1730, 610);
+                            } else {
+                                jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
+                            }
+
                             //Updates the inventory for the customer
                             ((CustomerView) customerView).updateData();
-                            jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
                             managerAsCustomer = true;
                             viewPanel.add(customerView.jp, BorderLayout.EAST);
                             jp.add(viewPanel);
@@ -3899,6 +3951,8 @@ public class ManagerView extends State {
             connectionStatus.setBounds(5, 445, 200, 15);
             connectionStatus.setForeground(Color.red);
             loginView.jp.add(connectionStatus);
+            
+            jp.remove(viewPanel);
 
             //A switch to the login view
             LoginView.currentPerson = 0;
@@ -5474,6 +5528,7 @@ public class ManagerView extends State {
     void deleteAccount() {
         try {
             int personID = LoginView.person.get(userSelected).personID;
+            personDetailsSelected = userSelected;
 
             String statement = "UPDATE Logon SET AccountDisabled = 1 WHERE PersonID = " + personID + ";";
             ps = con.prepareStatement(statement);
@@ -6508,12 +6563,11 @@ public class ManagerView extends State {
 
     void clearCustomerData() {
         inventory.setPreferredSize(new Dimension(625, 0));
-        jp.remove(CustomerView.cartPanel);
-        CustomerView.cartVisible = false;
-        CustomerView.cart.clear();
         jp.validate();
 
-        CustomerView.itemsSelected = 0;
+        customerView.jp.remove(CustomerView.cartPanel);
+        CustomerView.cartVisible = false;
+
         CustomerView.itemSelected = -1;
 
         CustomerView.itemsName.setVisible(false);

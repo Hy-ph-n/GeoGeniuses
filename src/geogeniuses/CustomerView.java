@@ -27,6 +27,8 @@ import javax.swing.table.TableColumnModel;
 public class CustomerView extends State {
 
     ArrayList<JButton> items = new ArrayList();
+    
+    static ArrayList<ArrayList<Cart>> cartList = new ArrayList<>();
 
     //The cart arraylist will track items waiting to be purchased.
     static ArrayList<Cart> cart = new ArrayList();
@@ -35,16 +37,16 @@ public class CustomerView extends State {
     static int personDetails = 0;
 
     //The decimal format is now listed properly.
-    DecimalFormat f = new DecimalFormat("#,###.00");
+    static DecimalFormat f = new DecimalFormat("#,###.00");
 
     static JPanel panel = new JPanel(null);
     static JPanel itemDisplay = new JPanel(null);
 
     static JPanel cartPanel = new JPanel(null);
-    JTable cartjt;
+    static JTable cartjt;
 
-    String[] cartCol;
-    Object[][] cartData;
+    static String[] cartCol;
+    static Object[][] cartData;
 
     static boolean cartVisible = false;
 
@@ -213,14 +215,14 @@ public class CustomerView extends State {
                     jp.validate();
                 }
                 itemsSelected++;
-                for (int i = 0; i < cart.size(); i++) {
-                    Cart cartItem = cart.get(i);
+                for (int i = 0; i < cartList.get(LoginView.personPosition).size(); i++) {
+                    Cart cartItem = cartList.get(LoginView.personPosition).get(i);
                     if (LoginView.inventory.get(itemSelected).inventoryID == cartItem.inventoryID) {
                         itemNotInCart = false;
                         if ((LoginView.inventory.get(itemSelected).quantity - cartItem.quantity) > 0) {
                             cartItem.quantity++;
                             // Changes the data in the current cart index, the only difference being a change in quantity
-                            cart.set(i, cartItem);
+                            cartList.get(LoginView.personPosition).set(i, cartItem);
                             quantity.setText("Quantity: " + (LoginView.inventory.get(itemSelected).quantity - cartItem.quantity));
                             cartChange = true;
                             break;
@@ -230,7 +232,7 @@ public class CustomerView extends State {
                     }
                 } // If the selected item is not already in the cart, it gets added
                 if (itemNotInCart) {
-                    cart.add(new Cart(LoginView.inventory.get(itemSelected).inventoryID, LoginView.inventory.get(itemSelected).itemName, LoginView.inventory.get(itemSelected).retailPrice, 1));
+                    cartList.get(LoginView.personPosition).add(new Cart(LoginView.inventory.get(itemSelected).inventoryID, LoginView.inventory.get(itemSelected).itemName, LoginView.inventory.get(itemSelected).retailPrice, 1));
                     quantity.setText("Quantity: " + (LoginView.inventory.get(itemSelected).quantity - 1));
                     cartChange = true;
                 }
@@ -310,7 +312,6 @@ public class CustomerView extends State {
 
         cartjt = new JTable();
         cartCol = new String[]{"Item Name", "Item Qty", "Item Cost"};
-        cartData = getCartData();
         cartjt.setModel(new DefaultTableModel(cartData, cartCol));
         cartjt.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         cartjt.setShowGrid(false);
@@ -720,7 +721,7 @@ public class CustomerView extends State {
             inventory.setPreferredSize(new Dimension(625, 0));
             jp.remove(cartPanel);
             cartVisible = false;
-            cart.clear();
+            cartList.get(LoginView.personPosition).clear();
             jp.validate();
 
             itemsSelected = 0;
@@ -735,10 +736,8 @@ public class CustomerView extends State {
             inventory.setPreferredSize(new Dimension(625, 0));
             jp.remove(cartPanel);
             cartVisible = false;
-            cart.clear();
             jp.validate();
 
-            itemsSelected = 0;
             itemSelected = -1;
 
             itemsName.setVisible(false);
@@ -903,8 +902,8 @@ public class CustomerView extends State {
 
             if (discountLevel != 0) {
                 boolean discountAppliable = false;
-                for (int i = 0; i < cart.size(); i++) {
-                    if (discountInventoryID == cart.get(i).inventoryID) {
+                for (int i = 0; i < cartList.get(LoginView.personPosition).size(); i++) {
+                    if (discountInventoryID == cartList.get(LoginView.personPosition).get(i).inventoryID) {
                         discountAppliable = true;
                         break;
                     }
@@ -974,11 +973,11 @@ public class CustomerView extends State {
         itemDisplay.validate();
     }
 
-    Object[][] getCartData() {
+    static Object[][] getCartData() {
         try {
-            Object[][] cartData = new Object[cart.size()][3];
-            for (int i = 0; i < cart.size(); i++) {
-                cartData[i] = new String[]{cart.get(i).itemName, cart.get(i).quantity + "", "$" + f.format(cart.get(i).itemCost * cart.get(i).quantity)};
+            Object[][] cartData = new Object[cartList.get(LoginView.personPosition).size()][3];
+            for (int i = 0; i < cartList.get(LoginView.personPosition).size(); i++) {
+                cartData[i] = new String[]{cartList.get(LoginView.personPosition).get(i).itemName, cartList.get(LoginView.personPosition).get(i).quantity + "", "$" + f.format(cartList.get(LoginView.personPosition).get(i).itemCost * cartList.get(LoginView.personPosition).get(i).quantity)};
             }
             return cartData;
         } catch (Exception ex) {
@@ -1018,12 +1017,12 @@ public class CustomerView extends State {
             sb.append("<th style=\"background: #333; color: white; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;\">Total Cost</th>");
             sb.append("</tr>");
 
-            for (int i = 0; i < cart.size(); i++) {
-                itemSubtotal += cart.get(i).itemCost * cart.get(i).quantity;
+            for (int i = 0; i < cartList.get(LoginView.personPosition).size(); i++) {
+                itemSubtotal += cartList.get(LoginView.personPosition).get(i).itemCost * cartList.get(LoginView.personPosition).get(i).quantity;
                 if (discountValid) {
-                    if (discountLevel == 1 && discountInventoryID == cart.get(i).inventoryID) {
+                    if (discountLevel == 1 && discountInventoryID == cartList.get(LoginView.personPosition).get(i).inventoryID) {
                         if (discountType == 0) {
-                            discount = (cart.get(i).itemCost * cart.get(i).quantity) * discountPercent;
+                            discount = (cartList.get(LoginView.personPosition).get(i).itemCost * cartList.get(LoginView.personPosition).get(i).quantity) * discountPercent;
                         } else if (discountType == 1) {
                             discount = discountAmount;
                         }
@@ -1031,7 +1030,7 @@ public class CustomerView extends State {
                 }
             }
 
-            for (Cart item : cart) {
+            for (Cart item : cartList.get(LoginView.personPosition)) {
                 sb.append("<tr>");
                 sb.append("<td style=\"padding: 6px; border: 1px solid #ccc; text-align: left;\">").append(item.itemName).append("</td>");
                 sb.append("<td style=\"padding: 6px; border: 1px solid #ccc; text-align: left;\">$").append(f.format(item.itemCost)).append("</td>");
@@ -1161,14 +1160,14 @@ public class CustomerView extends State {
                 rs.next();
                 int orderID = rs.getInt("OrderID");
 
-                for (int i = 0; i < cart.size(); i++) {
-                    query = "SELECT Quantity FROM Inventory WHERE InventoryID = " + cart.get(i).inventoryID + ";";
+                for (int i = 0; i < cartList.get(LoginView.personPosition).size(); i++) {
+                    query = "SELECT Quantity FROM Inventory WHERE InventoryID = " + cartList.get(LoginView.personPosition).get(i).inventoryID + ";";
                     ps = con.prepareStatement(query);
                     rs = ps.executeQuery();
                     if (rs.next()) {
                         int quantity = rs.getInt("Quantity");
 
-                        statement = "UPDATE Inventory SET Quantity = " + (quantity - cart.get(i).quantity) + " WHERE InventoryID = " + cart.get(i).inventoryID + ";";
+                        statement = "UPDATE Inventory SET Quantity = " + (quantity - cartList.get(LoginView.personPosition).get(i).quantity) + " WHERE InventoryID = " + cartList.get(LoginView.personPosition).get(i).inventoryID + ";";
                         ps = con.prepareStatement(statement);
                         ps.execute();
 
@@ -1176,12 +1175,12 @@ public class CustomerView extends State {
                                 + "VALUES (?, ?, ?, ?)";
                         ps = con.prepareStatement(statement);
                         ps.setInt(1, orderID);
-                        ps.setInt(2, cart.get(i).inventoryID);
+                        ps.setInt(2, cartList.get(LoginView.personPosition).get(i).inventoryID);
                         if (discountValid) {
                             if (discountLevel == 0) {
                                 ps.setInt(3, discountID);
                             } else if (discountLevel == 1) {
-                                if (discountInventoryID == cart.get(i).inventoryID) {
+                                if (discountInventoryID == cartList.get(LoginView.personPosition).get(i).inventoryID) {
                                     ps.setInt(3, discountID);
                                 } else {
                                     ps.setNull(3, java.sql.Types.INTEGER);
@@ -1192,7 +1191,7 @@ public class CustomerView extends State {
                         } else {
                             ps.setNull(3, java.sql.Types.INTEGER);
                         }
-                        ps.setInt(4, cart.get(i).quantity);
+                        ps.setInt(4, cartList.get(LoginView.personPosition).get(i).quantity);
                         ps.execute();
                     }
                 }
@@ -1202,7 +1201,7 @@ public class CustomerView extends State {
                 inventory.setPreferredSize(new Dimension(625, 0));
                 jp.remove(cartPanel);
                 cartVisible = false;
-                cart.clear();
+                cartList.get(LoginView.personPosition).clear();
                 jp.validate();
                 validateDiscount();
 

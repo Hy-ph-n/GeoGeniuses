@@ -25,6 +25,7 @@ public class LoginView extends State {
     static ArrayList<OrderDetails> orderDetails = new ArrayList();
 
     static int currentPerson = 0;
+    static int personPosition = 0;
 
     JTextField logName;
     JPasswordField logPassword;
@@ -35,6 +36,8 @@ public class LoginView extends State {
 
     static JButton resetPasswordButton;
     static boolean resetPassword = true;
+
+    static boolean personFirstUpdate = true;
 
     LoginView() {
 
@@ -164,6 +167,16 @@ public class LoginView extends State {
                                     connectionStatus.setBounds(5, 465, 200, 15);
                                     connectionStatus.setForeground(Color.red);
                                     CustomerView.panel.add(connectionStatus);
+
+                                    if (!CustomerView.cartList.get(LoginView.personPosition).isEmpty()) {
+                                        customerView.jp.add(CustomerView.cartPanel);
+                                        CustomerView.cartPanel.setVisible(true);
+                                        CustomerView.cartData = CustomerView.getCartData();
+                                        DefaultTableModel carttable = (DefaultTableModel) CustomerView.cartjt.getModel();
+                                        carttable.setDataVector(CustomerView.cartData, CustomerView.cartCol);
+                                        jp.validate();
+                                        CustomerView.inventory.setPreferredSize(new Dimension(360, 0));
+                                    }
 
                                     //Updates the inventory for the customer
                                     ((CustomerView) customerView).updateData();
@@ -368,6 +381,26 @@ public class LoginView extends State {
                 DefaultTableModel ptable = (DefaultTableModel) ManagerView.personjt.getModel();
                 ptable.setDataVector(ManagerView.personData, ManagerView.personCol);
                 managerView.jp.repaint();
+
+                if (ManagerView.personDetailsSelected != -1) {
+                    if (CustomerView.cartList.size() > person.size()) {
+                        for (int i = 0; i < person.size(); i++) {
+                            if (person.get(i).personID == ManagerView.personDetailsSelected) {
+                                CustomerView.cartList.remove(i);
+                            }
+                        }
+                    }
+                    ManagerView.personDetailsSelected = -1;
+                }
+                if (CustomerView.cartList.size() < person.size()) {
+                    CustomerView.cartList.add(new ArrayList<>());
+                }
+            }
+            if (personFirstUpdate) {
+                personFirstUpdate = false;
+                for (int i = 0; i < person.size(); i++) {
+                    CustomerView.cartList.add(new ArrayList<>());
+                }
             }
         } catch (SQLException ex) {
             System.out.println(ex);
@@ -637,6 +670,9 @@ public class LoginView extends State {
         for (int i = 0; i < person.size(); i++) {
             if (logon.get(i).logonName.equals(logonName)) {
                 currentPerson = logon.get(i).personID;
+                if (logon.get(i).positionTitle.equals("Customer")) {
+                    personPosition = i;
+                }
             }
         }
     }

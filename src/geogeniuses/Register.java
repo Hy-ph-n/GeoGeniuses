@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Register extends State {
 
@@ -861,6 +862,8 @@ public class Register extends State {
                     CustomerView.personDetails = l;
                 }
             }
+            
+            CustomerView.cartList.add(new ArrayList<>());
 
             jp.remove(connectionStatus);
             connectionStatus = new JLabel("");
