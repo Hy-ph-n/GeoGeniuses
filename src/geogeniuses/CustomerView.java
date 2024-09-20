@@ -1148,7 +1148,7 @@ public class CustomerView extends State {
                 } else {
                     ps.setNull(3, java.sql.Types.INTEGER);
                 }
-                ps.setDate(4, dateNow);
+                ps.setString(4, dateNow.toString());
                 ps.setString(5, cardNumber.getText());
                 ps.setString(6, cardExpirationMonth.getSelectedItem() + "/" + cardExpirationYear.getSelectedItem());
                 ps.setString(7, cardSecurityCode.getText() + "");

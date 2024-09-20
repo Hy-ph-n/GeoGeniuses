@@ -477,7 +477,6 @@ public class LoginView extends State {
         int number = 0;
         inventory.clear();
         try {
-            Blob imgBlob = null;
 
             String query = "SELECT InventoryID, ItemName, ItemDescription, CategoryID, StoneOrGemstone, GrainSize, GrainShape, Heft, SemiOrPrecious, Hardness, StoneSize, StoneWeight, RetailPrice, Cost, Quantity, RestockThreshold, ItemImage, Discontinued FROM Inventory WHERE Discontinued = 0;";
             ps = con.prepareStatement(query);
@@ -518,15 +517,9 @@ public class LoginView extends State {
                 double cost = Double.parseDouble(e[13]);
                 int quantity = Integer.parseInt(e[14]);
                 int restockThreshold = Integer.parseInt(e[15]);
-                Blob itemBlob = null;
                 byte[] itemImage = null;
                 if (e[16] != null) {
-                    itemBlob = rs.getBlob("ItemImage");
-                    try {
-                        itemImage = itemBlob.getBinaryStream(1, itemBlob.length()).readAllBytes();
-                    } catch (IOException ex) {
-                        System.out.println(ex);
-                    }
+                    itemImage = rs.getBytes("ItemImage");
                 }
 
                 //Adds everything
@@ -544,8 +537,7 @@ public class LoginView extends State {
 
             }
         } catch (SQLException ex) {
-            System.out.println(ex);
-            System.out.println(number);
+            ex.printStackTrace();
         }
     };
 
@@ -621,7 +613,8 @@ public class LoginView extends State {
                 } else {
                     managerID = Integer.parseInt(e[3]);
                 }
-                Date orderDate = Date.valueOf(e[4]);
+                String orderDate = e[4];
+                System.out.println(orderDate);
                 long ccNumber = Long.parseLong(e[5]);
                 String expDate = e[6];
                 int ccv = Integer.parseInt(e[7]);

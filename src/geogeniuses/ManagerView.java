@@ -4151,7 +4151,8 @@ public class ManagerView extends State {
                 orderReport.append("<table border='1'><tr></th><th>Order Date</th><th>Customer</th><th>Card Number</th><th>Card Expiration</th><th>Security Code</th><th>Discount Code</th><th>Order Total</th><th>Manager</th></tr>");
                 for (int or = 0; or < LoginView.orders.size(); or++) {
                     Orders order = LoginView.orders.get(or);
-                    if (LoginView.orders.get(or).orderDate.compareTo(orderStart) >= 0 && LoginView.orders.get(or).orderDate.compareTo(orderEnd) <= 0) {
+                    Date orderDate = Date.valueOf(LoginView.orders.get(or).orderDate);
+                    if (orderDate.compareTo(orderStart) >= 0 && orderDate.compareTo(orderEnd) <= 0) {
                         ordersFound = true;
                         double orderTotalCost = 0;
                         orderNumber++;
@@ -4293,12 +4294,13 @@ public class ManagerView extends State {
                     if (customerSelected == LoginView.person.get(p).personID) {
                         for (int or = 0; or < LoginView.orders.size(); or++) {
                             Orders order = LoginView.orders.get(or);
-                            if (LoginView.orders.get(or).orderDate.compareTo(orderStart) >= 0 && LoginView.orders.get(or).orderDate.compareTo(orderEnd) <= 0) {
+                            Date orderDate = Date.valueOf(LoginView.orders.get(or).orderDate);
+                            if (orderDate.compareTo(orderStart) >= 0 && orderDate.compareTo(orderEnd) <= 0) {
                                 ordersFound = true;
                                 double orderTotalCost = 0;
                                 orderNumber++;
                                 orderReport.append("<tr>");
-                                orderReport.append("<td>").append(order.orderDate.toString()).append("</td>");
+                                orderReport.append("<td>").append(order.orderDate).append("</td>");
                                 boolean customerFound = false;
                                 for (int i = 0; i < LoginView.person.size(); i++) {
                                     if (LoginView.person.get(i).personID == order.personID) {
@@ -6544,7 +6546,7 @@ public class ManagerView extends State {
                     byte[] b = Files.readAllBytes(imageFile.toPath());
                     String image = "UPDATE Inventory SET ItemImage = ? WHERE InventoryID = " + LoginView.inventory.get(itemSelected).inventoryID;
                     ps = con.prepareStatement(image);
-                    ps.setBinaryStream(1, new ByteArrayInputStream(b, 0, b.length));
+                    ps.setBytes(1, b);
                     ps.executeUpdate();
 
                     updatedFromManager = true;
