@@ -9,9 +9,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
+import java.util.Date;
 
 public class LoginView extends State {
 
@@ -136,6 +139,7 @@ public class LoginView extends State {
                                     CustomerView.cartPanel.setPreferredSize(new Dimension(265, 610));
                                     CustomerView.cartPanel.setBounds(0, 0, 267, 570);
                                     CustomerView.cartjs.setBounds(0, 0, CustomerView.cartPanel.getWidth(), CustomerView.cartPanel.getHeight());
+                                    CustomerView.ordersButton.setVisible(false);
                                     CustomerView.logOut.setVisible(false);
 
                                     ManagerView.includeQuestions();
@@ -161,7 +165,6 @@ public class LoginView extends State {
                                             CustomerView.personDetails = l;
                                         }
                                     }
-
                                     jp.remove(connectionStatus);
                                     connectionStatus = new JLabel("");
                                     connectionStatus.setBounds(5, 465, 200, 15);
@@ -178,6 +181,9 @@ public class LoginView extends State {
                                         CustomerView.inventory.setPreferredSize(new Dimension(360, 0));
                                     }
 
+                                    CustomerView.setMin();
+                                    CustomerView.setMax();
+
                                     //Updates the inventory for the customer
                                     ((CustomerView) customerView).updateData();
                                     //A switch to the customer's view
@@ -185,7 +191,7 @@ public class LoginView extends State {
                                     jp.setVisible(false);
                                     jf.remove(jp);
                                     jf.add(customerView.jp);
-                                    jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
+                                    jf.setBounds(jf.getX(), jf.getY(), 1050, 628);
                                     customerView.jp.setVisible(true);
                                 }
 
@@ -213,6 +219,9 @@ public class LoginView extends State {
             logPassword.setText("");
             logonError.setText("");
 
+            CustomerView.logOut.setBounds(28, 480, 207, 50);
+            CustomerView.ordersButton.setVisible(false);
+
             CustomerView.searchBarEntry.setVisible(true);
             CustomerView.searchBar.setVisible(true);
             CustomerView.cardNumberEntry.setVisible(false);
@@ -234,6 +243,9 @@ public class LoginView extends State {
             connectionStatus.setForeground(Color.red);
             CustomerView.panel.add(connectionStatus);
 
+            CustomerView.setMin();
+            CustomerView.setMax();
+
             //Updates the inventory for the customer
             ((CustomerView) customerView).updateData();
             //A switch to the customer's view
@@ -241,7 +253,7 @@ public class LoginView extends State {
             jp.setVisible(false);
             jf.remove(jp);
             jf.add(customerView.jp);
-            jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
+            jf.setBounds(jf.getX(), jf.getY(), 1050, 628);
             customerView.jp.setVisible(true);
         }
         );
@@ -535,6 +547,8 @@ public class LoginView extends State {
                 ditable.setDataVector(ManagerView.discountitemsData, ManagerView.discountitemsCol);
                 managerView.jp.repaint();
 
+                CustomerView.setMin();
+                CustomerView.setMax();
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -544,6 +558,7 @@ public class LoginView extends State {
     static Runnable discountInfo = () -> {
         String e[];
         discount.clear();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
             String query = "SELECT DiscountID, DiscountCode, Description, DiscountLevel, InventoryID, DiscountType, DiscountPercentage, DiscountDollarAmount, StartDate, ExpirationDate FROM Discounts";
             ps = con.prepareStatement(query);
@@ -566,8 +581,11 @@ public class LoginView extends State {
                 int discountType = Integer.parseInt(e[5]);
                 double discountPercentage = Double.parseDouble(e[6]);
                 double discountDollarAmount = Double.parseDouble(e[7]);
-                Date startDate = rs.getDate("StartDate");
-                Date expirationDate = rs.getDate("ExpirationDate");
+                String startDate = null;
+                if (e[8] != null) {
+                    startDate = e[8];
+                }
+                String expirationDate = e[9];
 
                 //Adds everything
                 discount.add(new Discount(discountID, discountCode, discountDescription, discountLevel, inventoryID, discountType, discountPercentage, discountDollarAmount, startDate, expirationDate));
@@ -614,7 +632,6 @@ public class LoginView extends State {
                     managerID = Integer.parseInt(e[3]);
                 }
                 String orderDate = e[4];
-                System.out.println(orderDate);
                 long ccNumber = Long.parseLong(e[5]);
                 String expDate = e[6];
                 int ccv = Integer.parseInt(e[7]);
@@ -672,18 +689,25 @@ public class LoginView extends State {
 
     void helpSystem() {
         Document document = new Document();
-
         Page page = document.getPages().add();
-
-        page.getParagraphs().add(new TextFragment("Logging In - Please enter a valid username and password and press 'Login' to login\n\nRegistration - If you wish to register, you must press the register button, you must enter all required fields in registration\n\nReset Password - If you wish to reset your password, you must first enter your username"));
-
-        document.save("help.pdf");
-
+        page.getParagraphs().add(new TextFragment("Help Guide for Login"));
+        page.getParagraphs().add(new TextFragment("==================================="));
+        page.getParagraphs().add(new TextFragment("----Login Process"));
+        page.getParagraphs().add(new TextFragment("Please enter a valid username and password and press 'Login' to login."));
+        page.getParagraphs().add(new TextFragment("If you do not have an account, click 'Register' to register."));
+        page.getParagraphs().add(new TextFragment("----Account Management"));
+        page.getParagraphs().add(new TextFragment("You can reset your password by clicking the 'Reset Password' button. Answer the security questions to reset your password."));
+        page.getParagraphs().add(new TextFragment("----Unable to Log in:"));
+        page.getParagraphs().add(new TextFragment("- Ensure your username and password are correct."));
+        page.getParagraphs().add(new TextFragment("- Check for any typos."));
+        page.getParagraphs().add(new TextFragment("- Make sure your account is not disabled/deleted."));
+        document.save("loginhelp.pdf");
         try {
-            File pdfFile = new File("help.pdf");
+            File pdfFile = new File("loginhelp.pdf");
             Desktop.getDesktop().open(pdfFile);
         } catch (IOException e) {
             System.out.println(e);
         }
     }
+
 }

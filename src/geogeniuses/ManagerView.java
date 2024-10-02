@@ -2,6 +2,7 @@ package geogeniuses;
 
 import com.aspose.pdf.Document;
 import com.aspose.pdf.Page;
+import com.aspose.pdf.FontRepository;
 import com.aspose.pdf.TextFragment;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -426,6 +427,7 @@ public class ManagerView extends State {
                                 CustomerView.searchBarEntry.setVisible(true);
                                 CustomerView.searchBar.setVisible(true);
                                 CustomerView.searchBar.setText("");
+                                CustomerView.orderError.setText("");
                                 CustomerView.cardNumberEntry.setVisible(true);
                                 CustomerView.cardNumber.setVisible(true);
                                 CustomerView.securityCodeEntry.setVisible(true);
@@ -444,8 +446,11 @@ public class ManagerView extends State {
                                 CustomerView.igneousButton.setVisible(true);
                                 CustomerView.sedimentaryButton.setVisible(true);
                                 CustomerView.metamorphicButton.setVisible(true);
+                                CustomerView.stoneButton.setVisible(true);
+                                CustomerView.gemstoneButton.setVisible(true);
                                 CustomerView.checkout.setVisible(true);
                                 CustomerView.clearCart.setVisible(true);
+                                CustomerView.ordersButton.setVisible(true);
 
                                 customerSelected = LoginView.person.get(i).personID;
                                 LoginView.SetPersonID(customerLogonName);
@@ -454,6 +459,9 @@ public class ManagerView extends State {
                                         CustomerView.personDetails = l;
                                     }
                                 }
+
+                                CustomerView.setMax();
+                                CustomerView.setMin();
 
                                 managerDiscountData = getManagerDiscountData();
                                 DefaultTableModel mdtable = (DefaultTableModel) managerdiscountjt.getModel();
@@ -723,6 +731,7 @@ public class ManagerView extends State {
                             CustomerView.searchBarEntry.setVisible(true);
                             CustomerView.searchBar.setVisible(true);
                             CustomerView.searchBar.setText("");
+                            CustomerView.orderError.setText("");
                             CustomerView.cardNumberEntry.setVisible(true);
                             CustomerView.cardNumber.setVisible(true);
                             CustomerView.securityCodeEntry.setVisible(true);
@@ -741,6 +750,8 @@ public class ManagerView extends State {
                             CustomerView.igneousButton.setVisible(true);
                             CustomerView.sedimentaryButton.setVisible(true);
                             CustomerView.metamorphicButton.setVisible(true);
+                            CustomerView.stoneButton.setVisible(true);
+                            CustomerView.gemstoneButton.setVisible(true);
                             CustomerView.checkout.setVisible(true);
                             CustomerView.clearCart.setVisible(true);
 
@@ -752,6 +763,9 @@ public class ManagerView extends State {
                                     CustomerView.personDetails = l;
                                 }
                             }
+
+                            CustomerView.setMax();
+                            CustomerView.setMin();
 
                             managerDiscountData = getManagerDiscountData();
                             DefaultTableModel mdtable = (DefaultTableModel) managerdiscountjt.getModel();
@@ -844,6 +858,7 @@ public class ManagerView extends State {
                             CustomerView.searchBarEntry.setVisible(true);
                             CustomerView.searchBar.setVisible(true);
                             CustomerView.searchBar.setText("");
+                            CustomerView.orderError.setText("");
                             CustomerView.cardNumberEntry.setVisible(true);
                             CustomerView.cardNumber.setVisible(true);
                             CustomerView.securityCodeEntry.setVisible(true);
@@ -862,6 +877,8 @@ public class ManagerView extends State {
                             CustomerView.igneousButton.setVisible(true);
                             CustomerView.sedimentaryButton.setVisible(true);
                             CustomerView.metamorphicButton.setVisible(true);
+                            CustomerView.stoneButton.setVisible(true);
+                            CustomerView.gemstoneButton.setVisible(true);
                             CustomerView.checkout.setVisible(true);
                             CustomerView.clearCart.setVisible(true);
 
@@ -872,6 +889,9 @@ public class ManagerView extends State {
                                     CustomerView.personDetails = l;
                                 }
                             }
+
+                            CustomerView.setMax();
+                            CustomerView.setMin();
 
                             managerDiscountData = getManagerDiscountData();
                             DefaultTableModel mdtable = (DefaultTableModel) managerdiscountjt.getModel();
@@ -974,6 +994,8 @@ public class ManagerView extends State {
                             CustomerView.searchBarEntry.setVisible(true);
                             CustomerView.searchBar.setVisible(true);
                             CustomerView.searchBar.setText("");
+                            CustomerView.orderError.setText("");
+                            CustomerView.orderError.setText("");
                             CustomerView.cardNumberEntry.setVisible(true);
                             CustomerView.cardNumber.setVisible(true);
                             CustomerView.securityCodeEntry.setVisible(true);
@@ -992,6 +1014,8 @@ public class ManagerView extends State {
                             CustomerView.igneousButton.setVisible(true);
                             CustomerView.sedimentaryButton.setVisible(true);
                             CustomerView.metamorphicButton.setVisible(true);
+                            CustomerView.stoneButton.setVisible(true);
+                            CustomerView.gemstoneButton.setVisible(true);
                             CustomerView.checkout.setVisible(true);
                             CustomerView.clearCart.setVisible(true);
 
@@ -1002,6 +1026,9 @@ public class ManagerView extends State {
                                     CustomerView.personDetails = l;
                                 }
                             }
+
+                            CustomerView.setMax();
+                            CustomerView.setMin();
 
                             managerDiscountData = getManagerDiscountData();
                             DefaultTableModel mdtable = (DefaultTableModel) managerdiscountjt.getModel();
@@ -3912,9 +3939,10 @@ public class ManagerView extends State {
             customersLogonName.setText("");
             customersLogonNameError.setText("");
 
+            CustomerView.panel.setBounds(0, 0, 273, 628);
             CustomerView.panel.setPreferredSize(new Dimension(120, 0));
+            CustomerView.cartPanel.setBounds(0, 0, 267, 590);
             CustomerView.cartPanel.setPreferredSize(new Dimension(120, 0));
-            CustomerView.cartPanel.setBounds(0, 0, 267, 485);
             CustomerView.cartjs.setBounds(0, 0, CustomerView.cartPanel.getWidth(), CustomerView.cartPanel.getHeight());
 
             resetOrderDates();
@@ -3927,31 +3955,42 @@ public class ManagerView extends State {
             customerjs.setVisible(false);
             managerdiscountjs.setVisible(false);
 
-            CustomerView.cardNumberEntry.setBounds(32, 140, 200, 15);
-            CustomerView.cardNumber.setBounds(32, 157, 200, 20);
-            CustomerView.securityCodeEntry.setBounds(32, 190, 200, 15);
-            CustomerView.cardSecurityCode.setBounds(32, 207, 200, 20);
-            CustomerView.cardExpireYear.setBounds(60, 240, 100, 15);
-            CustomerView.cardExpirationYear.setBounds(65, 255, 55, 20);
-            CustomerView.cardExpireMonth.setBounds(150, 240, 110, 15);
-            CustomerView.cardExpirationMonth.setBounds(160, 255, 55, 20);
-            CustomerView.cardError.setBounds(120, 140, 200, 15);
-            CustomerView.cardSecurityError.setBounds(120, 190, 200, 15);
-            CustomerView.expirationError.setBounds(CustomerView.panel.getWidth() / 8, 275, 200, 15);
-            CustomerView.discountEntry.setBounds(32, 290, 200, 15);
-            CustomerView.discountCode.setBounds(32, 307, 200, 20);
-            CustomerView.discountError.setBounds(120, 290, 200, 15);
-            CustomerView.checkout.setBounds(27, 345, 100, 50);
-            CustomerView.clearCart.setBounds(136, 345, 100, 50);
-            CustomerView.returnToSearch.setBounds(25, 410, 100, 50);
-            CustomerView.addToCart.setBounds(140, 410, 100, 50);
+            CustomerView.cardNumberEntry.setBounds(32, 210, 200, 15);
+            CustomerView.cardNumber.setBounds(32, 227, 200, 20);
+            CustomerView.securityCodeEntry.setBounds(32, 260, 200, 15);
+            CustomerView.cardSecurityCode.setBounds(32, 277, 200, 20);
+            CustomerView.cardExpireYear.setBounds(60, 310, 100, 15);
+            CustomerView.cardExpirationYear.setBounds(65, 325, 55, 20);
+            CustomerView.cardExpireMonth.setBounds(150, 310, 110, 15);
+            CustomerView.cardExpirationMonth.setBounds(160, 325, 55, 20);
+            CustomerView.cardError.setBounds(120, 210, 200, 15);
+            CustomerView.cardSecurityError.setBounds(120, 260, 200, 15);
+            CustomerView.expirationError.setBounds(CustomerView.panel.getWidth() / 8, 345, 200, 15);
+            CustomerView.discountEntry.setBounds(32, 360, 200, 15);
+            CustomerView.discountCode.setBounds(32, 377, 200, 20);
+            CustomerView.discountError.setBounds(120, 360, 200, 15);
+            CustomerView.checkout.setBounds(27, 415, 100, 50);
+            CustomerView.clearCart.setBounds(136, 415, 100, 50);
+            CustomerView.logOut.setBounds(28, 480, 207, 50);
+
+            CustomerView.itemsName.setBounds(CustomerView.panel.getWidth() / 8, 220, 200, 15);
+            CustomerView.itemsDescription.setBounds(11, 245, 250, 105);
+            CustomerView.itemRockOrGem.setBounds(CustomerView.panel.getWidth() / 8, 335, 200, 15);
+            CustomerView.itemGrainSize.setBounds(CustomerView.panel.getWidth() / 8, 350, 200, 15);
+            CustomerView.itemGrainShape.setBounds(CustomerView.panel.getWidth() / 8, 365, 200, 15);
+            CustomerView.itemHeft.setBounds(CustomerView.panel.getWidth() / 8, 350, 200, 15);
+            CustomerView.itemHardness.setBounds(CustomerView.panel.getWidth() / 8, 365, 200, 15);
+            CustomerView.stoneSize.setBounds(CustomerView.panel.getWidth() / 8, 380, 200, 15);
+            CustomerView.stoneWeight.setBounds(CustomerView.panel.getWidth() / 8, 395, 200, 15);
+            CustomerView.price.setBounds(CustomerView.panel.getWidth() / 8, 310, 200, 15);
+            CustomerView.quantity.setBounds(CustomerView.panel.getWidth() / 8, 425, 200, 15);
 
             jp.remove(connectionStatus);
             connectionStatus = new JLabel("");
             connectionStatus.setBounds(5, 445, 200, 15);
             connectionStatus.setForeground(Color.red);
             loginView.jp.add(connectionStatus);
-            
+
             jp.remove(viewPanel);
 
             //A switch to the login view
@@ -4038,9 +4077,9 @@ public class ManagerView extends State {
 
             int d = 0;
             for (int i = 0; i < LoginView.discount.size(); i++) {
-                String discountYearSubstring = LoginView.discount.get(i).expirationDate.toString();
-                String discountMonthSubstring = LoginView.discount.get(i).expirationDate.toString();
-                String discountDaySubstring = LoginView.discount.get(i).expirationDate.toString();
+                String discountYearSubstring = LoginView.discount.get(i).expirationDate;
+                String discountMonthSubstring = LoginView.discount.get(i).expirationDate;
+                String discountDaySubstring = LoginView.discount.get(i).expirationDate;
                 discountYearSubstring = discountYearSubstring.substring(0, 4);
                 discountMonthSubstring = discountMonthSubstring.substring(5, 7);
                 discountDaySubstring = discountDaySubstring.substring(8, 10);
@@ -6267,8 +6306,7 @@ public class ManagerView extends State {
         int discountType = 0;
         double discountPercent = 0.00;
         double discountAmount = 0.00;
-        java.sql.Date discountStart = null;
-        java.sql.Date discountExpiration = null;
+        String discountStart = null;
         if (discountCodeValid) {
             if (discountCode.isEmpty()) {
                 discountsCodeError.setText("Code required");
@@ -6341,26 +6379,19 @@ public class ManagerView extends State {
         LocalDate expirationOfDiscount = LocalDate.of(discountExpirationYear, discountExpirationMonth, discountExpirationDay);
         long compareDateToDiscount = ChronoUnit.DAYS.between(currentDate, expirationOfDiscount);
         if (compareDateToDiscount > 0) {
-            try {
-                adaptDiscountDates();
-                java.util.Date discountExpires = df.parse(discountExpirationTime);
-                discountExpiration = new Date(discountExpires.getTime());
-                if (discountStartDate.isSelected()) {
-                    LocalDate startOfDiscount = LocalDate.of(discountStartYear, discountStartMonth, discountStartDay);
-                    long diff = ChronoUnit.DAYS.between(startOfDiscount, expirationOfDiscount);
-                    if (diff > 0) {
-                        java.util.Date discountStarts = df.parse(discountStartTime);
-                        discountStart = new Date(discountStarts.getTime());
-                    } else if (diff == 0) {
-                        discountDateError.setText("Cannot start and expire on same day");
-                        discountValid = false;
-                    } else if (diff < 0) {
-                        discountDateError.setText("Cannot start after expiration");
-                        discountValid = false;
-                    }
+            adaptDiscountDates();
+            if (discountStartDate.isSelected()) {
+                LocalDate startOfDiscount = LocalDate.of(discountStartYear, discountStartMonth, discountStartDay);
+                long diff = ChronoUnit.DAYS.between(startOfDiscount, expirationOfDiscount);
+                if (diff > 0) {
+                    discountStart = discountStartTime;
+                } else if (diff == 0) {
+                    discountDateError.setText("Cannot start and expire on same day");
+                    discountValid = false;
+                } else if (diff < 0) {
+                    discountDateError.setText("Cannot start after expiration");
+                    discountValid = false;
                 }
-            } catch (ParseException e) {
-                System.out.println(e);
             }
         } else {
             discountDateError.setText("Cannot expire on or before today");
@@ -6384,11 +6415,11 @@ public class ManagerView extends State {
                 ps.setDouble(6, discountPercent);
                 ps.setDouble(7, discountAmount);
                 if (discountStart != null) {
-                    ps.setDate(8, discountStart);
+                    ps.setString(8, discountStart);
                 } else {
-                    ps.setNull(8, java.sql.Types.DATE);
+                    ps.setString(8, null);
                 }
-                ps.setDate(9, discountExpiration);
+                ps.setString(9, discountExpirationTime);
                 ps.execute();
 
                 updatedFromManager = true;
@@ -6409,8 +6440,7 @@ public class ManagerView extends State {
         int discountType = 0;
         double discountPercent = 0.00;
         double discountAmount = 0.00;
-        java.sql.Date discountStart = null;
-        java.sql.Date discountExpiration = null;
+        String discountStart = null;
         if (discountCodeValid) {
             if (discountCode.isEmpty()) {
                 discountsCodeError.setText("Code required");
@@ -6472,26 +6502,19 @@ public class ManagerView extends State {
         LocalDate expirationOfDiscount = LocalDate.of(discountExpirationYear, discountExpirationMonth, discountExpirationDay);
         long compareDateToDiscount = ChronoUnit.DAYS.between(currentDate, expirationOfDiscount);
         if (compareDateToDiscount > 0) {
-            try {
-                adaptDiscountDates();
-                java.util.Date discountExpires = df.parse(discountExpirationTime);
-                discountExpiration = new Date(discountExpires.getTime());
-                if (discountStartDate.isSelected()) {
-                    LocalDate startOfDiscount = LocalDate.of(discountStartYear, discountStartMonth, discountStartDay);
-                    long diff = ChronoUnit.DAYS.between(startOfDiscount, expirationOfDiscount);
-                    if (diff > 0) {
-                        java.util.Date discountStarts = df.parse(discountStartTime);
-                        discountStart = new Date(discountStarts.getTime());
-                    } else if (diff == 0) {
-                        discountDateError.setText("Cannot start and expire on same day");
-                        discountValid = false;
-                    } else if (diff < 0) {
-                        discountDateError.setText("Cannot start after expiration");
-                        discountValid = false;
-                    }
+            adaptDiscountDates();
+            if (discountStartDate.isSelected()) {
+                LocalDate startOfDiscount = LocalDate.of(discountStartYear, discountStartMonth, discountStartDay);
+                long diff = ChronoUnit.DAYS.between(startOfDiscount, expirationOfDiscount);
+                if (diff > 0) {
+                    discountStart = discountStartTime;
+                } else if (diff == 0) {
+                    discountDateError.setText("Cannot start and expire on same day");
+                    discountValid = false;
+                } else if (diff < 0) {
+                    discountDateError.setText("Cannot start after expiration");
+                    discountValid = false;
                 }
-            } catch (ParseException e) {
-                System.out.println(e);
             }
         } else {
             discountDateError.setText("Cannot expire on or before today");
@@ -6514,11 +6537,11 @@ public class ManagerView extends State {
                 ps.setDouble(6, discountPercent);
                 ps.setDouble(7, discountAmount);
                 if (discountStart != null) {
-                    ps.setDate(8, discountStart);
+                    ps.setString(8, discountStart);
                 } else {
                     ps.setNull(8, java.sql.Types.DATE);
                 }
-                ps.setDate(9, discountExpiration);
+                ps.setString(9, discountExpirationTime);
                 ps.setString(10, discountCode);
                 ps.executeUpdate();
 
@@ -6588,6 +6611,7 @@ public class ManagerView extends State {
         CustomerView.searchBarEntry.setVisible(true);
         CustomerView.searchBar.setVisible(true);
         CustomerView.searchBar.setText("");
+        CustomerView.orderError.setText("");
         CustomerView.cardNumberEntry.setVisible(true);
         CustomerView.cardNumber.setVisible(true);
         CustomerView.securityCodeEntry.setVisible(true);
@@ -6606,25 +6630,34 @@ public class ManagerView extends State {
         CustomerView.igneousButton.setVisible(true);
         CustomerView.sedimentaryButton.setVisible(true);
         CustomerView.metamorphicButton.setVisible(true);
+        CustomerView.stoneButton.setVisible(true);
+        CustomerView.gemstoneButton.setVisible(true);
         CustomerView.checkout.setVisible(true);
         CustomerView.clearCart.setVisible(true);
     }
 
     void restockAlert() {
         Document document = new Document();
-
         Page page = document.getPages().add();
-        page.getParagraphs().add(new TextFragment("Items in Need of Restock"));
+        TextFragment title = new TextFragment("Items in Need of Restock");
+        title.getTextState().setFontSize(18);
+        title.getTextState().setFont(FontRepository.findFont("Arial"));
+        page.getParagraphs().add(title);
+        String header = String.format("%-20s %-10s %-10s", "Item Name", "Quantity", "Restock At");
+        page.getParagraphs().add(new TextFragment(header));
+        page.getParagraphs().add(new TextFragment("-------------------------------"));
         int itemNumber = 1;
         for (int i = 0; i < LoginView.inventory.size(); i++) {
             if (LoginView.inventory.get(i).quantity <= LoginView.inventory.get(i).restockThreshold) {
-                page.getParagraphs().add(new TextFragment(itemNumber + ". " + LoginView.inventory.get(i).itemName + " - Quantity: " + LoginView.inventory.get(i).quantity + " - Restock at: " + LoginView.inventory.get(i).restockThreshold));
+                String line = String.format("%-20s %-10d %-10d",
+                        LoginView.inventory.get(i).itemName,
+                        LoginView.inventory.get(i).quantity,
+                        LoginView.inventory.get(i).restockThreshold);
+                page.getParagraphs().add(new TextFragment(line));
                 itemNumber++;
             }
         }
-
         document.save("restock.pdf");
-
         try {
             File pdfFile = new File("restock.pdf");
             Desktop.getDesktop().open(pdfFile);
@@ -6635,31 +6668,22 @@ public class ManagerView extends State {
 
     void helpSystem() {
         Document document = new Document();
-
         Page page = document.getPages().add();
-
-        page.getParagraphs().add(new TextFragment("----Manager/SOS View\n\n  Upon first logging in as a manager, you will be greeted by a somewhat slim screen with a variety of features implemented. "
-                + "These features will allow you to look for total sales over a certain time period or, optionally select a customer. Upon selecting a customer, your "
-                + "view will expand to include the customer view, allowing you, the manager, to purchase as a customer. But that's not all, you can also view that "
-                + "specific customer's purchases, once again using a certain date and time.\n\n"
-                + "If you do not like any of these options, there are three buttons called 'edit users' 'edit items' and 'edit discounts', all of which take you to "
-                + "vastly different pages that will allow the current manager, you, to edit user details, including your own, edit item details, and edit discounts. "
-                + "\n\n----Edit Users\n\n  When you first press the edit users button, you will see two tables and a very large amount of textfields, along with a "
-                + "handful of combo boxes. All of these will hold data that can either be applied to a new user, or used to edit an existing user. It is also possible "
-                + "to delete users with the associated button, but editing and deleting users requires one to be selected from a jtable. Both of the jtables hold "
-                + "information for customers, and clicking information from either is valid. Upon selecting a customer, their information will fill all fields and "
-                + "combo boxes automatically, to make editing a more convenient process."
-                + "\n\n----Edit Inventory\n\n When you first press the edit items button, you will see a scroll pane full of buttons on the right side, while the "
-                + "left side contains a group of text fields. If all required fields are filled with valid data, you will be able to add or edit data. Upon selecting "
-                + "a button, that item's data will fill all fields and it will be selected, allowing easy editing of items. You can also use this selected item's value "
-                + "to delete it entirely."
-                + "\n\n----Edit Discounts\n\n  When you first press the edit a button, you will see a table  full of all discounts on the right side, while the left "
-                + "side contains a group of text fields and radio buttons. If all required fields are filled with valid data, you will be able to add or edit discounts. "
-                + "Upon selecting a discount from the table, that discount's data will fill all fields and it will be selected, allowing easy editing of discounts. You "
-                + "can also use this selected item's value to delete the discount."));
-
+        page.getParagraphs().add(new TextFragment("Help Guide for Managers"));
+        page.getParagraphs().add(new TextFragment("==================================="));
+        page.getParagraphs().add(new TextFragment("----Manager/SOS View"));
+        page.getParagraphs().add(new TextFragment("Upon first logging in as a manager, you will be greeted by a slim screen with various features. "
+                + "These features allow you to view total sales over a specified time period, or select a customer to see their purchases and manage them.\n"));
+        page.getParagraphs().add(new TextFragment("----Edit Users"));
+        page.getParagraphs().add(new TextFragment("When you press the edit users button, you will see two tables and several text fields. "
+                + "You can edit existing users or delete them. Selecting a customer fills the fields automatically for convenience.\n"));
+        page.getParagraphs().add(new TextFragment("----Edit Inventory"));
+        page.getParagraphs().add(new TextFragment("Pressing the edit items button shows a scroll pane of buttons and text fields. "
+                + "You can add or edit items easily by selecting them.\n"));
+        page.getParagraphs().add(new TextFragment("----Edit Discounts"));
+        page.getParagraphs().add(new TextFragment("Pressing the edit discounts button displays a table of discounts. "
+                + "You can add, edit, or delete discounts by filling in the required fields.\n"));
         document.save("managerhelp.pdf");
-
         try {
             File pdfFile = new File("managerhelp.pdf");
             Desktop.getDesktop().open(pdfFile);

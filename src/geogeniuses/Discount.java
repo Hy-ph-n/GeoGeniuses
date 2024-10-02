@@ -1,7 +1,5 @@
 package geogeniuses;
 
-import java.util.Date;
-
 public class Discount {
     
     int discountID;
@@ -12,10 +10,10 @@ public class Discount {
     int discountType;
     double discountPercentage;
     double discountDollarAmount;
-    Date startDate;
-    Date expirationDate;
+    String startDate;
+    String expirationDate;
     
-    Discount(int discountID, String discountCode, String discountDescription, int discountLevel, int inventoryID, int discountType, double discountPercentage, double discountDollarAmount, Date startDate, Date expirationDate) {
+    Discount(int discountID, String discountCode, String discountDescription, int discountLevel, int inventoryID, int discountType, double discountPercentage, double discountDollarAmount, String startDate, String expirationDate) {
         this.discountID = discountID;
         this.discountCode = discountCode;
         this.discountDescription = discountDescription;

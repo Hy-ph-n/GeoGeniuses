@@ -18,16 +18,18 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.regex.*;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
 
 //The customer view is entered by either a customer account or a guest account.
 public class CustomerView extends State {
 
     ArrayList<JButton> items = new ArrayList();
-    
+
     static ArrayList<ArrayList<Cart>> cartList = new ArrayList<>();
 
     //The cart arraylist will track items waiting to be purchased.
@@ -104,14 +106,25 @@ public class CustomerView extends State {
     static JButton igneousButton;
     static JButton sedimentaryButton;
     static JButton metamorphicButton;
+    static JButton stoneButton;
+    static JButton gemstoneButton;
     static JButton addToCart;
     static JButton returnToSearch;
     static JButton checkout;
     static JButton clearCart;
+    static JButton ordersButton;
     static JButton logOut;
+
+    static JSlider minPriceSlider;
+    static JSlider maxPriceSlider;
 
     static ScrollPane inventory;
     static ScrollPane cartjs;
+
+    static JLabel orderError;
+
+    static double minPrice;
+    static double maxPrice;
 
     CustomerView() {
 
@@ -122,18 +135,23 @@ public class CustomerView extends State {
         jp.setLayout(new BoxLayout(jp, BoxLayout.X_AXIS));
 
         panel.setBackground(lightCyan);
-        panel.setBounds(0, 0, 273, 523);
+        panel.setBounds(0, 0, 273, 628);
         panel.setPreferredSize(new Dimension(120, 0));
         jp.add(panel);
 
+        orderError = new JLabel("");
+        orderError.setBounds(100, 15, 200, 15);
+        orderError.setForeground(Color.red);
+        panel.add(orderError);
+
         itemsName = new JLabel("");
-        itemsName.setBounds(panel.getWidth() / 8, 150, 200, 15);
+        itemsName.setBounds(panel.getWidth() / 8, 255, 200, 15);
         itemsName.setHorizontalAlignment(SwingConstants.CENTER);
         itemsName.setVisible(false);
         panel.add(itemsName);
 
         itemsDescription = new JTextArea("");
-        itemsDescription.setBounds(11, 175, 250, 105);
+        itemsDescription.setBounds(11, 280, 250, 105);
         itemsDescription.setEnabled(false);
         itemsDescription.setDisabledTextColor(Color.black);
         itemsDescription.setLineWrap(true);
@@ -143,61 +161,61 @@ public class CustomerView extends State {
         panel.add(itemsDescription);
 
         itemRockOrGem = new JLabel("");
-        itemRockOrGem.setBounds(panel.getWidth() / 8, 265, 200, 15);
+        itemRockOrGem.setBounds(panel.getWidth() / 8, 370, 200, 15);
         itemRockOrGem.setHorizontalAlignment(SwingConstants.CENTER);
         itemRockOrGem.setVisible(false);
         panel.add(itemRockOrGem);
 
         itemGrainSize = new JLabel("");
-        itemGrainSize.setBounds(panel.getWidth() / 8, 280, 200, 15);
+        itemGrainSize.setBounds(panel.getWidth() / 8, 385, 200, 15);
         itemGrainSize.setHorizontalAlignment(SwingConstants.CENTER);
         itemGrainSize.setVisible(false);
         panel.add(itemGrainSize);
 
         itemGrainShape = new JLabel("");
-        itemGrainShape.setBounds(panel.getWidth() / 8, 295, 200, 15);
+        itemGrainShape.setBounds(panel.getWidth() / 8, 400, 200, 15);
         itemGrainShape.setHorizontalAlignment(SwingConstants.CENTER);
         itemGrainShape.setVisible(false);
         panel.add(itemGrainShape);
 
         itemHeft = new JLabel("");
-        itemHeft.setBounds(panel.getWidth() / 8, 280, 200, 15);
+        itemHeft.setBounds(panel.getWidth() / 8, 385, 200, 15);
         itemHeft.setHorizontalAlignment(SwingConstants.CENTER);
         itemHeft.setVisible(false);
         panel.add(itemHeft);
 
         itemHardness = new JLabel("");
-        itemHardness.setBounds(panel.getWidth() / 8, 295, 200, 15);
+        itemHardness.setBounds(panel.getWidth() / 8, 400, 200, 15);
         itemHardness.setHorizontalAlignment(SwingConstants.CENTER);
         itemHardness.setVisible(false);
         panel.add(itemHardness);
 
         stoneSize = new JLabel("");
-        stoneSize.setBounds(panel.getWidth() / 8, 310, 200, 15);
+        stoneSize.setBounds(panel.getWidth() / 8, 415, 200, 15);
         stoneSize.setHorizontalAlignment(SwingConstants.CENTER);
         stoneSize.setVisible(false);
         panel.add(stoneSize);
 
         stoneWeight = new JLabel("");
-        stoneWeight.setBounds(panel.getWidth() / 8, 325, 200, 15);
+        stoneWeight.setBounds(panel.getWidth() / 8, 430, 200, 15);
         stoneWeight.setHorizontalAlignment(SwingConstants.CENTER);
         stoneWeight.setVisible(false);
         panel.add(stoneWeight);
 
         price = new JLabel("");
-        price.setBounds(panel.getWidth() / 8, 340, 200, 15);
+        price.setBounds(panel.getWidth() / 8, 345, 200, 15);
         price.setHorizontalAlignment(SwingConstants.CENTER);
         price.setVisible(false);
         panel.add(price);
 
         quantity = new JLabel("");
-        quantity.setBounds(panel.getWidth() / 8, 355, 200, 15);
+        quantity.setBounds(panel.getWidth() / 8, 460, 200, 15);
         quantity.setHorizontalAlignment(SwingConstants.CENTER);
         quantity.setVisible(false);
         panel.add(quantity);
 
         addToCart = new JButton("Add to Cart");
-        addToCart.setBounds(140, 410, 100, 50);
+        addToCart.setBounds(140, 515, 100, 50);
         addToCart.setVisible(false);
         addToCart.setBackground(thistle);
         addToCart.addActionListener((e) -> {
@@ -249,7 +267,7 @@ public class CustomerView extends State {
         panel.add(addToCart);
 
         returnToSearch = new JButton("Return");
-        returnToSearch.setBounds(25, 410, 100, 50);
+        returnToSearch.setBounds(25, 515, 100, 50);
         returnToSearch.setVisible(false);
         returnToSearch.setBackground(thistle);
         returnToSearch.addActionListener((e) -> {
@@ -289,9 +307,12 @@ public class CustomerView extends State {
             igneousButton.setVisible(true);
             sedimentaryButton.setVisible(true);
             metamorphicButton.setVisible(true);
+            stoneButton.setVisible(true);
+            gemstoneButton.setVisible(true);
             checkout.setVisible(true);
             clearCart.setVisible(true);
             if (!ManagerView.managerAsCustomer) {
+                ordersButton.setVisible(true);
                 logOut.setVisible(true);
             }
         });
@@ -308,7 +329,7 @@ public class CustomerView extends State {
 
         cartPanel = new JPanel();
         cartPanel.setLayout(null);
-        cartPanel.setBounds(0, 0, 267, 485);
+        cartPanel.setBounds(0, 0, 267, 590);
 
         cartjt = new JTable();
         cartCol = new String[]{"Item Name", "Item Qty", "Item Cost"};
@@ -410,6 +431,7 @@ public class CustomerView extends State {
         refreshButton.setBackground(thistle);
         refreshButton.addActionListener((e) -> {
             searchBar.setText("");
+            orderError.setText("");
             updateData();
         });
         panel.add(refreshButton);
@@ -600,12 +622,318 @@ public class CustomerView extends State {
         });
         panel.add(metamorphicButton);
 
+        stoneButton = new JButton("Stone");
+        stoneButton.setBounds(20, 130, 110, 30);
+        stoneButton.setBackground(thistle);
+        stoneButton.addActionListener((e) -> {
+            GridBagConstraints imageLayout = new GridBagConstraints();
+            imageLayout.insets = new Insets(2, 2, 2, 2);
+            int x = 0;
+            int y = 0;
+            itemDisplay.removeAll();
+            items.clear();
+            itemDisplay.repaint();
+            ItemSelection select = new ItemSelection(items);
+            for (int i = 0; i < LoginView.inventory.size(); i++) {
+                if (LoginView.inventory.get(i).stoneOrGemstone == 0) {
+                    String itemName = LoginView.inventory.get(i).itemName;
+
+                    imageLayout.weightx = 0.5;
+                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                    imageLayout.gridx = x;
+                    imageLayout.gridy = y;
+
+                    if (x == 4) {
+                        x = 0;
+                        y++;
+                    } else {
+                        x++;
+                    }
+
+                    if (LoginView.inventory.get(i).itemImage == null) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } else {
+                        try {
+                            byte[] b = LoginView.inventory.get(i).itemImage;
+                            ItemIcon itemIcon = new ItemIcon(b);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                            itemIcon = new ItemIcon(itemImage);
+                            JButton item = new JButton(itemName, itemIcon);
+                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                            item.setHorizontalTextPosition(SwingConstants.CENTER);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                        } catch (Exception ex) {
+                            JButton item = new JButton(itemName);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                            System.out.println("Invalid Image");
+                        }
+                    }
+                }
+            }
+            itemDisplay.validate();
+        });
+        panel.add(stoneButton);
+
+        gemstoneButton = new JButton("Gemstone");
+        gemstoneButton.setBounds(135, 130, 110, 30);
+        gemstoneButton.setBackground(thistle);
+        gemstoneButton.addActionListener((e) -> {
+            GridBagConstraints imageLayout = new GridBagConstraints();
+            imageLayout.insets = new Insets(2, 2, 2, 2);
+            int x = 0;
+            int y = 0;
+            itemDisplay.removeAll();
+            items.clear();
+            itemDisplay.repaint();
+            ItemSelection select = new ItemSelection(items);
+            for (int i = 0; i < LoginView.inventory.size(); i++) {
+                if (LoginView.inventory.get(i).stoneOrGemstone == 1) {
+                    String itemName = LoginView.inventory.get(i).itemName;
+
+                    imageLayout.weightx = 0.5;
+                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                    imageLayout.gridx = x;
+                    imageLayout.gridy = y;
+
+                    if (x == 4) {
+                        x = 0;
+                        y++;
+                    } else {
+                        x++;
+                    }
+
+                    if (LoginView.inventory.get(i).itemImage == null) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } else {
+                        try {
+                            byte[] b = LoginView.inventory.get(i).itemImage;
+                            ItemIcon itemIcon = new ItemIcon(b);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                            itemIcon = new ItemIcon(itemImage);
+                            JButton item = new JButton(itemName, itemIcon);
+                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                            item.setHorizontalTextPosition(SwingConstants.CENTER);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                        } catch (Exception ex) {
+                            JButton item = new JButton(itemName);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                            System.out.println("Invalid Image");
+                        }
+                    }
+                }
+            }
+            itemDisplay.validate();
+        });
+        panel.add(gemstoneButton);
+
+        minPriceSlider = new JSlider(0, 100, 0);
+        minPriceSlider.setMajorTickSpacing(10);
+        minPriceSlider.setMinorTickSpacing(1);
+        minPriceSlider.setPaintTicks(false);
+        minPriceSlider.setPaintLabels(true);
+        minPriceSlider.setBackground(lightCyan);
+        minPriceSlider.setBounds(10, 165, 250, 25);
+        minPriceSlider.addMouseListener(new MouseAdapter() {
+            public void mouseReleased(MouseEvent e) {
+                newMinForMax();
+
+                GridBagConstraints imageLayout = new GridBagConstraints();
+                imageLayout.insets = new Insets(2, 2, 2, 2);
+                int x = 0;
+                int y = 0;
+                itemDisplay.removeAll();
+                items.clear();
+                itemDisplay.repaint();
+                ItemSelection select = new ItemSelection(items);
+
+                int minPrice = minPriceSlider.getValue();
+                int maxPrice = maxPriceSlider.getValue();
+                int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+                ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+                if (maxPrice == maxPriceMaximum) {
+                    sortedInventory.removeIf(item -> item.cost < minPrice);
+                } else {
+                    sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+                }
+
+                Collections.sort(sortedInventory, new Comparator<Inventory>() {
+                    @Override
+                    public int compare(Inventory item1, Inventory item2) {
+                        return Double.compare(item1.cost, item2.cost);
+                    }
+                });
+
+                for (int i = 0; i < sortedInventory.size(); i++) {
+                    String itemName = sortedInventory.get(i).itemName;
+
+                    imageLayout.weightx = 0.5;
+                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                    imageLayout.gridx = x;
+                    imageLayout.gridy = y;
+
+                    if (x == 4) {
+                        x = 0;
+                        y++;
+                    } else {
+                        x++;
+                    }
+
+                    if (sortedInventory.get(i).itemImage == null) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } else {
+                        try {
+                            byte[] b = sortedInventory.get(i).itemImage;
+                            ItemIcon itemIcon = new ItemIcon(b);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                            itemIcon = new ItemIcon(itemImage);
+                            JButton item = new JButton(itemName, itemIcon);
+                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                            item.setHorizontalTextPosition(SwingConstants.CENTER);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                        } catch (Exception ex) {
+                            JButton item = new JButton(itemName);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                            System.out.println("Invalid Image");
+                        }
+                    }
+                }
+                itemDisplay.validate();
+            }
+        });
+        panel.add(minPriceSlider);
+
+        maxPriceSlider = new JSlider(0, 100, 0);
+        maxPriceSlider.setMajorTickSpacing(10);
+        maxPriceSlider.setMinorTickSpacing(1);
+        maxPriceSlider.setPaintTicks(false);
+        maxPriceSlider.setPaintLabels(true);
+        maxPriceSlider.setBackground(lightCyan);
+        maxPriceSlider.setBounds(10, 200, 250, 25);
+        maxPriceSlider.addMouseListener(new MouseAdapter() {
+            public void mouseReleased(MouseEvent e) {
+                GridBagConstraints imageLayout = new GridBagConstraints();
+                imageLayout.insets = new Insets(2, 2, 2, 2);
+                int x = 0;
+                int y = 0;
+                itemDisplay.removeAll();
+                items.clear();
+                itemDisplay.repaint();
+                ItemSelection select = new ItemSelection(items);
+
+                int minPrice = minPriceSlider.getValue();
+                int maxPrice = maxPriceSlider.getValue();
+                int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+                ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+                if (maxPrice == maxPriceMaximum) {
+                    sortedInventory.removeIf(item -> item.cost < minPrice);
+                } else {
+                    sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+                }
+
+                Collections.sort(sortedInventory, new Comparator<Inventory>() {
+                    @Override
+                    public int compare(Inventory item1, Inventory item2) {
+                        return Double.compare(item1.cost, item2.cost);
+                    }
+                });
+
+                for (int i = 0; i < sortedInventory.size(); i++) {
+                    String itemName = sortedInventory.get(i).itemName;
+
+                    imageLayout.weightx = 0.5;
+                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                    imageLayout.gridx = x;
+                    imageLayout.gridy = y;
+
+                    if (x == 4) {
+                        x = 0;
+                        y++;
+                    } else {
+                        x++;
+                    }
+
+                    if (sortedInventory.get(i).itemImage == null) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } else {
+                        try {
+                            byte[] b = sortedInventory.get(i).itemImage;
+                            ItemIcon itemIcon = new ItemIcon(b);
+                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                            itemIcon = new ItemIcon(itemImage);
+                            JButton item = new JButton(itemName, itemIcon);
+                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                            item.setHorizontalTextPosition(SwingConstants.CENTER);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                        } catch (Exception ex) {
+                            JButton item = new JButton(itemName);
+                            item.setBackground(thistle);
+                            item.addActionListener(select);
+                            items.add(item);
+                            itemDisplay.add(item, imageLayout);
+                            System.out.println("Invalid Image");
+                        }
+                    }
+                }
+                itemDisplay.validate();
+            }
+        });
+        panel.add(maxPriceSlider);
+
+        ordersButton = new JButton("Orders");
+        ordersButton.setBounds(136, 515, 100, 50);
+        ordersButton.setBackground(thistle);
+        ordersButton.addActionListener((e) -> {
+            customerSalesDetails();
+        });
+        panel.add(ordersButton);
+
         cardNumberEntry = new JLabel("Card Number");
-        cardNumberEntry.setBounds(32, 140, 200, 15);
+        cardNumberEntry.setBounds(32, 245, 200, 15);
         panel.add(cardNumberEntry);
 
         cardNumber = new JTextField("");
-        cardNumber.setBounds(32, 157, 200, 20);
+        cardNumber.setBounds(32, 262, 200, 20);
         panel.add(cardNumber);
 
         cardNumber.addKeyListener(new KeyAdapter() {
@@ -615,11 +943,11 @@ public class CustomerView extends State {
         });
 
         securityCodeEntry = new JLabel("Security Code");
-        securityCodeEntry.setBounds(32, 190, 200, 15);
+        securityCodeEntry.setBounds(32, 295, 200, 15);
         panel.add(securityCodeEntry);
 
         cardSecurityCode = new JTextField("");
-        cardSecurityCode.setBounds(32, 207, 200, 20);
+        cardSecurityCode.setBounds(32, 312, 200, 20);
         panel.add(cardSecurityCode);
 
         cardSecurityCode.addKeyListener(new KeyAdapter() {
@@ -629,14 +957,14 @@ public class CustomerView extends State {
         });
 
         cardExpireYear = new JLabel("Expire Year");
-        cardExpireYear.setBounds(60, 240, 100, 15);
+        cardExpireYear.setBounds(60, 345, 100, 15);
         panel.add(cardExpireYear);
 
         int yearsForList = currentDate.getYear();
 
         String[] expireYear = {"" + (yearsForList - 7), "" + (yearsForList - 6), "" + (yearsForList - 5), "" + (yearsForList - 4), "" + (yearsForList - 3), "" + (yearsForList - 2), "" + (yearsForList - 1), "" + yearsForList, "" + (yearsForList + 1), "" + (yearsForList + 2), "" + (yearsForList + 3), "" + (yearsForList + 4), "" + (yearsForList + 5), "" + (yearsForList + 6), "" + (yearsForList + 7)};
         cardExpirationYear = new JComboBox(expireYear);
-        cardExpirationYear.setBounds(65, 255, 55, 20);
+        cardExpirationYear.setBounds(65, 360, 55, 20);
         cardExpirationYear.setSelectedIndex(7);
         panel.add(cardExpirationYear);
 
@@ -645,37 +973,37 @@ public class CustomerView extends State {
         });
 
         cardExpireMonth = new JLabel("Expire Month");
-        cardExpireMonth.setBounds(150, 240, 110, 15);
+        cardExpireMonth.setBounds(150, 345, 110, 15);
         panel.add(cardExpireMonth);
 
         String[] expireMonth = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
         cardExpirationMonth = new JComboBox(expireMonth);
-        cardExpirationMonth.setBounds(160, 255, 55, 20);
+        cardExpirationMonth.setBounds(160, 360, 55, 20);
         cardExpirationMonth.setSelectedIndex(currentDate.getMonthValue() - 1);
         panel.add(cardExpirationMonth);
 
         cardError = new JLabel("");
-        cardError.setBounds(120, 140, 200, 15);
+        cardError.setBounds(120, 245, 200, 15);
         cardError.setForeground(Color.red);
         panel.add(cardError);
 
         cardSecurityError = new JLabel("");
-        cardSecurityError.setBounds(120, 190, 200, 15);
+        cardSecurityError.setBounds(120, 295, 200, 15);
         cardSecurityError.setForeground(Color.red);
         panel.add(cardSecurityError);
 
         expirationError = new JLabel("");
-        expirationError.setBounds(CustomerView.panel.getWidth() / 8, 275, 200, 15);
+        expirationError.setBounds(CustomerView.panel.getWidth() / 8, 380, 200, 15);
         expirationError.setHorizontalAlignment(SwingConstants.CENTER);
         expirationError.setForeground(Color.red);
         panel.add(expirationError);
 
         discountEntry = new JLabel("Discount Code");
-        discountEntry.setBounds(32, 290, 200, 15);
+        discountEntry.setBounds(32, 395, 200, 15);
         panel.add(discountEntry);
 
         discountCode = new JTextField("");
-        discountCode.setBounds(32, 307, 200, 20);
+        discountCode.setBounds(32, 412, 200, 20);
         panel.add(discountCode);
 
         discountCode.addKeyListener(new KeyAdapter() {
@@ -685,12 +1013,12 @@ public class CustomerView extends State {
         });
 
         discountError = new JLabel("");
-        discountError.setBounds(120, 290, 200, 15);
+        discountError.setBounds(120, 395, 200, 15);
         discountError.setForeground(Color.red);
         panel.add(discountError);
 
         checkout = new JButton("Checkout");
-        checkout.setBounds(27, 345, 100, 50);
+        checkout.setBounds(27, 450, 100, 50);
         checkout.setBackground(thistle);
         checkout.addActionListener((e) -> {
             if (itemsSelected > 0) {
@@ -712,7 +1040,7 @@ public class CustomerView extends State {
         panel.add(checkout);
 
         clearCart = new JButton("Clear Cart");
-        clearCart.setBounds(136, 345, 100, 50);
+        clearCart.setBounds(136, 450, 100, 50);
         clearCart.setBackground(thistle);
         clearCart.addActionListener((e) -> {
             if (ManagerView.managerAsCustomer) {
@@ -730,7 +1058,7 @@ public class CustomerView extends State {
 
         //This button logs the user out, returning them to the login menu.
         logOut = new JButton("Log Out");
-        logOut.setBounds(28, 410, 207, 50);
+        logOut.setBounds(27, 515, 100, 50);
         logOut.setBackground(thistle);
         logOut.addActionListener((e) -> {
             inventory.setPreferredSize(new Dimension(625, 0));
@@ -756,6 +1084,7 @@ public class CustomerView extends State {
             searchBarEntry.setVisible(true);
             searchBar.setVisible(true);
             searchBar.setText("");
+            orderError.setText("");
             cardNumberEntry.setVisible(true);
             cardNumber.setVisible(true);
             securityCodeEntry.setVisible(true);
@@ -774,8 +1103,12 @@ public class CustomerView extends State {
             igneousButton.setVisible(true);
             sedimentaryButton.setVisible(true);
             metamorphicButton.setVisible(true);
+            stoneButton.setVisible(true);
+            gemstoneButton.setVisible(true);
+            ordersButton.setVisible(true);
             checkout.setVisible(true);
             clearCart.setVisible(true);
+            logOut.setBounds(27, 480, 100, 50);
             logOut.setVisible(true);
 
             jp.remove(connectionStatus);
@@ -874,9 +1207,11 @@ public class CustomerView extends State {
                 if (discountCode.getText().equals(LoginView.discount.get(i).discountCode)) {
                     discountID = LoginView.discount.get(i).discountID;
                     if (LoginView.discount.get(i).startDate != null) {
-                        startDate = new java.sql.Date(LoginView.discount.get(i).startDate.getTime());
+                        LocalDate localStartDate = LocalDate.parse(LoginView.discount.get(i).startDate);
+                        startDate = Date.valueOf(localStartDate);
                     }
-                    expireDate = new java.sql.Date(LoginView.discount.get(i).expirationDate.getTime());
+                    LocalDate localExpireDate = LocalDate.parse(LoginView.discount.get(i).expirationDate);
+                    expireDate = Date.valueOf(localExpireDate);
                     discountLevel = LoginView.discount.get(i).discountLevel;
                     if (discountLevel == 1) {
                         discountInventoryID = LoginView.discount.get(i).inventoryID;
@@ -1233,50 +1568,227 @@ public class CustomerView extends State {
 
     void helpSystem() {
         Document document = new Document();
-
         Page page = document.getPages().add();
-
-        if (LoginView.currentPerson == 0) {
-            page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
-                    + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
-                    + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
-                    + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
-                    + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
-                    + "\n\nLogout Button - The log out button returns the user to the login menu"));
-        } else {
-            if (ManagerView.managerAsCustomer) {
-                page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
-                        + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
-                        + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
-                        + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
-                        + "\n\nClear Cart Button - This button removes all items from the cart and hides the table"
-                        + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
-                        + "\n\nAdd to Cart - A button allowing the user to add an item to their cart (confirm button required), can be clicked multiple times"
-                        + "\n\nReturn - A button that returns the user to search/purchase options"
-                        + "\n\nCard Data - You must enter a valid card number (Visa/Mastercard) and Card Verification Value (CVV), the card year cannot be five years expired"
-                        + "\n\nDiscount Code (NOT REQUIRED) - You must enter a valid discount code if you wish to save money"));
-            } else {
-                page.getParagraphs().add(new TextFragment("Refresh - Instantly removes all filters by refreshing the items on display"
-                        + "\n\nIgneous Button - The igneous button finds all rocks classified as igneous"
-                        + "\n\nSedimentary Button - The igneous button finds all rocks classified as sedimentary"
-                        + "\n\nMetamorphic Button - The igneous button finds all rocks classified as metamorphic"
-                        + "\n\nClear Cart Button - This button removes all items from the cart and hides the table"
-                        + "\n\nLogout Button - The log out button returns the user to the login menu"
-                        + "\n\nAny Button on Right Side - Showcases relevant data about the stone including the name, basic description, and current quantity"
-                        + "\n\nAdd to Cart - A button allowing the user to add an item to their cart (confirm button required), can be clicked multiple times"
-                        + "\n\nReturn - A button that returns the user to search/purchase options"
-                        + "\n\nCard Data - You must enter a valid card number (Visa/Mastercard) and Card Verification Value (CVV), the card year cannot be five years expired"
-                        + "\n\nDiscount Code (NOT REQUIRED) - You must enter a valid discount code if you wish to save money"));
-            }
+        page.getParagraphs().add(new TextFragment("Help Guide for Customers"));
+        page.getParagraphs().add(new TextFragment("==================================="));
+        page.getParagraphs().add(new TextFragment("----Guest Accessible Features"));
+        page.getParagraphs().add(new TextFragment("Refresh: Instantly removes all filters by refreshing the items on display."));
+        page.getParagraphs().add(new TextFragment("Igneous Button: Finds all rocks classified as igneous."));
+        page.getParagraphs().add(new TextFragment("Sedimentary Button: Finds all rocks classified as sedimentary."));
+        page.getParagraphs().add(new TextFragment("Metamorphic Button: Finds all rocks classified as metamorphic."));
+        page.getParagraphs().add(new TextFragment("Any Button on Right Side: Showcases relevant data about the stone including the name, description, and quantity."));
+        page.getParagraphs().add(new TextFragment("Logout Button: Returns the user to the login menu."));
+        page.getParagraphs().add(new TextFragment("----Additional Features for Customers Only"));
+        page.getParagraphs().add(new TextFragment("Clear Cart Button: Removes all items from the cart and hides the table."));
+        page.getParagraphs().add(new TextFragment("Add to Cart: Allows the user to add an item to their cart (confirmation required)."));
+        page.getParagraphs().add(new TextFragment("Return Button: Returns the user to search/purchase options."));
+        page.getParagraphs().add(new TextFragment("Card Data: Enter a valid card number (Visa/Mastercard) and CVV; the card cannot be expired by more than five years."));
+        page.getParagraphs().add(new TextFragment("Discount Code (NOT REQUIRED): Enter a valid discount code to save money."));
+        if (ManagerView.managerAsCustomer) {
+            page.getParagraphs().add(new TextFragment("----Manager Features"));
+            page.getParagraphs().add(new TextFragment("As a manager using the customer view, you have access to all standard features and can manage customer transactions effectively."));
+            page.getParagraphs().add(new TextFragment("Use the Clear Cart and Add to Cart functions as described above."));
         }
-
-        document.save("help.pdf");
-
+        document.save("customerhelp.pdf");
         try {
-            File pdfFile = new File("help.pdf");
+            File pdfFile = new File("customerhelp.pdf");
             Desktop.getDesktop().open(pdfFile);
         } catch (IOException e) {
             System.out.println(e);
         }
+    }
+
+    void customerSalesDetails() {
+        int orderNumber = 0;
+        boolean ordersFound = false;
+        double totalOfAllOrders = 0;
+        orderError.setText("");
+        final double TAX = 0.0825;
+        StringBuilder orderReport = new StringBuilder();
+        orderReport.append("<html><body><h1>Purchase Report</h1>");
+        orderReport.append("<table border='1'><tr></th><th>Order Date</th><th>Customer</th><th>Card Number</th><th>Card Expiration</th><th>Security Code</th><th>Discount Code</th><th>Order Total</th><th>Manager</th></tr>");
+        for (int p = 0; p < LoginView.person.size(); p++) {
+            if (LoginView.currentPerson == LoginView.person.get(p).personID) {
+                for (int or = 0; or < LoginView.orders.size(); or++) {
+                    Orders order = LoginView.orders.get(or);
+                    ordersFound = true;
+                    double orderTotalCost = 0;
+                    orderNumber++;
+                    orderReport.append("<tr>");
+                    orderReport.append("<td>").append(order.orderDate).append("</td>");
+                    boolean customerFound = false;
+                    for (int i = 0; i < LoginView.person.size(); i++) {
+                        if (LoginView.person.get(i).personID == order.personID) {
+                            orderReport.append("<td>").append(LoginView.person.get(i).nameFirst + " " + LoginView.person.get(i).nameLast.charAt(0)).append(".</td>");
+                            customerFound = true;
+                            break;
+                        }
+                    }
+                    if (!customerFound) {
+                        orderReport.append("<td>").append("Account Inactive - Customer Disabled").append("</td>");
+                    }
+                    orderReport.append("<td>").append(order.ccNumber).append("</td>");
+                    orderReport.append("<td>").append(order.expDate).append("</td>");
+                    orderReport.append("<td>").append(order.ccv).append("</td>");
+                    for (int od = 0; od < LoginView.orderDetails.size(); od++) {
+                        OrderDetails orderDetail = LoginView.orderDetails.get(od);
+                        boolean amountUsedUp = false;
+                        if (LoginView.orders.get(or).orderID == LoginView.orderDetails.get(od).orderID) {
+                            double itemTotalCost = LoginView.inventory.get(orderDetail.inventoryID).cost * orderDetail.quantity;
+                            if (orderDetail.discountID != 0) {
+                                for (int i = 0; i < LoginView.discount.size(); i++) {
+                                    if (LoginView.discount.get(i).discountID == orderDetail.discountID) {
+                                        if (LoginView.discount.get(i).discountLevel == 0) {
+                                            if (LoginView.discount.get(i).discountType == 0) {
+                                                itemTotalCost = itemTotalCost - (itemTotalCost * LoginView.discount.get(i).discountPercentage);
+                                            }
+                                            if (LoginView.discount.get(i).discountType == 1 && !amountUsedUp) {
+                                                amountUsedUp = true;
+                                                itemTotalCost = itemTotalCost - LoginView.discount.get(i).discountDollarAmount;
+                                            }
+                                        } else if (LoginView.discount.get(i).discountLevel == 1) {
+                                            if (LoginView.discount.get(i).inventoryID == LoginView.orderDetails.get(i).inventoryID) {
+                                                if (LoginView.discount.get(i).discountType == 0) {
+                                                    itemTotalCost = itemTotalCost - (itemTotalCost * LoginView.discount.get(i).discountPercentage);
+                                                }
+                                                if (LoginView.discount.get(i).discountType == 1 && !amountUsedUp) {
+                                                    amountUsedUp = true;
+                                                    itemTotalCost = itemTotalCost - LoginView.discount.get(i).discountDollarAmount;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            orderTotalCost += itemTotalCost;
+                        }
+                    }
+                    boolean discountPresent = false;
+                    for (int i = 0; i < LoginView.discount.size(); i++) {
+                        if (LoginView.discount.get(i).discountID == order.discountID) {
+                            orderReport.append("<td>").append(LoginView.discount.get(i).discountCode).append("</td>");
+                            discountPresent = true;
+                            break;
+                        }
+                    }
+                    if (!discountPresent) {
+                        orderReport.append("<td>").append("None").append("</td>");
+                    }
+                    double afterTax = orderTotalCost * TAX;
+                    orderTotalCost = orderTotalCost + afterTax;
+                    orderReport.append("<td>").append("$" + f.format(orderTotalCost)).append("</td>");
+                    boolean managerFound = false;
+                    for (int i = 0; i < LoginView.person.size(); i++) {
+                        if (LoginView.person.get(i).personID == order.managerID) {
+                            orderReport.append("<td>").append(LoginView.person.get(i).nameFirst + " " + LoginView.person.get(i).nameLast.charAt(0)).append("</td>");
+                            managerFound = true;
+                            break;
+                        }
+                    }
+                    if (!managerFound) {
+                        orderReport.append("<td>").append("None").append("</td>");
+                    }
+                    totalOfAllOrders += orderTotalCost;
+                }
+                orderReport.append("</table>");
+                orderReport.append("<h2>Cost of all orders: $" + f.format(totalOfAllOrders) + "<h2>");
+                orderReport.append("</body></html>");
+                break;
+            }
+        }
+        if (ordersFound) {
+            try {
+                String documentsDirectory = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+                File directory = new File(documentsDirectory);
+                if (!directory.exists()) {
+                    boolean created = directory.mkdirs();
+                    if (!created) {
+                        System.out.println("Directory Not Established: " + documentsDirectory);
+                        return;
+                    }
+                }
+
+                String filePath = documentsDirectory + File.separator + "customerOrders.html";
+                BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+                writer.write(orderReport.toString());
+                writer.close();
+                File file = new File(filePath);
+                URI uri = file.toURI();
+                Desktop.getDesktop().browse(uri);
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+        } else {
+            orderError.setText("No orders found");
+        }
+    }
+
+    static void setMin() {
+        for (int i = 0; i < LoginView.inventory.size(); i++) {
+            if (LoginView.inventory.get(i).cost > minPrice) {
+                minPrice = LoginView.inventory.get(i).cost;
+            }
+        }
+
+        minPriceSlider.setMinimum(0);
+        minPriceSlider.setMaximum((int) minPrice);
+        minPriceSlider.setValue(0);
+
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        labelTable.put(0, createLabel("$0"));
+        labelTable.put((int) minPrice / 2, createLabel("$" + f.format(((minPrice / 2)))));
+        labelTable.put((int) minPrice, createLabel("$" + f.format(minPrice)));
+
+        minPriceSlider.setLabelTable(labelTable);
+
+        minPriceSlider.repaint();
+        minPriceSlider.setLabelTable(labelTable);
+    }
+
+    static void setMax() {
+        for (int i = 0; i < LoginView.inventory.size(); i++) {
+            if (LoginView.inventory.get(i).cost > maxPrice) {
+                maxPrice = LoginView.inventory.get(i).cost;
+            }
+        }
+
+        maxPriceSlider.setMinimum((int) minPriceSlider.getValue());
+        maxPriceSlider.setMaximum((int) maxPrice);
+        maxPriceSlider.setValue(0);
+
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        labelTable.put(0, createLabel("$" + f.format(minPriceSlider.getValue())));
+        double mediumPrice = (maxPrice + minPriceSlider.getValue()) / 2;
+        labelTable.put((int) maxPrice / 2, createLabel("$" + f.format(mediumPrice)));
+        labelTable.put((int) maxPrice, createLabel("$" + f.format(maxPrice)));
+
+        maxPriceSlider.setLabelTable(labelTable);
+
+        maxPriceSlider.repaint();
+        maxPriceSlider.setLabelTable(labelTable);
+    }
+
+    static JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Arial", Font.PLAIN, 10));
+        return label;
+    }
+
+    void newMinForMax() {
+        maxPriceSlider.setMinimum(minPriceSlider.getValue());
+
+        if (maxPriceSlider.getValue() < maxPriceSlider.getMinimum()) {
+            maxPriceSlider.setValue(maxPriceSlider.getMinimum());
+        }
+
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        labelTable.put(maxPriceSlider.getMinimum(), createLabel("$" + f.format(maxPriceSlider.getMinimum())));
+        labelTable.put(maxPriceSlider.getMaximum(), createLabel("$" + f.format(maxPriceSlider.getMaximum())));
+
+        double mediumPrice = (maxPriceSlider.getMaximum() + maxPriceSlider.getMinimum()) / 2;
+        labelTable.put((int) mediumPrice, createLabel("$" + f.format(mediumPrice)));
+
+        maxPriceSlider.setLabelTable(labelTable);
+        maxPriceSlider.repaint();
     }
 }

@@ -862,7 +862,7 @@ public class Register extends State {
                     CustomerView.personDetails = l;
                 }
             }
-            
+
             CustomerView.cartList.add(new ArrayList<>());
 
             jp.remove(connectionStatus);
@@ -871,6 +871,9 @@ public class Register extends State {
             connectionStatus.setForeground(Color.red);
             CustomerView.panel.add(connectionStatus);
 
+            CustomerView.setMin();
+            CustomerView.setMax();
+
             //Updates the inventory for the customer
             ((CustomerView) customerView).updateData();
             //A switch to the customer's view
@@ -878,7 +881,7 @@ public class Register extends State {
             jp.setVisible(false);
             jf.remove(jp);
             jf.add(customerView.jp);
-            jf.setBounds(jf.getX(), jf.getY(), 1050, 523);
+            jf.setBounds(jf.getX(), jf.getY(), 1050, 628);
             customerView.jp.setVisible(true);
         }
     }

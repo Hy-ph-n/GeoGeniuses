@@ -29,7 +29,7 @@ public class ItemSelection extends State implements ActionListener {
         CustomerView.itemGrainSize.setVisible(false);
         CustomerView.itemGrainShape.setVisible(false);
         CustomerView.itemHeft.setVisible(false);
-        int yValue = 265;
+        int yValue = 370;
         if (inventory.categoryID == 1) {
             CustomerView.itemRockOrGem.setText("Igneous Rock");
         } else if (inventory.categoryID == 2) {
@@ -75,7 +75,7 @@ public class ItemSelection extends State implements ActionListener {
         CustomerView.stoneSize.setVisible(true);
         CustomerView.stoneWeight.setVisible(true);
         CustomerView.price.setLocation(CustomerView.price.getX(), yValue += 15);
-        CustomerView.price.setText("Price: $" + inventory.retailPrice);
+        CustomerView.price.setText("Price: $" + inventory.cost);
         CustomerView.price.setVisible(true);
         CustomerView.quantity.setLocation(CustomerView.quantity.getX(), yValue += 15);
         if (CustomerView.cart.size() == 0) {
@@ -113,6 +113,7 @@ public class ItemSelection extends State implements ActionListener {
             CustomerView.discountError.setText("");
             CustomerView.checkout.setVisible(false);
             CustomerView.clearCart.setVisible(false);
+            CustomerView.ordersButton.setVisible(false);
             CustomerView.logOut.setVisible(false);
         }
     }
