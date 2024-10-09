@@ -221,7 +221,7 @@ public class LoginView extends State {
 
             CustomerView.logOut.setBounds(28, 480, 207, 50);
             CustomerView.ordersButton.setVisible(false);
-
+            
             CustomerView.searchBarEntry.setVisible(true);
             CustomerView.searchBar.setVisible(true);
             CustomerView.cardNumberEntry.setVisible(false);
@@ -289,7 +289,7 @@ public class LoginView extends State {
         resetPasswordButton.setBounds(310, 355, 130, 50);
         resetPasswordButton.setBackground(thistle);
         resetPasswordButton.addActionListener((e) -> {
-            resetPassword = true;
+            resetPassword = false;
             String loginName = logName.getText();
 
             jp.remove(connectionStatus);
@@ -683,6 +683,7 @@ public class LoginView extends State {
                 if (logon.get(i).positionTitle.equals("Customer")) {
                     personPosition = i;
                 }
+                resetPassword = true;
             }
         }
     }

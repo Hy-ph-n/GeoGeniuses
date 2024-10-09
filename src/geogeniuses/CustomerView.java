@@ -1108,7 +1108,7 @@ public class CustomerView extends State {
             ordersButton.setVisible(true);
             checkout.setVisible(true);
             clearCart.setVisible(true);
-            logOut.setBounds(27, 480, 100, 50);
+            logOut.setBounds(27, 515, 100, 50);
             logOut.setVisible(true);
 
             jp.remove(connectionStatus);
