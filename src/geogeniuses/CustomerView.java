@@ -145,13 +145,13 @@ public class CustomerView extends State {
         panel.add(orderError);
 
         itemsName = new JLabel("");
-        itemsName.setBounds(panel.getWidth() / 8, 255, 200, 15);
+        itemsName.setBounds(panel.getWidth() / 8, 260, 200, 15);
         itemsName.setHorizontalAlignment(SwingConstants.CENTER);
         itemsName.setVisible(false);
         panel.add(itemsName);
 
         itemsDescription = new JTextArea("");
-        itemsDescription.setBounds(11, 280, 250, 105);
+        itemsDescription.setBounds(11, 285, 250, 105);
         itemsDescription.setEnabled(false);
         itemsDescription.setDisabledTextColor(Color.black);
         itemsDescription.setLineWrap(true);
@@ -161,55 +161,55 @@ public class CustomerView extends State {
         panel.add(itemsDescription);
 
         itemRockOrGem = new JLabel("");
-        itemRockOrGem.setBounds(panel.getWidth() / 8, 370, 200, 15);
+        itemRockOrGem.setBounds(panel.getWidth() / 8, 375, 200, 15);
         itemRockOrGem.setHorizontalAlignment(SwingConstants.CENTER);
         itemRockOrGem.setVisible(false);
         panel.add(itemRockOrGem);
 
         itemGrainSize = new JLabel("");
-        itemGrainSize.setBounds(panel.getWidth() / 8, 385, 200, 15);
+        itemGrainSize.setBounds(panel.getWidth() / 8, 390, 200, 15);
         itemGrainSize.setHorizontalAlignment(SwingConstants.CENTER);
         itemGrainSize.setVisible(false);
         panel.add(itemGrainSize);
 
         itemGrainShape = new JLabel("");
-        itemGrainShape.setBounds(panel.getWidth() / 8, 400, 200, 15);
+        itemGrainShape.setBounds(panel.getWidth() / 8, 405, 200, 15);
         itemGrainShape.setHorizontalAlignment(SwingConstants.CENTER);
         itemGrainShape.setVisible(false);
         panel.add(itemGrainShape);
 
         itemHeft = new JLabel("");
-        itemHeft.setBounds(panel.getWidth() / 8, 385, 200, 15);
+        itemHeft.setBounds(panel.getWidth() / 8, 390, 200, 15);
         itemHeft.setHorizontalAlignment(SwingConstants.CENTER);
         itemHeft.setVisible(false);
         panel.add(itemHeft);
 
         itemHardness = new JLabel("");
-        itemHardness.setBounds(panel.getWidth() / 8, 400, 200, 15);
+        itemHardness.setBounds(panel.getWidth() / 8, 405, 200, 15);
         itemHardness.setHorizontalAlignment(SwingConstants.CENTER);
         itemHardness.setVisible(false);
         panel.add(itemHardness);
 
         stoneSize = new JLabel("");
-        stoneSize.setBounds(panel.getWidth() / 8, 415, 200, 15);
+        stoneSize.setBounds(panel.getWidth() / 8, 420, 200, 15);
         stoneSize.setHorizontalAlignment(SwingConstants.CENTER);
         stoneSize.setVisible(false);
         panel.add(stoneSize);
 
         stoneWeight = new JLabel("");
-        stoneWeight.setBounds(panel.getWidth() / 8, 430, 200, 15);
+        stoneWeight.setBounds(panel.getWidth() / 8, 435, 200, 15);
         stoneWeight.setHorizontalAlignment(SwingConstants.CENTER);
         stoneWeight.setVisible(false);
         panel.add(stoneWeight);
 
         price = new JLabel("");
-        price.setBounds(panel.getWidth() / 8, 345, 200, 15);
+        price.setBounds(panel.getWidth() / 8, 350, 200, 15);
         price.setHorizontalAlignment(SwingConstants.CENTER);
         price.setVisible(false);
         panel.add(price);
 
         quantity = new JLabel("");
-        quantity.setBounds(panel.getWidth() / 8, 460, 200, 15);
+        quantity.setBounds(panel.getWidth() / 8, 465, 200, 15);
         quantity.setHorizontalAlignment(SwingConstants.CENTER);
         quantity.setVisible(false);
         panel.add(quantity);
@@ -375,10 +375,30 @@ public class CustomerView extends State {
                 itemDisplay.repaint();
                 ItemSelection select = new ItemSelection(items);
                 String searchText = searchBar.getText().trim().toLowerCase();
-                for (int i = 0; i < LoginView.inventory.size(); i++) {
-                    String compareName = LoginView.inventory.get(i).itemName.toLowerCase();
+
+                int minPrice = minPriceSlider.getValue();
+                int maxPrice = maxPriceSlider.getValue();
+                int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+                ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+                if (maxPrice == maxPriceMaximum) {
+                    sortedInventory.removeIf(item -> item.cost < minPrice);
+                } else {
+                    sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+                }
+
+                Collections.sort(sortedInventory, new Comparator<Inventory>() {
+                    @Override
+                    public int compare(Inventory item1, Inventory item2) {
+                        return Double.compare(item1.cost, item2.cost);
+                    }
+                });
+
+                for (int i = 0; i < sortedInventory.size(); i++) {
+                    String compareName = sortedInventory.get(i).itemName.toLowerCase();
                     if (compareName.contains(searchText)) {
-                        String itemName = LoginView.inventory.get(i).itemName;
+                        String itemName = sortedInventory.get(i).itemName;
 
                         imageLayout.weightx = 0.5;
                         imageLayout.fill = GridBagConstraints.HORIZONTAL;
@@ -392,7 +412,7 @@ public class CustomerView extends State {
                             x++;
                         }
 
-                        if (LoginView.inventory.get(i).itemImage == null) {
+                        if (sortedInventory.get(i).itemImage == null) {
                             JButton item = new JButton(itemName);
                             item.setBackground(thistle);
                             item.addActionListener(select);
@@ -400,7 +420,7 @@ public class CustomerView extends State {
                             itemDisplay.add(item, imageLayout);
                         } else {
                             try {
-                                byte[] b = LoginView.inventory.get(i).itemImage;
+                                byte[] b = sortedInventory.get(i).itemImage;
                                 ItemIcon itemIcon = new ItemIcon(b);
                                 Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                                 itemIcon = new ItemIcon(itemImage);
@@ -432,6 +452,8 @@ public class CustomerView extends State {
         refreshButton.addActionListener((e) -> {
             searchBar.setText("");
             orderError.setText("");
+            setMin();
+            setMax();
             updateData();
         });
         panel.add(refreshButton);
@@ -448,9 +470,29 @@ public class CustomerView extends State {
             items.clear();
             itemDisplay.repaint();
             ItemSelection select = new ItemSelection(items);
-            for (int i = 0; i < LoginView.inventory.size(); i++) {
-                if (LoginView.inventory.get(i).categoryID == 1) {
-                    String itemName = LoginView.inventory.get(i).itemName;
+
+            int minPrice = minPriceSlider.getValue();
+            int maxPrice = maxPriceSlider.getValue();
+            int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+            ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+            if (maxPrice == maxPriceMaximum) {
+                sortedInventory.removeIf(item -> item.cost < minPrice);
+            } else {
+                sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+            }
+
+            Collections.sort(sortedInventory, new Comparator<Inventory>() {
+                @Override
+                public int compare(Inventory item1, Inventory item2) {
+                    return Double.compare(item1.cost, item2.cost);
+                }
+            });
+
+            for (int i = 0; i < sortedInventory.size(); i++) {
+                if (sortedInventory.get(i).categoryID == 1) {
+                    String itemName = sortedInventory.get(i).itemName;
 
                     imageLayout.weightx = 0.5;
                     imageLayout.fill = GridBagConstraints.HORIZONTAL;
@@ -464,7 +506,7 @@ public class CustomerView extends State {
                         x++;
                     }
 
-                    if (LoginView.inventory.get(i).itemImage == null) {
+                    if (sortedInventory.get(i).itemImage == null) {
                         JButton item = new JButton(itemName);
                         item.setBackground(thistle);
                         item.addActionListener(select);
@@ -472,7 +514,7 @@ public class CustomerView extends State {
                         itemDisplay.add(item, imageLayout);
                     } else {
                         try {
-                            byte[] b = LoginView.inventory.get(i).itemImage;
+                            byte[] b = sortedInventory.get(i).itemImage;
                             ItemIcon itemIcon = new ItemIcon(b);
                             Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                             itemIcon = new ItemIcon(itemImage);
@@ -510,9 +552,29 @@ public class CustomerView extends State {
             items.clear();
             itemDisplay.repaint();
             ItemSelection select = new ItemSelection(items);
-            for (int i = 0; i < LoginView.inventory.size(); i++) {
-                if (LoginView.inventory.get(i).categoryID == 2) {
-                    String itemName = LoginView.inventory.get(i).itemName;
+
+            int minPrice = minPriceSlider.getValue();
+            int maxPrice = maxPriceSlider.getValue();
+            int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+            ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+            if (maxPrice == maxPriceMaximum) {
+                sortedInventory.removeIf(item -> item.cost < minPrice);
+            } else {
+                sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+            }
+
+            Collections.sort(sortedInventory, new Comparator<Inventory>() {
+                @Override
+                public int compare(Inventory item1, Inventory item2) {
+                    return Double.compare(item1.cost, item2.cost);
+                }
+            });
+
+            for (int i = 0; i < sortedInventory.size(); i++) {
+                if (sortedInventory.get(i).categoryID == 2) {
+                    String itemName = sortedInventory.get(i).itemName;
 
                     imageLayout.weightx = 0.5;
                     imageLayout.fill = GridBagConstraints.HORIZONTAL;
@@ -526,7 +588,7 @@ public class CustomerView extends State {
                         x++;
                     }
 
-                    if (LoginView.inventory.get(i).itemImage == null) {
+                    if (sortedInventory.get(i).itemImage == null) {
                         JButton item = new JButton(itemName);
                         item.setBackground(thistle);
                         item.addActionListener(select);
@@ -534,7 +596,7 @@ public class CustomerView extends State {
                         itemDisplay.add(item, imageLayout);
                     } else {
                         try {
-                            byte[] b = LoginView.inventory.get(i).itemImage;
+                            byte[] b = sortedInventory.get(i).itemImage;
                             ItemIcon itemIcon = new ItemIcon(b);
                             Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                             itemIcon = new ItemIcon(itemImage);
@@ -572,9 +634,29 @@ public class CustomerView extends State {
             items.clear();
             itemDisplay.repaint();
             ItemSelection select = new ItemSelection(items);
-            for (int i = 0; i < LoginView.inventory.size(); i++) {
-                if (LoginView.inventory.get(i).categoryID == 3) {
-                    String itemName = LoginView.inventory.get(i).itemName;
+
+            int minPrice = minPriceSlider.getValue();
+            int maxPrice = maxPriceSlider.getValue();
+            int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+            ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+            if (maxPrice == maxPriceMaximum) {
+                sortedInventory.removeIf(item -> item.cost < minPrice);
+            } else {
+                sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+            }
+
+            Collections.sort(sortedInventory, new Comparator<Inventory>() {
+                @Override
+                public int compare(Inventory item1, Inventory item2) {
+                    return Double.compare(item1.cost, item2.cost);
+                }
+            });
+
+            for (int i = 0; i < sortedInventory.size(); i++) {
+                if (sortedInventory.get(i).categoryID == 3) {
+                    String itemName = sortedInventory.get(i).itemName;
 
                     imageLayout.weightx = 0.5;
                     imageLayout.fill = GridBagConstraints.HORIZONTAL;
@@ -588,7 +670,7 @@ public class CustomerView extends State {
                         x++;
                     }
 
-                    if (LoginView.inventory.get(i).itemImage == null) {
+                    if (sortedInventory.get(i).itemImage == null) {
                         JButton item = new JButton(itemName);
                         item.setBackground(thistle);
                         item.addActionListener(select);
@@ -596,7 +678,7 @@ public class CustomerView extends State {
                         itemDisplay.add(item, imageLayout);
                     } else {
                         try {
-                            byte[] b = LoginView.inventory.get(i).itemImage;
+                            byte[] b = sortedInventory.get(i).itemImage;
                             ItemIcon itemIcon = new ItemIcon(b);
                             Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                             itemIcon = new ItemIcon(itemImage);
@@ -634,9 +716,29 @@ public class CustomerView extends State {
             items.clear();
             itemDisplay.repaint();
             ItemSelection select = new ItemSelection(items);
-            for (int i = 0; i < LoginView.inventory.size(); i++) {
-                if (LoginView.inventory.get(i).stoneOrGemstone == 0) {
-                    String itemName = LoginView.inventory.get(i).itemName;
+
+            int minPrice = minPriceSlider.getValue();
+            int maxPrice = maxPriceSlider.getValue();
+            int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+            ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+            if (maxPrice == maxPriceMaximum) {
+                sortedInventory.removeIf(item -> item.cost < minPrice);
+            } else {
+                sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+            }
+
+            Collections.sort(sortedInventory, new Comparator<Inventory>() {
+                @Override
+                public int compare(Inventory item1, Inventory item2) {
+                    return Double.compare(item1.cost, item2.cost);
+                }
+            });
+
+            for (int i = 0; i < sortedInventory.size(); i++) {
+                if (sortedInventory.get(i).stoneOrGemstone == 0) {
+                    String itemName = sortedInventory.get(i).itemName;
 
                     imageLayout.weightx = 0.5;
                     imageLayout.fill = GridBagConstraints.HORIZONTAL;
@@ -650,7 +752,7 @@ public class CustomerView extends State {
                         x++;
                     }
 
-                    if (LoginView.inventory.get(i).itemImage == null) {
+                    if (sortedInventory.get(i).itemImage == null) {
                         JButton item = new JButton(itemName);
                         item.setBackground(thistle);
                         item.addActionListener(select);
@@ -658,7 +760,7 @@ public class CustomerView extends State {
                         itemDisplay.add(item, imageLayout);
                     } else {
                         try {
-                            byte[] b = LoginView.inventory.get(i).itemImage;
+                            byte[] b = sortedInventory.get(i).itemImage;
                             ItemIcon itemIcon = new ItemIcon(b);
                             Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                             itemIcon = new ItemIcon(itemImage);
@@ -696,9 +798,29 @@ public class CustomerView extends State {
             items.clear();
             itemDisplay.repaint();
             ItemSelection select = new ItemSelection(items);
-            for (int i = 0; i < LoginView.inventory.size(); i++) {
-                if (LoginView.inventory.get(i).stoneOrGemstone == 1) {
-                    String itemName = LoginView.inventory.get(i).itemName;
+
+            int minPrice = minPriceSlider.getValue();
+            int maxPrice = maxPriceSlider.getValue();
+            int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+            ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+            if (maxPrice == maxPriceMaximum) {
+                sortedInventory.removeIf(item -> item.cost < minPrice);
+            } else {
+                sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+            }
+
+            Collections.sort(sortedInventory, new Comparator<Inventory>() {
+                @Override
+                public int compare(Inventory item1, Inventory item2) {
+                    return Double.compare(item1.cost, item2.cost);
+                }
+            });
+
+            for (int i = 0; i < sortedInventory.size(); i++) {
+                if (sortedInventory.get(i).stoneOrGemstone == 1) {
+                    String itemName = sortedInventory.get(i).itemName;
 
                     imageLayout.weightx = 0.5;
                     imageLayout.fill = GridBagConstraints.HORIZONTAL;
@@ -712,7 +834,7 @@ public class CustomerView extends State {
                         x++;
                     }
 
-                    if (LoginView.inventory.get(i).itemImage == null) {
+                    if (sortedInventory.get(i).itemImage == null) {
                         JButton item = new JButton(itemName);
                         item.setBackground(thistle);
                         item.addActionListener(select);
@@ -720,7 +842,7 @@ public class CustomerView extends State {
                         itemDisplay.add(item, imageLayout);
                     } else {
                         try {
-                            byte[] b = LoginView.inventory.get(i).itemImage;
+                            byte[] b = sortedInventory.get(i).itemImage;
                             ItemIcon itemIcon = new ItemIcon(b);
                             Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
                             itemIcon = new ItemIcon(itemImage);
@@ -1332,24 +1454,32 @@ public class CustomerView extends State {
 
             StringBuilder sb = new StringBuilder();
             sb.append("<html>");
+            sb.append("<style>")
+                                    .append("body {background-color: #DFFDFF;}")
+                                    .append("table {width: 100%; border-collapse: collapse;}")
+                                    .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                                    .append("td {background-color: white !important;}")
+                                    .append("th {background-color: #f2f2f2;}")
+                                    .append("tr:hover { background-color: #f1f1f1;}")
+                                    .append("</style>");
             sb.append("<head></head>");
             sb.append("<body>");
 
             if (ManagerView.managerAsCustomer) {
-                sb.append("<h2>Assissted Checkout</h2>");
-                sb.append("<h2>Manager Name: ").append(LoginView.person.get(ManagerView.managerDetails).nameFirst + " " + LoginView.person.get(ManagerView.managerDetails).nameLast.charAt(0)).append(".</h2>");
+                sb.append("<h2 style='text-align: center;'>Assisted Checkout</h2>");
+                sb.append("<h2 style='text-align: center;'>Manager Name: ").append(LoginView.person.get(ManagerView.managerDetails).nameFirst + " " + LoginView.person.get(ManagerView.managerDetails).nameLast.charAt(0)).append(".</h2>");
             }
-            sb.append("<h2>Customer Name: ").append(LoginView.person.get(personDetails).nameFirst + " " + LoginView.person.get(personDetails).nameLast.charAt(0)).append(".</h2>");
-            sb.append("<h2>Phone Number:  ").append(LoginView.person.get(personDetails).phonePrimary).append("</h2>");
-            sb.append("<h2>Card Expiration Date:  ").append(cardExpirationMonth.getSelectedItem() + "/" + cardExpirationYear.getSelectedItem()).append("</h2>");
+            sb.append("<h2 style='text-align: center;'>Customer Name: ").append(LoginView.person.get(personDetails).nameFirst + " " + LoginView.person.get(personDetails).nameLast.charAt(0)).append(".</h2>");
+            sb.append("<h2 style='text-align: center;'>Phone Number:  ").append(LoginView.person.get(personDetails).phonePrimary).append("</h2>");
+            sb.append("<h2 style='text-align: center;'>Card Expiration Date:  ").append(cardExpirationMonth.getSelectedItem() + "/" + cardExpirationYear.getSelectedItem()).append("</h2>");
 
             sb.append("<table>");
 
             sb.append("<tr>");
-            sb.append("<th style=\"background: #333; color: white; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;\">Item Name</th>");
-            sb.append("<th style=\"background: #333; color: white; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;\">Cost</th>");
-            sb.append("<th style=\"background: #333; color: white; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;\">Quantity</th>");
-            sb.append("<th style=\"background: #333; color: white; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;\">Total Cost</th>");
+            sb.append("<th style=\"background: #f2f2f2; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;\">Item Name</th>");
+            sb.append("<th style=\"background: #f2f2f2; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;\">Cost</th>");
+            sb.append("<th style=\"background: #f2f2f2; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;\">Quantity</th>");
+            sb.append("<th style=\"background: #f2f2f2; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;\">Total Cost</th>");
             sb.append("</tr>");
 
             for (int i = 0; i < cartList.get(LoginView.personPosition).size(); i++) {
@@ -1605,49 +1735,41 @@ public class CustomerView extends State {
         orderError.setText("");
         final double TAX = 0.0825;
         StringBuilder orderReport = new StringBuilder();
-        orderReport.append("<html><body><h1>Purchase Report</h1>");
-        orderReport.append("<table border='1'><tr></th><th>Order Date</th><th>Customer</th><th>Card Number</th><th>Card Expiration</th><th>Security Code</th><th>Discount Code</th><th>Order Total</th><th>Manager</th></tr>");
         for (int p = 0; p < LoginView.person.size(); p++) {
             if (LoginView.currentPerson == LoginView.person.get(p).personID) {
                 for (int or = 0; or < LoginView.orders.size(); or++) {
                     Orders order = LoginView.orders.get(or);
-                    ordersFound = true;
                     double orderTotalCost = 0;
                     orderNumber++;
-                    orderReport.append("<tr>");
-                    orderReport.append("<td>").append(order.orderDate).append("</td>");
-                    boolean customerFound = false;
-                    for (int i = 0; i < LoginView.person.size(); i++) {
-                        if (LoginView.person.get(i).personID == order.personID) {
-                            orderReport.append("<td>").append(LoginView.person.get(i).nameFirst + " " + LoginView.person.get(i).nameLast.charAt(0)).append(".</td>");
-                            customerFound = true;
-                            break;
+                    if (LoginView.currentPerson == order.personID) {
+                        if (!ordersFound) {
+                            orderReport.append("<html><body><h1 style='text-align: center;'>Purchase Report</h1>");
+                            orderReport.append("<style>")
+                                    .append("body {background-color: #DFFDFF;}")
+                                    .append("table {width: 100%; border-collapse: collapse;}")
+                                    .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                                    .append("td {background-color: white !important;}")
+                                    .append("th {background-color: #f2f2f2;}")
+                                    .append("tr:hover { background-color: #f1f1f1;}")
+                                    .append("</style>");
+                            orderReport.append("<table border='1'><tr></th><th>Order Date</th><th>Customer</th><th>Card Number</th><th>Card Expiration</th><th>Security Code</th><th>Discount Code</th><th>Order Total</th><th>Manager</th></tr>");
+                            ordersFound = true;
                         }
-                    }
-                    if (!customerFound) {
-                        orderReport.append("<td>").append("Account Inactive - Customer Disabled").append("</td>");
-                    }
-                    orderReport.append("<td>").append(order.ccNumber).append("</td>");
-                    orderReport.append("<td>").append(order.expDate).append("</td>");
-                    orderReport.append("<td>").append(order.ccv).append("</td>");
-                    for (int od = 0; od < LoginView.orderDetails.size(); od++) {
-                        OrderDetails orderDetail = LoginView.orderDetails.get(od);
-                        boolean amountUsedUp = false;
-                        if (LoginView.orders.get(or).orderID == LoginView.orderDetails.get(od).orderID) {
-                            double itemTotalCost = LoginView.inventory.get(orderDetail.inventoryID).cost * orderDetail.quantity;
-                            if (orderDetail.discountID != 0) {
-                                for (int i = 0; i < LoginView.discount.size(); i++) {
-                                    if (LoginView.discount.get(i).discountID == orderDetail.discountID) {
-                                        if (LoginView.discount.get(i).discountLevel == 0) {
-                                            if (LoginView.discount.get(i).discountType == 0) {
-                                                itemTotalCost = itemTotalCost - (itemTotalCost * LoginView.discount.get(i).discountPercentage);
-                                            }
-                                            if (LoginView.discount.get(i).discountType == 1 && !amountUsedUp) {
-                                                amountUsedUp = true;
-                                                itemTotalCost = itemTotalCost - LoginView.discount.get(i).discountDollarAmount;
-                                            }
-                                        } else if (LoginView.discount.get(i).discountLevel == 1) {
-                                            if (LoginView.discount.get(i).inventoryID == LoginView.orderDetails.get(i).inventoryID) {
+                        orderReport.append("<tr>");
+                        orderReport.append("<td>").append(order.orderDate).append("</td>");
+                        orderReport.append("<td>").append(LoginView.person.get(p).nameFirst + " " + LoginView.person.get(p).nameLast.charAt(0)).append(".</td>");
+                        orderReport.append("<td>").append(order.ccNumber).append("</td>");
+                        orderReport.append("<td>").append(order.expDate).append("</td>");
+                        orderReport.append("<td>").append(order.ccv).append("</td>");
+                        for (int od = 0; od < LoginView.orderDetails.size(); od++) {
+                            OrderDetails orderDetail = LoginView.orderDetails.get(od);
+                            boolean amountUsedUp = false;
+                            if (LoginView.orders.get(or).orderID == LoginView.orderDetails.get(od).orderID) {
+                                double itemTotalCost = LoginView.inventory.get(orderDetail.inventoryID).cost * orderDetail.quantity;
+                                if (orderDetail.discountID != 0) {
+                                    for (int i = 0; i < LoginView.discount.size(); i++) {
+                                        if (LoginView.discount.get(i).discountID == orderDetail.discountID) {
+                                            if (LoginView.discount.get(i).discountLevel == 0) {
                                                 if (LoginView.discount.get(i).discountType == 0) {
                                                     itemTotalCost = itemTotalCost - (itemTotalCost * LoginView.discount.get(i).discountPercentage);
                                                 }
@@ -1655,44 +1777,59 @@ public class CustomerView extends State {
                                                     amountUsedUp = true;
                                                     itemTotalCost = itemTotalCost - LoginView.discount.get(i).discountDollarAmount;
                                                 }
+                                            } else if (LoginView.discount.get(i).discountLevel == 1) {
+                                                if (LoginView.discount.get(i).inventoryID == LoginView.orderDetails.get(i).inventoryID) {
+                                                    if (LoginView.discount.get(i).discountType == 0) {
+                                                        itemTotalCost = itemTotalCost - (itemTotalCost * LoginView.discount.get(i).discountPercentage);
+                                                    }
+                                                    if (LoginView.discount.get(i).discountType == 1 && !amountUsedUp) {
+                                                        amountUsedUp = true;
+                                                        itemTotalCost = itemTotalCost - LoginView.discount.get(i).discountDollarAmount;
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
+                                orderTotalCost += itemTotalCost;
                             }
-                            orderTotalCost += itemTotalCost;
                         }
-                    }
-                    boolean discountPresent = false;
-                    for (int i = 0; i < LoginView.discount.size(); i++) {
-                        if (LoginView.discount.get(i).discountID == order.discountID) {
-                            orderReport.append("<td>").append(LoginView.discount.get(i).discountCode).append("</td>");
-                            discountPresent = true;
-                            break;
+                        boolean discountPresent = false;
+                        for (int i = 0; i < LoginView.discount.size(); i++) {
+                            if (LoginView.discount.get(i).discountID == order.discountID) {
+                                orderReport.append("<td>").append(LoginView.discount.get(i).discountCode).append("</td>");
+                                discountPresent = true;
+                                break;
+                            }
                         }
-                    }
-                    if (!discountPresent) {
-                        orderReport.append("<td>").append("None").append("</td>");
-                    }
-                    double afterTax = orderTotalCost * TAX;
-                    orderTotalCost = orderTotalCost + afterTax;
-                    orderReport.append("<td>").append("$" + f.format(orderTotalCost)).append("</td>");
-                    boolean managerFound = false;
-                    for (int i = 0; i < LoginView.person.size(); i++) {
-                        if (LoginView.person.get(i).personID == order.managerID) {
-                            orderReport.append("<td>").append(LoginView.person.get(i).nameFirst + " " + LoginView.person.get(i).nameLast.charAt(0)).append("</td>");
-                            managerFound = true;
-                            break;
+                        if (!discountPresent) {
+                            orderReport.append("<td>").append("None").append("</td>");
                         }
+                        double afterTax = orderTotalCost * TAX;
+                        orderTotalCost = orderTotalCost + afterTax;
+                        orderReport.append("<td>").append("$" + f.format(orderTotalCost)).append("</td>");
+                        boolean managerFound = false;
+                        for (int i = 0; i < LoginView.person.size(); i++) {
+                            if (LoginView.person.get(i).personID == order.managerID) {
+                                orderReport.append("<td>").append(LoginView.person.get(i).nameFirst + " " + LoginView.person.get(i).nameLast.charAt(0)).append("</td>");
+                                managerFound = true;
+                                break;
+                            }
+                        }
+                        if (!managerFound) {
+                            orderReport.append("<td>").append("None").append("</td>");
+                        }
+                        totalOfAllOrders += orderTotalCost;
                     }
-                    if (!managerFound) {
-                        orderReport.append("<td>").append("None").append("</td>");
-                    }
-                    totalOfAllOrders += orderTotalCost;
                 }
-                orderReport.append("</table>");
-                orderReport.append("<h2>Cost of all orders: $" + f.format(totalOfAllOrders) + "<h2>");
-                orderReport.append("</body></html>");
+                if (ordersFound) {
+                    orderReport.append("</table>");
+                    orderReport.append("<h2 style='text-align: center;'>Cost of all orders: $" + f.format(totalOfAllOrders) + "<h2>");
+                    orderReport.append("</body></html>");
+                } else {
+                    orderReport.append("<p>No orders</p>");
+                    orderReport.append("</body></html>");
+                }
                 break;
             }
         }
@@ -1740,7 +1877,7 @@ public class CustomerView extends State {
         labelTable.put((int) minPrice, createLabel("$" + f.format(minPrice)));
 
         minPriceSlider.setLabelTable(labelTable);
-
+        minPriceSlider.setValue(minPriceSlider.getMinimum());
         minPriceSlider.repaint();
         minPriceSlider.setLabelTable(labelTable);
     }
@@ -1757,13 +1894,17 @@ public class CustomerView extends State {
         maxPriceSlider.setValue(0);
 
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-        labelTable.put(0, createLabel("$" + f.format(minPriceSlider.getValue())));
+        if (minPriceSlider.getValue() > 0) {
+            labelTable.put(0, createLabel("$" + f.format(minPriceSlider.getValue())));
+        } else {
+            labelTable.put(0, createLabel("$" + minPriceSlider.getValue()));
+        }
         double mediumPrice = (maxPrice + minPriceSlider.getValue()) / 2;
         labelTable.put((int) maxPrice / 2, createLabel("$" + f.format(mediumPrice)));
         labelTable.put((int) maxPrice, createLabel("$" + f.format(maxPrice)));
 
         maxPriceSlider.setLabelTable(labelTable);
-
+        maxPriceSlider.setValue(maxPriceSlider.getMaximum());
         maxPriceSlider.repaint();
         maxPriceSlider.setLabelTable(labelTable);
     }
@@ -1782,7 +1923,11 @@ public class CustomerView extends State {
         }
 
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-        labelTable.put(maxPriceSlider.getMinimum(), createLabel("$" + f.format(maxPriceSlider.getMinimum())));
+        if (minPriceSlider.getValue() > 0) {
+            labelTable.put(maxPriceSlider.getMinimum(), createLabel("$" + f.format(maxPriceSlider.getMinimum())));
+        } else {
+            labelTable.put(maxPriceSlider.getMinimum(), createLabel("$" + maxPriceSlider.getMinimum()));
+        }
         labelTable.put(maxPriceSlider.getMaximum(), createLabel("$" + f.format(maxPriceSlider.getMaximum())));
 
         double mediumPrice = (maxPriceSlider.getMaximum() + maxPriceSlider.getMinimum()) / 2;

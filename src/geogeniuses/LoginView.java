@@ -219,7 +219,7 @@ public class LoginView extends State {
             logPassword.setText("");
             logonError.setText("");
 
-            CustomerView.logOut.setBounds(28, 480, 207, 50);
+            CustomerView.logOut.setBounds(27, 515, 207, 50);
             CustomerView.ordersButton.setVisible(false);
             
             CustomerView.searchBarEntry.setVisible(true);

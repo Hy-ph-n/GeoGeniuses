@@ -4186,7 +4186,17 @@ public class ManagerView extends State {
                 java.util.Date orderEnds = df.parse(orderEndTime);
                 java.sql.Date orderEnd = new Date(orderEnds.getTime());
                 StringBuilder orderReport = new StringBuilder();
-                orderReport.append("<html><body><h1>Sales Report</h1>");
+                orderReport.append("<html>");
+                orderReport.append("<style>")
+                        .append("body {background-color: #DFFDFF;}")
+                        .append("table {width: 100%; border-collapse: collapse;}")
+                        .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                        .append("td {background-color: white !important;}")
+                        .append("th {background-color: #f2f2f2;}")
+                        .append("tr:hover { background-color: #f1f1f1;}")
+                        .append("</style>");
+                orderReport.append("<head></head>");
+                orderReport.append("<body><h1 style='text-align: center;'>Sales Report</h1>");
                 orderReport.append("<table border='1'><tr></th><th>Order Date</th><th>Customer</th><th>Card Number</th><th>Card Expiration</th><th>Security Code</th><th>Discount Code</th><th>Order Total</th><th>Manager</th></tr>");
                 for (int or = 0; or < LoginView.orders.size(); or++) {
                     Orders order = LoginView.orders.get(or);
@@ -4273,7 +4283,7 @@ public class ManagerView extends State {
                     }
                 }
                 orderReport.append("</table>");
-                orderReport.append("<h2>Cost of all orders: $" + f.format(totalOfAllOrders) + "<h2>");
+                orderReport.append("<h2 style='text-align: center;'>Cost of all orders: $" + f.format(totalOfAllOrders) + "<h2>");
                 orderReport.append("</body></html>");
                 if (ordersFound) {
                     try {
@@ -4327,7 +4337,17 @@ public class ManagerView extends State {
                 java.util.Date orderEnds = df.parse(orderEndTime);
                 java.sql.Date orderEnd = new Date(orderEnds.getTime());
                 StringBuilder orderReport = new StringBuilder();
-                orderReport.append("<html><body><h1>Sales Report</h1>");
+                orderReport.append("<html>");
+                orderReport.append("<style>")
+                        .append("body {background-color: #DFFDFF;}")
+                        .append("table {width: 100%; border-collapse: collapse;}")
+                        .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                        .append("td {background-color: white !important;}")
+                        .append("th {background-color: #f2f2f2;}")
+                        .append("tr:hover { background-color: #f1f1f1;}")
+                        .append("</style>");
+                orderReport.append("<head></head>");
+                orderReport.append("<body><h1 style='text-align: center;'>Sales Report</h1>");
                 orderReport.append("<table border='1'><tr></th><th>Order Date</th><th>Customer</th><th>Card Number</th><th>Card Expiration</th><th>Security Code</th><th>Discount Code</th><th>Order Total</th><th>Manager</th></tr>");
                 for (int p = 0; p < LoginView.person.size(); p++) {
                     if (customerSelected == LoginView.person.get(p).personID) {
@@ -4416,7 +4436,7 @@ public class ManagerView extends State {
                             }
                         }
                         orderReport.append("</table>");
-                        orderReport.append("<h2>Cost of all orders: $" + f.format(totalOfAllOrders) + "<h2>");
+                        orderReport.append("<h2 style='text-align: center;'>Cost of all orders: $" + f.format(totalOfAllOrders) + "<h2>");
                         orderReport.append("</body></html>");
                         break;
                     }
@@ -4458,7 +4478,17 @@ public class ManagerView extends State {
 
     void customerReport() {
         StringBuilder userReport = new StringBuilder();
-        userReport.append("<html><body><h1>All Customers</h1>");
+        userReport.append("<html>");
+        userReport.append("<style>")
+                .append("body {background-color: #DFFDFF;}")
+                .append("table {width: 100%; border-collapse: collapse;}")
+                .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                .append("td {background-color: white !important;}")
+                .append("th {background-color: #f2f2f2;}")
+                .append("tr:hover { background-color: #f1f1f1;}")
+                .append("</style>");
+        userReport.append("<head></head>");
+        userReport.append("<body><h1 style='text-align: center;'>All Customers</h1>");
         userReport.append("<table border='1'><tr></th><th>Logon Name</th><th>Password</th><th>Title</th><th>First Name</th><th>Middle Name</th><th>Last Name</th><th>Suffix</th><th>Address 1</th><th>Address 2</th><th>Address 3</th><th>City</th><th>Zipcode</th><th>State</th><th>Email</th><th>Phone #1</th><th>Phone #2</th></tr>");
         for (int i = 0; i < LoginView.logon.size(); i++) {
             Logon customer = LoginView.logon.get(i);
@@ -4510,7 +4540,17 @@ public class ManagerView extends State {
 
     void managerReport() {
         StringBuilder userReport = new StringBuilder();
-        userReport.append("<html><body><h1>All Managers</h1>");
+        userReport.append("<html>");
+        userReport.append("<style>")
+                .append("body {background-color: #DFFDFF;}")
+                .append("table {width: 100%; border-collapse: collapse;}")
+                .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                .append("td {background-color: white !important;}")
+                .append("th {background-color: #f2f2f2;}")
+                .append("tr:hover { background-color: #f1f1f1;}")
+                .append("</style>");
+        userReport.append("<head></head>");
+        userReport.append("<body><h1 style='text-align: center;'>All Managers</h1>");
         userReport.append("<table border='1'><tr></th><th>Logon Name</th><th>Password</th><th>Title</th><th>First Name</th><th>Middle Name</th><th>Last Name</th><th>Suffix</th><th>Address 1</th><th>Address 2</th><th>Address 3</th><th>City</th><th>Zipcode</th><th>State</th><th>Email</th><th>Phone #1</th><th>Phone #2</th></tr>");
         for (int i = 0; i < LoginView.logon.size(); i++) {
             Logon manager = LoginView.logon.get(i);

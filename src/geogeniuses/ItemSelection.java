@@ -29,7 +29,7 @@ public class ItemSelection extends State implements ActionListener {
         CustomerView.itemGrainSize.setVisible(false);
         CustomerView.itemGrainShape.setVisible(false);
         CustomerView.itemHeft.setVisible(false);
-        int yValue = 370;
+        int yValue = 375;
         if (inventory.categoryID == 1) {
             CustomerView.itemRockOrGem.setText("Igneous Rock");
         } else if (inventory.categoryID == 2) {
