@@ -135,6 +135,8 @@ public class LoginView extends State {
                                     ManagerView.searchForCustomer.setSelected(true);
                                     ManagerView.searchForManager.setSelected(false);
 
+                                    CustomerView.itemsName.setBounds(CustomerView.panel.getWidth() / 8, 260, 200, 15);
+                                    CustomerView.itemsDescription.setBounds(11, 285, 250, 105);
                                     CustomerView.panel.setPreferredSize(new Dimension(265, 610));
                                     CustomerView.cartPanel.setPreferredSize(new Dimension(265, 610));
                                     CustomerView.cartPanel.setBounds(0, 0, 267, 570);

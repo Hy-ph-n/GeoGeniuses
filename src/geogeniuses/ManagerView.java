@@ -411,6 +411,12 @@ public class ManagerView extends State {
                                 CustomerView.itemsSelected = 0;
                                 CustomerView.itemSelected = -1;
 
+                                CustomerView.sortedIgn = 0;
+                                CustomerView.sortedSed = 0;
+                                CustomerView.sortedMet = 0;
+                                CustomerView.sortedSto = 0;
+                                CustomerView.sortedGem = 0;
+
                                 CustomerView.itemsName.setVisible(false);
                                 CustomerView.itemsDescription.setVisible(false);
                                 CustomerView.itemRockOrGem.setVisible(false);
@@ -715,6 +721,12 @@ public class ManagerView extends State {
                             CustomerView.itemsSelected = 0;
                             CustomerView.itemSelected = -1;
 
+                            CustomerView.sortedIgn = 0;
+                            CustomerView.sortedSed = 0;
+                            CustomerView.sortedMet = 0;
+                            CustomerView.sortedSto = 0;
+                            CustomerView.sortedGem = 0;
+
                             CustomerView.itemsName.setVisible(false);
                             CustomerView.itemsDescription.setVisible(false);
                             CustomerView.itemRockOrGem.setVisible(false);
@@ -841,6 +853,12 @@ public class ManagerView extends State {
 
                             CustomerView.itemsSelected = 0;
                             CustomerView.itemSelected = -1;
+
+                            CustomerView.sortedIgn = 0;
+                            CustomerView.sortedSed = 0;
+                            CustomerView.sortedMet = 0;
+                            CustomerView.sortedSto = 0;
+                            CustomerView.sortedGem = 0;
 
                             CustomerView.itemsName.setVisible(false);
                             CustomerView.itemsDescription.setVisible(false);
@@ -977,6 +995,12 @@ public class ManagerView extends State {
 
                             CustomerView.itemsSelected = 0;
                             CustomerView.itemSelected = -1;
+
+                            CustomerView.sortedIgn = 0;
+                            CustomerView.sortedSed = 0;
+                            CustomerView.sortedMet = 0;
+                            CustomerView.sortedSto = 0;
+                            CustomerView.sortedGem = 0;
 
                             CustomerView.itemsName.setVisible(false);
                             CustomerView.itemsDescription.setVisible(false);
@@ -3950,40 +3974,57 @@ public class ManagerView extends State {
             clearCustomerData();
             managerAsCustomer = false;
             viewPanel.add(customerView.jp, BorderLayout.WEST);
+            CustomerView.ordersButton.setVisible(true);
             CustomerView.logOut.setVisible(true);
             customerView.jp.setVisible(false);
             customerjs.setVisible(false);
             managerdiscountjs.setVisible(false);
 
-            CustomerView.cardNumberEntry.setBounds(32, 210, 200, 15);
-            CustomerView.cardNumber.setBounds(32, 227, 200, 20);
-            CustomerView.securityCodeEntry.setBounds(32, 260, 200, 15);
-            CustomerView.cardSecurityCode.setBounds(32, 277, 200, 20);
-            CustomerView.cardExpireYear.setBounds(60, 310, 100, 15);
-            CustomerView.cardExpirationYear.setBounds(65, 325, 55, 20);
-            CustomerView.cardExpireMonth.setBounds(150, 310, 110, 15);
-            CustomerView.cardExpirationMonth.setBounds(160, 325, 55, 20);
-            CustomerView.cardError.setBounds(120, 210, 200, 15);
-            CustomerView.cardSecurityError.setBounds(120, 260, 200, 15);
-            CustomerView.expirationError.setBounds(CustomerView.panel.getWidth() / 8, 345, 200, 15);
-            CustomerView.discountEntry.setBounds(32, 360, 200, 15);
-            CustomerView.discountCode.setBounds(32, 377, 200, 20);
-            CustomerView.discountError.setBounds(120, 360, 200, 15);
-            CustomerView.checkout.setBounds(27, 415, 100, 50);
-            CustomerView.clearCart.setBounds(136, 415, 100, 50);
-            CustomerView.logOut.setBounds(28, 480, 207, 50);
+            CustomerView.cardNumberEntry.setBounds(32, 245, 200, 15);
+            CustomerView.cardNumber.setBounds(32, 262, 200, 20);
+            CustomerView.securityCodeEntry.setBounds(32, 295, 200, 15);
+            CustomerView.cardSecurityCode.setBounds(32, 312, 200, 20);
+            CustomerView.cardExpireYear.setBounds(50, 345, 100, 15);
+            CustomerView.cardExpirationYear.setBounds(55, 360, 55, 20);
+            CustomerView.cardExpireMonth.setBounds(140, 345, 110, 15);
+            CustomerView.cardExpirationMonth.setBounds(150, 360, 55, 20);
+            CustomerView.cardError.setBounds(110, 245, 200, 15);
+            CustomerView.cardSecurityError.setBounds(120, 295, 200, 15);
+            CustomerView.expirationError.setBounds(CustomerView.panel.getWidth() / 8, 380, 200, 15);
+            CustomerView.discountEntry.setBounds(32, 395, 200, 15);
+            CustomerView.discountCode.setBounds(32, 412, 200, 20);
+            CustomerView.discountError.setBounds(120, 395, 200, 15);
+            CustomerView.checkout.setBounds(27, 450, 100, 50);
+            CustomerView.clearCart.setBounds(136, 450, 100, 50);
+            CustomerView.logOut.setBounds(27, 515, 100, 50);
 
-            CustomerView.itemsName.setBounds(CustomerView.panel.getWidth() / 8, 220, 200, 15);
-            CustomerView.itemsDescription.setBounds(11, 245, 250, 105);
-            CustomerView.itemRockOrGem.setBounds(CustomerView.panel.getWidth() / 8, 335, 200, 15);
-            CustomerView.itemGrainSize.setBounds(CustomerView.panel.getWidth() / 8, 350, 200, 15);
-            CustomerView.itemGrainShape.setBounds(CustomerView.panel.getWidth() / 8, 365, 200, 15);
-            CustomerView.itemHeft.setBounds(CustomerView.panel.getWidth() / 8, 350, 200, 15);
-            CustomerView.itemHardness.setBounds(CustomerView.panel.getWidth() / 8, 365, 200, 15);
-            CustomerView.stoneSize.setBounds(CustomerView.panel.getWidth() / 8, 380, 200, 15);
-            CustomerView.stoneWeight.setBounds(CustomerView.panel.getWidth() / 8, 395, 200, 15);
-            CustomerView.price.setBounds(CustomerView.panel.getWidth() / 8, 310, 200, 15);
-            CustomerView.quantity.setBounds(CustomerView.panel.getWidth() / 8, 425, 200, 15);
+            CustomerView.sortedIgn = 0;
+            CustomerView.sortedSed = 0;
+            CustomerView.sortedMet = 0;
+            CustomerView.sortedSto = 0;
+            CustomerView.sortedGem = 0;
+
+            CustomerView.itemsName.setBounds(CustomerView.panel.getWidth() / 8, 260, 200, 15);
+            CustomerView.itemsName.setHorizontalAlignment(SwingConstants.CENTER);
+            CustomerView.itemsDescription.setBounds(11, 285, 250, 105);
+            CustomerView.itemRockOrGem.setBounds(CustomerView.panel.getWidth() / 8, 375, 200, 15);
+            CustomerView.itemRockOrGem.setHorizontalAlignment(SwingConstants.CENTER);
+            CustomerView.itemGrainSize.setBounds(CustomerView.panel.getWidth() / 8, 390, 200, 15);
+            CustomerView.itemGrainSize.setHorizontalAlignment(SwingConstants.CENTER);
+            CustomerView.itemGrainShape.setBounds(CustomerView.panel.getWidth() / 8, 405, 200, 15);
+            CustomerView.itemGrainShape.setHorizontalAlignment(SwingConstants.CENTER);
+            CustomerView.itemHeft.setBounds(CustomerView.panel.getWidth() / 8, 390, 200, 15);
+            CustomerView.itemHeft.setHorizontalAlignment(SwingConstants.CENTER);
+            CustomerView.itemHardness.setBounds(CustomerView.panel.getWidth() / 8, 405, 200, 15);
+            CustomerView.itemHardness.setHorizontalAlignment(SwingConstants.CENTER);
+            CustomerView.stoneSize.setBounds(CustomerView.panel.getWidth() / 8, 420, 200, 15);
+            CustomerView.stoneSize.setHorizontalAlignment(SwingConstants.CENTER);
+            CustomerView.stoneWeight.setBounds(CustomerView.panel.getWidth() / 8, 435, 200, 15);
+            CustomerView.stoneWeight.setHorizontalAlignment(SwingConstants.CENTER);
+            CustomerView.price.setBounds(CustomerView.panel.getWidth() / 8, 350, 200, 15);
+            CustomerView.price.setHorizontalAlignment(SwingConstants.CENTER);
+            CustomerView.quantity.setBounds(CustomerView.panel.getWidth() / 8, 465, 200, 15);
+            CustomerView.quantity.setHorizontalAlignment(SwingConstants.CENTER);
 
             jp.remove(connectionStatus);
             connectionStatus = new JLabel("");
@@ -4189,11 +4230,13 @@ public class ManagerView extends State {
                 orderReport.append("<html>");
                 orderReport.append("<style>")
                         .append("body {background-color: #DFFDFF;}")
-                        .append("table {width: 100%; border-collapse: collapse;}")
-                        .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                        .append("h1 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73; margin: 20px 0; padding: 10px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); letter-spacing: 1px;}")
+                        .append("h2 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73;}")
+                        .append("table {width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);}")
+                        .append("th, td {padding: 10px; text-align: center; border: 1px solid #ddd;}")
                         .append("td {background-color: white !important;}")
                         .append("th {background-color: #f2f2f2;}")
-                        .append("tr:hover { background-color: #f1f1f1;}")
+                        .append("tr:hover {background-color: #f1f1f1;}")
                         .append("</style>");
                 orderReport.append("<head></head>");
                 orderReport.append("<body><h1 style='text-align: center;'>Sales Report</h1>");
@@ -4340,11 +4383,13 @@ public class ManagerView extends State {
                 orderReport.append("<html>");
                 orderReport.append("<style>")
                         .append("body {background-color: #DFFDFF;}")
-                        .append("table {width: 100%; border-collapse: collapse;}")
-                        .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                        .append("h1 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73; margin: 20px 0; padding: 10px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); letter-spacing: 1px;}")
+                        .append("h2 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73;}")
+                        .append("table {width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);}")
+                        .append("th, td {padding: 10px; text-align: center; border: 1px solid #ddd;}")
                         .append("td {background-color: white !important;}")
                         .append("th {background-color: #f2f2f2;}")
-                        .append("tr:hover { background-color: #f1f1f1;}")
+                        .append("tr:hover {background-color: #f1f1f1;}")
                         .append("</style>");
                 orderReport.append("<head></head>");
                 orderReport.append("<body><h1 style='text-align: center;'>Sales Report</h1>");
@@ -4481,11 +4526,13 @@ public class ManagerView extends State {
         userReport.append("<html>");
         userReport.append("<style>")
                 .append("body {background-color: #DFFDFF;}")
-                .append("table {width: 100%; border-collapse: collapse;}")
-                .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                .append("h1 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73; margin: 20px 0; padding: 10px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); letter-spacing: 1px;}")
+                .append("h2 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73;}")
+                .append("table {width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);}")
+                .append("th, td {padding: 10px; text-align: center; border: 1px solid #ddd;}")
                 .append("td {background-color: white !important;}")
                 .append("th {background-color: #f2f2f2;}")
-                .append("tr:hover { background-color: #f1f1f1;}")
+                .append("tr:hover {background-color: #f1f1f1;}")
                 .append("</style>");
         userReport.append("<head></head>");
         userReport.append("<body><h1 style='text-align: center;'>All Customers</h1>");
@@ -4543,11 +4590,13 @@ public class ManagerView extends State {
         userReport.append("<html>");
         userReport.append("<style>")
                 .append("body {background-color: #DFFDFF;}")
-                .append("table {width: 100%; border-collapse: collapse;}")
-                .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                .append("h1 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73; margin: 20px 0; padding: 10px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); letter-spacing: 1px;}")
+                .append("h2 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73;}")
+                .append("table {width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);}")
+                .append("th, td {padding: 10px; text-align: center; border: 1px solid #ddd;}")
                 .append("td {background-color: white !important;}")
                 .append("th {background-color: #f2f2f2;}")
-                .append("tr:hover { background-color: #f1f1f1;}")
+                .append("tr:hover {background-color: #f1f1f1;}")
                 .append("</style>");
         userReport.append("<head></head>");
         userReport.append("<body><h1 style='text-align: center;'>All Managers</h1>");
@@ -5675,6 +5724,16 @@ public class ManagerView extends State {
     void itemsReport() {
         StringBuilder orderReport = new StringBuilder();
         orderReport.append("<html><body><h1>All Items</h1>");
+        orderReport.append("<style>")
+                .append("body {background-color: #DFFDFF;}")
+                .append("h1 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73; margin: 20px 0; padding: 10px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); letter-spacing: 1px;}")
+                .append("h2 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73;}")
+                .append("table {width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);}")
+                .append("th, td {padding: 10px; text-align: center; border: 1px solid #ddd;}")
+                .append("td {background-color: white !important;}")
+                .append("th {background-color: #f2f2f2;}")
+                .append("tr:hover {background-color: #f1f1f1;}")
+                .append("</style>");
         orderReport.append("<table border='1'><tr></th><th>Item Name</th><th>Item Category</th><th>Type</th><th>Hardness</th><th>Size</th><th>Weight</th><th>Retail Price</th><th>Cost</th><th>Quantity</th></tr>");
         for (int i = 0; i < LoginView.inventory.size(); i++) {
             Inventory item = LoginView.inventory.get(i);

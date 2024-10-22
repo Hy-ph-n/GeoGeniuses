@@ -102,6 +102,12 @@ public class CustomerView extends State {
     // The current date placed into a variable
     LocalDate currentDate = LocalDate.now();
 
+    static int sortedIgn = 0;
+    static int sortedSed = 0;
+    static int sortedMet = 0;
+    static int sortedSto = 0;
+    static int sortedGem = 0;
+
     static JButton refreshButton;
     static JButton igneousButton;
     static JButton sedimentaryButton;
@@ -446,12 +452,27 @@ public class CustomerView extends State {
             }
         });
 
+        JLabel minimumPrice = new JLabel("Min");
+        minimumPrice.setBounds(2, 161, 110, 25);
+        panel.add(minimumPrice);
+
+        JLabel maximumPrice = new JLabel("Max");
+        maximumPrice.setBounds(2, 196, 110, 25);
+        panel.add(maximumPrice);
+
         refreshButton = new JButton("Refresh");
         refreshButton.setBounds(20, 60, 110, 30);
         refreshButton.setBackground(thistle);
         refreshButton.addActionListener((e) -> {
+            sortedIgn = 0;
+            sortedSed = 0;
+            sortedMet = 0;
+            sortedSto = 0;
+            sortedGem = 0;
+
             searchBar.setText("");
             orderError.setText("");
+            panel.repaint();
             setMin();
             setMax();
             updateData();
@@ -462,81 +483,7 @@ public class CustomerView extends State {
         igneousButton.setBounds(135, 60, 110, 30);
         igneousButton.setBackground(thistle);
         igneousButton.addActionListener((e) -> {
-            GridBagConstraints imageLayout = new GridBagConstraints();
-            imageLayout.insets = new Insets(2, 2, 2, 2);
-            int x = 0;
-            int y = 0;
-            itemDisplay.removeAll();
-            items.clear();
-            itemDisplay.repaint();
-            ItemSelection select = new ItemSelection(items);
-
-            int minPrice = minPriceSlider.getValue();
-            int maxPrice = maxPriceSlider.getValue();
-            int maxPriceMaximum = maxPriceSlider.getMaximum();
-
-            ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
-
-            if (maxPrice == maxPriceMaximum) {
-                sortedInventory.removeIf(item -> item.cost < minPrice);
-            } else {
-                sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
-            }
-
-            Collections.sort(sortedInventory, new Comparator<Inventory>() {
-                @Override
-                public int compare(Inventory item1, Inventory item2) {
-                    return Double.compare(item1.cost, item2.cost);
-                }
-            });
-
-            for (int i = 0; i < sortedInventory.size(); i++) {
-                if (sortedInventory.get(i).categoryID == 1) {
-                    String itemName = sortedInventory.get(i).itemName;
-
-                    imageLayout.weightx = 0.5;
-                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                    imageLayout.gridx = x;
-                    imageLayout.gridy = y;
-
-                    if (x == 4) {
-                        x = 0;
-                        y++;
-                    } else {
-                        x++;
-                    }
-
-                    if (sortedInventory.get(i).itemImage == null) {
-                        JButton item = new JButton(itemName);
-                        item.setBackground(thistle);
-                        item.addActionListener(select);
-                        items.add(item);
-                        itemDisplay.add(item, imageLayout);
-                    } else {
-                        try {
-                            byte[] b = sortedInventory.get(i).itemImage;
-                            ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                            itemIcon = new ItemIcon(itemImage);
-                            JButton item = new JButton(itemName, itemIcon);
-                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                            item.setHorizontalTextPosition(SwingConstants.CENTER);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                        } catch (Exception ex) {
-                            JButton item = new JButton(itemName);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                            System.out.println("Invalid Image");
-                        }
-                    }
-                }
-            }
-            itemDisplay.validate();
+            igneousSort();
         });
         panel.add(igneousButton);
 
@@ -544,81 +491,7 @@ public class CustomerView extends State {
         sedimentaryButton.setBounds(20, 95, 110, 30);
         sedimentaryButton.setBackground(thistle);
         sedimentaryButton.addActionListener((e) -> {
-            GridBagConstraints imageLayout = new GridBagConstraints();
-            imageLayout.insets = new Insets(2, 2, 2, 2);
-            int x = 0;
-            int y = 0;
-            itemDisplay.removeAll();
-            items.clear();
-            itemDisplay.repaint();
-            ItemSelection select = new ItemSelection(items);
-
-            int minPrice = minPriceSlider.getValue();
-            int maxPrice = maxPriceSlider.getValue();
-            int maxPriceMaximum = maxPriceSlider.getMaximum();
-
-            ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
-
-            if (maxPrice == maxPriceMaximum) {
-                sortedInventory.removeIf(item -> item.cost < minPrice);
-            } else {
-                sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
-            }
-
-            Collections.sort(sortedInventory, new Comparator<Inventory>() {
-                @Override
-                public int compare(Inventory item1, Inventory item2) {
-                    return Double.compare(item1.cost, item2.cost);
-                }
-            });
-
-            for (int i = 0; i < sortedInventory.size(); i++) {
-                if (sortedInventory.get(i).categoryID == 2) {
-                    String itemName = sortedInventory.get(i).itemName;
-
-                    imageLayout.weightx = 0.5;
-                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                    imageLayout.gridx = x;
-                    imageLayout.gridy = y;
-
-                    if (x == 4) {
-                        x = 0;
-                        y++;
-                    } else {
-                        x++;
-                    }
-
-                    if (sortedInventory.get(i).itemImage == null) {
-                        JButton item = new JButton(itemName);
-                        item.setBackground(thistle);
-                        item.addActionListener(select);
-                        items.add(item);
-                        itemDisplay.add(item, imageLayout);
-                    } else {
-                        try {
-                            byte[] b = sortedInventory.get(i).itemImage;
-                            ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                            itemIcon = new ItemIcon(itemImage);
-                            JButton item = new JButton(itemName, itemIcon);
-                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                            item.setHorizontalTextPosition(SwingConstants.CENTER);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                        } catch (Exception ex) {
-                            JButton item = new JButton(itemName);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                            System.out.println("Invalid Image");
-                        }
-                    }
-                }
-            }
-            itemDisplay.validate();
+            sedimentarySort();
         });
         panel.add(sedimentaryButton);
 
@@ -626,81 +499,7 @@ public class CustomerView extends State {
         metamorphicButton.setBounds(135, 95, 110, 30);
         metamorphicButton.setBackground(thistle);
         metamorphicButton.addActionListener((e) -> {
-            GridBagConstraints imageLayout = new GridBagConstraints();
-            imageLayout.insets = new Insets(2, 2, 2, 2);
-            int x = 0;
-            int y = 0;
-            itemDisplay.removeAll();
-            items.clear();
-            itemDisplay.repaint();
-            ItemSelection select = new ItemSelection(items);
-
-            int minPrice = minPriceSlider.getValue();
-            int maxPrice = maxPriceSlider.getValue();
-            int maxPriceMaximum = maxPriceSlider.getMaximum();
-
-            ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
-
-            if (maxPrice == maxPriceMaximum) {
-                sortedInventory.removeIf(item -> item.cost < minPrice);
-            } else {
-                sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
-            }
-
-            Collections.sort(sortedInventory, new Comparator<Inventory>() {
-                @Override
-                public int compare(Inventory item1, Inventory item2) {
-                    return Double.compare(item1.cost, item2.cost);
-                }
-            });
-
-            for (int i = 0; i < sortedInventory.size(); i++) {
-                if (sortedInventory.get(i).categoryID == 3) {
-                    String itemName = sortedInventory.get(i).itemName;
-
-                    imageLayout.weightx = 0.5;
-                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                    imageLayout.gridx = x;
-                    imageLayout.gridy = y;
-
-                    if (x == 4) {
-                        x = 0;
-                        y++;
-                    } else {
-                        x++;
-                    }
-
-                    if (sortedInventory.get(i).itemImage == null) {
-                        JButton item = new JButton(itemName);
-                        item.setBackground(thistle);
-                        item.addActionListener(select);
-                        items.add(item);
-                        itemDisplay.add(item, imageLayout);
-                    } else {
-                        try {
-                            byte[] b = sortedInventory.get(i).itemImage;
-                            ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                            itemIcon = new ItemIcon(itemImage);
-                            JButton item = new JButton(itemName, itemIcon);
-                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                            item.setHorizontalTextPosition(SwingConstants.CENTER);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                        } catch (Exception ex) {
-                            JButton item = new JButton(itemName);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                            System.out.println("Invalid Image");
-                        }
-                    }
-                }
-            }
-            itemDisplay.validate();
+            metamorphicSort();
         });
         panel.add(metamorphicButton);
 
@@ -708,81 +507,7 @@ public class CustomerView extends State {
         stoneButton.setBounds(20, 130, 110, 30);
         stoneButton.setBackground(thistle);
         stoneButton.addActionListener((e) -> {
-            GridBagConstraints imageLayout = new GridBagConstraints();
-            imageLayout.insets = new Insets(2, 2, 2, 2);
-            int x = 0;
-            int y = 0;
-            itemDisplay.removeAll();
-            items.clear();
-            itemDisplay.repaint();
-            ItemSelection select = new ItemSelection(items);
-
-            int minPrice = minPriceSlider.getValue();
-            int maxPrice = maxPriceSlider.getValue();
-            int maxPriceMaximum = maxPriceSlider.getMaximum();
-
-            ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
-
-            if (maxPrice == maxPriceMaximum) {
-                sortedInventory.removeIf(item -> item.cost < minPrice);
-            } else {
-                sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
-            }
-
-            Collections.sort(sortedInventory, new Comparator<Inventory>() {
-                @Override
-                public int compare(Inventory item1, Inventory item2) {
-                    return Double.compare(item1.cost, item2.cost);
-                }
-            });
-
-            for (int i = 0; i < sortedInventory.size(); i++) {
-                if (sortedInventory.get(i).stoneOrGemstone == 0) {
-                    String itemName = sortedInventory.get(i).itemName;
-
-                    imageLayout.weightx = 0.5;
-                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                    imageLayout.gridx = x;
-                    imageLayout.gridy = y;
-
-                    if (x == 4) {
-                        x = 0;
-                        y++;
-                    } else {
-                        x++;
-                    }
-
-                    if (sortedInventory.get(i).itemImage == null) {
-                        JButton item = new JButton(itemName);
-                        item.setBackground(thistle);
-                        item.addActionListener(select);
-                        items.add(item);
-                        itemDisplay.add(item, imageLayout);
-                    } else {
-                        try {
-                            byte[] b = sortedInventory.get(i).itemImage;
-                            ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                            itemIcon = new ItemIcon(itemImage);
-                            JButton item = new JButton(itemName, itemIcon);
-                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                            item.setHorizontalTextPosition(SwingConstants.CENTER);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                        } catch (Exception ex) {
-                            JButton item = new JButton(itemName);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                            System.out.println("Invalid Image");
-                        }
-                    }
-                }
-            }
-            itemDisplay.validate();
+            stoneSort();
         });
         panel.add(stoneButton);
 
@@ -790,81 +515,7 @@ public class CustomerView extends State {
         gemstoneButton.setBounds(135, 130, 110, 30);
         gemstoneButton.setBackground(thistle);
         gemstoneButton.addActionListener((e) -> {
-            GridBagConstraints imageLayout = new GridBagConstraints();
-            imageLayout.insets = new Insets(2, 2, 2, 2);
-            int x = 0;
-            int y = 0;
-            itemDisplay.removeAll();
-            items.clear();
-            itemDisplay.repaint();
-            ItemSelection select = new ItemSelection(items);
-
-            int minPrice = minPriceSlider.getValue();
-            int maxPrice = maxPriceSlider.getValue();
-            int maxPriceMaximum = maxPriceSlider.getMaximum();
-
-            ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
-
-            if (maxPrice == maxPriceMaximum) {
-                sortedInventory.removeIf(item -> item.cost < minPrice);
-            } else {
-                sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
-            }
-
-            Collections.sort(sortedInventory, new Comparator<Inventory>() {
-                @Override
-                public int compare(Inventory item1, Inventory item2) {
-                    return Double.compare(item1.cost, item2.cost);
-                }
-            });
-
-            for (int i = 0; i < sortedInventory.size(); i++) {
-                if (sortedInventory.get(i).stoneOrGemstone == 1) {
-                    String itemName = sortedInventory.get(i).itemName;
-
-                    imageLayout.weightx = 0.5;
-                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                    imageLayout.gridx = x;
-                    imageLayout.gridy = y;
-
-                    if (x == 4) {
-                        x = 0;
-                        y++;
-                    } else {
-                        x++;
-                    }
-
-                    if (sortedInventory.get(i).itemImage == null) {
-                        JButton item = new JButton(itemName);
-                        item.setBackground(thistle);
-                        item.addActionListener(select);
-                        items.add(item);
-                        itemDisplay.add(item, imageLayout);
-                    } else {
-                        try {
-                            byte[] b = sortedInventory.get(i).itemImage;
-                            ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                            itemIcon = new ItemIcon(itemImage);
-                            JButton item = new JButton(itemName, itemIcon);
-                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                            item.setHorizontalTextPosition(SwingConstants.CENTER);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                        } catch (Exception ex) {
-                            JButton item = new JButton(itemName);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                            System.out.println("Invalid Image");
-                        }
-                    }
-                }
-            }
-            itemDisplay.validate();
+            gemstoneSort();
         });
         panel.add(gemstoneButton);
 
@@ -879,79 +530,93 @@ public class CustomerView extends State {
             public void mouseReleased(MouseEvent e) {
                 newMinForMax();
 
-                GridBagConstraints imageLayout = new GridBagConstraints();
-                imageLayout.insets = new Insets(2, 2, 2, 2);
-                int x = 0;
-                int y = 0;
-                itemDisplay.removeAll();
-                items.clear();
-                itemDisplay.repaint();
-                ItemSelection select = new ItemSelection(items);
-
-                int minPrice = minPriceSlider.getValue();
-                int maxPrice = maxPriceSlider.getValue();
-                int maxPriceMaximum = maxPriceSlider.getMaximum();
-
-                ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
-
-                if (maxPrice == maxPriceMaximum) {
-                    sortedInventory.removeIf(item -> item.cost < minPrice);
+                if (sortedIgn == 1) {
+                    igneousSort();
+                } else if (sortedSed == 1) {
+                    sedimentarySort();
+                } else if (sortedMet == 1) {
+                    metamorphicSort();
+                } else if (sortedSto == 1) {
+                    stoneSort();
+                } else if (sortedGem == 1) {
+                    gemstoneSort();
                 } else {
-                    sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
-                }
 
-                Collections.sort(sortedInventory, new Comparator<Inventory>() {
-                    @Override
-                    public int compare(Inventory item1, Inventory item2) {
-                        return Double.compare(item1.cost, item2.cost);
-                    }
-                });
+                    GridBagConstraints imageLayout = new GridBagConstraints();
+                    imageLayout.insets = new Insets(2, 2, 2, 2);
+                    int x = 0;
+                    int y = 0;
+                    itemDisplay.removeAll();
+                    items.clear();
+                    itemDisplay.repaint();
+                    ItemSelection select = new ItemSelection(items);
 
-                for (int i = 0; i < sortedInventory.size(); i++) {
-                    String itemName = sortedInventory.get(i).itemName;
+                    int minPrice = minPriceSlider.getValue();
+                    int maxPrice = maxPriceSlider.getValue();
+                    int maxPriceMaximum = maxPriceSlider.getMaximum();
 
-                    imageLayout.weightx = 0.5;
-                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                    imageLayout.gridx = x;
-                    imageLayout.gridy = y;
+                    ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
 
-                    if (x == 4) {
-                        x = 0;
-                        y++;
+                    if (maxPrice == maxPriceMaximum) {
+                        sortedInventory.removeIf(item -> item.cost < minPrice);
                     } else {
-                        x++;
+                        sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
                     }
 
-                    if (sortedInventory.get(i).itemImage == null) {
-                        JButton item = new JButton(itemName);
-                        item.setBackground(thistle);
-                        item.addActionListener(select);
-                        items.add(item);
-                        itemDisplay.add(item, imageLayout);
-                    } else {
-                        try {
-                            byte[] b = sortedInventory.get(i).itemImage;
-                            ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                            itemIcon = new ItemIcon(itemImage);
-                            JButton item = new JButton(itemName, itemIcon);
-                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                            item.setHorizontalTextPosition(SwingConstants.CENTER);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                        } catch (Exception ex) {
+                    Collections.sort(sortedInventory, new Comparator<Inventory>() {
+                        @Override
+                        public int compare(Inventory item1, Inventory item2) {
+                            return Double.compare(item1.cost, item2.cost);
+                        }
+                    });
+
+                    for (int i = 0; i < sortedInventory.size(); i++) {
+                        String itemName = sortedInventory.get(i).itemName;
+
+                        imageLayout.weightx = 0.5;
+                        imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                        imageLayout.gridx = x;
+                        imageLayout.gridy = y;
+
+                        if (x == 4) {
+                            x = 0;
+                            y++;
+                        } else {
+                            x++;
+                        }
+
+                        if (sortedInventory.get(i).itemImage == null) {
                             JButton item = new JButton(itemName);
                             item.setBackground(thistle);
                             item.addActionListener(select);
                             items.add(item);
                             itemDisplay.add(item, imageLayout);
-                            System.out.println("Invalid Image");
+                        } else {
+                            try {
+                                byte[] b = sortedInventory.get(i).itemImage;
+                                ItemIcon itemIcon = new ItemIcon(b);
+                                Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                                itemIcon = new ItemIcon(itemImage);
+                                JButton item = new JButton(itemName, itemIcon);
+                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                                item.setHorizontalTextPosition(SwingConstants.CENTER);
+                                item.setBackground(thistle);
+                                item.addActionListener(select);
+                                items.add(item);
+                                itemDisplay.add(item, imageLayout);
+                            } catch (Exception ex) {
+                                JButton item = new JButton(itemName);
+                                item.setBackground(thistle);
+                                item.addActionListener(select);
+                                items.add(item);
+                                itemDisplay.add(item, imageLayout);
+                                System.out.println("Invalid Image");
+                            }
                         }
                     }
+                    itemDisplay.validate();
+                    panel.repaint();
                 }
-                itemDisplay.validate();
             }
         });
         panel.add(minPriceSlider);
@@ -965,79 +630,92 @@ public class CustomerView extends State {
         maxPriceSlider.setBounds(10, 200, 250, 25);
         maxPriceSlider.addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent e) {
-                GridBagConstraints imageLayout = new GridBagConstraints();
-                imageLayout.insets = new Insets(2, 2, 2, 2);
-                int x = 0;
-                int y = 0;
-                itemDisplay.removeAll();
-                items.clear();
-                itemDisplay.repaint();
-                ItemSelection select = new ItemSelection(items);
-
-                int minPrice = minPriceSlider.getValue();
-                int maxPrice = maxPriceSlider.getValue();
-                int maxPriceMaximum = maxPriceSlider.getMaximum();
-
-                ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
-
-                if (maxPrice == maxPriceMaximum) {
-                    sortedInventory.removeIf(item -> item.cost < minPrice);
+                if (sortedIgn == 1) {
+                    igneousSort();
+                } else if (sortedSed == 1) {
+                    sedimentarySort();
+                } else if (sortedMet == 1) {
+                    metamorphicSort();
+                } else if (sortedSto == 1) {
+                    stoneSort();
+                } else if (sortedGem == 1) {
+                    gemstoneSort();
                 } else {
-                    sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
-                }
+                    GridBagConstraints imageLayout = new GridBagConstraints();
+                    imageLayout.insets = new Insets(2, 2, 2, 2);
+                    int x = 0;
+                    int y = 0;
+                    itemDisplay.removeAll();
+                    items.clear();
+                    itemDisplay.repaint();
+                    ItemSelection select = new ItemSelection(items);
 
-                Collections.sort(sortedInventory, new Comparator<Inventory>() {
-                    @Override
-                    public int compare(Inventory item1, Inventory item2) {
-                        return Double.compare(item1.cost, item2.cost);
-                    }
-                });
+                    int minPrice = minPriceSlider.getValue();
+                    int maxPrice = maxPriceSlider.getValue();
+                    int maxPriceMaximum = maxPriceSlider.getMaximum();
 
-                for (int i = 0; i < sortedInventory.size(); i++) {
-                    String itemName = sortedInventory.get(i).itemName;
+                    ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
 
-                    imageLayout.weightx = 0.5;
-                    imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                    imageLayout.gridx = x;
-                    imageLayout.gridy = y;
-
-                    if (x == 4) {
-                        x = 0;
-                        y++;
+                    if (maxPrice == maxPriceMaximum) {
+                        sortedInventory.removeIf(item -> item.cost < minPrice);
                     } else {
-                        x++;
+                        sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
                     }
 
-                    if (sortedInventory.get(i).itemImage == null) {
-                        JButton item = new JButton(itemName);
-                        item.setBackground(thistle);
-                        item.addActionListener(select);
-                        items.add(item);
-                        itemDisplay.add(item, imageLayout);
-                    } else {
-                        try {
-                            byte[] b = sortedInventory.get(i).itemImage;
-                            ItemIcon itemIcon = new ItemIcon(b);
-                            Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                            itemIcon = new ItemIcon(itemImage);
-                            JButton item = new JButton(itemName, itemIcon);
-                            item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                            item.setHorizontalTextPosition(SwingConstants.CENTER);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                        } catch (Exception ex) {
+                    Collections.sort(sortedInventory, new Comparator<Inventory>() {
+                        @Override
+                        public int compare(Inventory item1, Inventory item2) {
+                            return Double.compare(item1.cost, item2.cost);
+                        }
+                    });
+
+                    for (int i = 0; i < sortedInventory.size(); i++) {
+                        String itemName = sortedInventory.get(i).itemName;
+
+                        imageLayout.weightx = 0.5;
+                        imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                        imageLayout.gridx = x;
+                        imageLayout.gridy = y;
+
+                        if (x == 4) {
+                            x = 0;
+                            y++;
+                        } else {
+                            x++;
+                        }
+
+                        if (sortedInventory.get(i).itemImage == null) {
                             JButton item = new JButton(itemName);
                             item.setBackground(thistle);
                             item.addActionListener(select);
                             items.add(item);
                             itemDisplay.add(item, imageLayout);
-                            System.out.println("Invalid Image");
+                        } else {
+                            try {
+                                byte[] b = sortedInventory.get(i).itemImage;
+                                ItemIcon itemIcon = new ItemIcon(b);
+                                Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                                itemIcon = new ItemIcon(itemImage);
+                                JButton item = new JButton(itemName, itemIcon);
+                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                                item.setHorizontalTextPosition(SwingConstants.CENTER);
+                                item.setBackground(thistle);
+                                item.addActionListener(select);
+                                items.add(item);
+                                itemDisplay.add(item, imageLayout);
+                            } catch (Exception ex) {
+                                JButton item = new JButton(itemName);
+                                item.setBackground(thistle);
+                                item.addActionListener(select);
+                                items.add(item);
+                                itemDisplay.add(item, imageLayout);
+                                System.out.println("Invalid Image");
+                            }
                         }
                     }
+                    itemDisplay.validate();
+                    panel.repaint();
                 }
-                itemDisplay.validate();
             }
         });
         panel.add(maxPriceSlider);
@@ -1079,14 +757,14 @@ public class CustomerView extends State {
         });
 
         cardExpireYear = new JLabel("Expire Year");
-        cardExpireYear.setBounds(60, 345, 100, 15);
+        cardExpireYear.setBounds(50, 345, 100, 15);
         panel.add(cardExpireYear);
 
         int yearsForList = currentDate.getYear();
 
         String[] expireYear = {"" + (yearsForList - 7), "" + (yearsForList - 6), "" + (yearsForList - 5), "" + (yearsForList - 4), "" + (yearsForList - 3), "" + (yearsForList - 2), "" + (yearsForList - 1), "" + yearsForList, "" + (yearsForList + 1), "" + (yearsForList + 2), "" + (yearsForList + 3), "" + (yearsForList + 4), "" + (yearsForList + 5), "" + (yearsForList + 6), "" + (yearsForList + 7)};
         cardExpirationYear = new JComboBox(expireYear);
-        cardExpirationYear.setBounds(65, 360, 55, 20);
+        cardExpirationYear.setBounds(55, 360, 55, 20);
         cardExpirationYear.setSelectedIndex(7);
         panel.add(cardExpirationYear);
 
@@ -1095,17 +773,17 @@ public class CustomerView extends State {
         });
 
         cardExpireMonth = new JLabel("Expire Month");
-        cardExpireMonth.setBounds(150, 345, 110, 15);
+        cardExpireMonth.setBounds(140, 345, 110, 15);
         panel.add(cardExpireMonth);
 
         String[] expireMonth = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
         cardExpirationMonth = new JComboBox(expireMonth);
-        cardExpirationMonth.setBounds(160, 360, 55, 20);
+        cardExpirationMonth.setBounds(150, 360, 55, 20);
         cardExpirationMonth.setSelectedIndex(currentDate.getMonthValue() - 1);
         panel.add(cardExpirationMonth);
 
         cardError = new JLabel("");
-        cardError.setBounds(120, 245, 200, 15);
+        cardError.setBounds(110, 245, 200, 15);
         cardError.setForeground(Color.red);
         panel.add(cardError);
 
@@ -1183,6 +861,12 @@ public class CustomerView extends State {
         logOut.setBounds(27, 515, 100, 50);
         logOut.setBackground(thistle);
         logOut.addActionListener((e) -> {
+            sortedIgn = 0;
+            sortedSed = 0;
+            sortedMet = 0;
+            sortedSto = 0;
+            sortedGem = 0;
+
             inventory.setPreferredSize(new Dimension(625, 0));
             jp.remove(cartPanel);
             cartVisible = false;
@@ -1208,10 +892,13 @@ public class CustomerView extends State {
             searchBar.setText("");
             orderError.setText("");
             cardNumberEntry.setVisible(true);
+            cardNumber.setText("");
             cardNumber.setVisible(true);
             securityCodeEntry.setVisible(true);
+            cardSecurityCode.setText("");
             cardSecurityCode.setVisible(true);
             cardExpireYear.setVisible(true);
+            cardExpirationYear.setSelectedIndex(7);
             cardExpirationYear.setVisible(true);
             cardExpireMonth.setVisible(true);
             cardExpirationMonth.setVisible(true);
@@ -1373,6 +1060,441 @@ public class CustomerView extends State {
         }
     }
 
+    void igneousSort() {
+        Color thistle = Color.decode("#D5CBE2");
+
+        sortedIgn = 1;
+        sortedSed = 0;
+        sortedMet = 0;
+        sortedSto = 0;
+        sortedGem = 0;
+
+        GridBagConstraints imageLayout = new GridBagConstraints();
+        imageLayout.insets = new Insets(2, 2, 2, 2);
+        int x = 0;
+        int y = 0;
+        itemDisplay.removeAll();
+        items.clear();
+        itemDisplay.repaint();
+        ItemSelection select = new ItemSelection(items);
+
+        int minPrice = minPriceSlider.getValue();
+        int maxPrice = maxPriceSlider.getValue();
+        int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+        ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+        if (maxPrice == maxPriceMaximum) {
+            sortedInventory.removeIf(item -> item.cost < minPrice);
+        } else {
+            sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+        }
+
+        Collections.sort(sortedInventory, new Comparator<Inventory>() {
+            @Override
+            public int compare(Inventory item1, Inventory item2) {
+                return Double.compare(item1.cost, item2.cost);
+            }
+        });
+
+        for (int i = 0; i < sortedInventory.size(); i++) {
+            if (sortedInventory.get(i).categoryID == 1) {
+                String itemName = sortedInventory.get(i).itemName;
+
+                imageLayout.weightx = 0.5;
+                imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                imageLayout.gridx = x;
+                imageLayout.gridy = y;
+
+                if (x == 4) {
+                    x = 0;
+                    y++;
+                } else {
+                    x++;
+                }
+
+                if (sortedInventory.get(i).itemImage == null) {
+                    JButton item = new JButton(itemName);
+                    item.setBackground(thistle);
+                    item.addActionListener(select);
+                    items.add(item);
+                    itemDisplay.add(item, imageLayout);
+                } else {
+                    try {
+                        byte[] b = sortedInventory.get(i).itemImage;
+                        ItemIcon itemIcon = new ItemIcon(b);
+                        Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                        itemIcon = new ItemIcon(itemImage);
+                        JButton item = new JButton(itemName, itemIcon);
+                        item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                        item.setHorizontalTextPosition(SwingConstants.CENTER);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } catch (Exception ex) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                        System.out.println("Invalid Image");
+                    }
+                }
+            }
+        }
+        itemDisplay.validate();
+        panel.repaint();
+    }
+
+    void sedimentarySort() {
+        Color thistle = Color.decode("#D5CBE2");
+
+        sortedIgn = 0;
+        sortedSed = 1;
+        sortedMet = 0;
+        sortedSto = 0;
+        sortedGem = 0;
+
+        GridBagConstraints imageLayout = new GridBagConstraints();
+        imageLayout.insets = new Insets(2, 2, 2, 2);
+        int x = 0;
+        int y = 0;
+        itemDisplay.removeAll();
+        items.clear();
+        itemDisplay.repaint();
+        ItemSelection select = new ItemSelection(items);
+
+        int minPrice = minPriceSlider.getValue();
+        int maxPrice = maxPriceSlider.getValue();
+        int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+        ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+        if (maxPrice == maxPriceMaximum) {
+            sortedInventory.removeIf(item -> item.cost < minPrice);
+        } else {
+            sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+        }
+
+        Collections.sort(sortedInventory, new Comparator<Inventory>() {
+            @Override
+            public int compare(Inventory item1, Inventory item2) {
+                return Double.compare(item1.cost, item2.cost);
+            }
+        });
+
+        for (int i = 0; i < sortedInventory.size(); i++) {
+            if (sortedInventory.get(i).categoryID == 2) {
+                String itemName = sortedInventory.get(i).itemName;
+
+                imageLayout.weightx = 0.5;
+                imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                imageLayout.gridx = x;
+                imageLayout.gridy = y;
+
+                if (x == 4) {
+                    x = 0;
+                    y++;
+                } else {
+                    x++;
+                }
+
+                if (sortedInventory.get(i).itemImage == null) {
+                    JButton item = new JButton(itemName);
+                    item.setBackground(thistle);
+                    item.addActionListener(select);
+                    items.add(item);
+                    itemDisplay.add(item, imageLayout);
+                } else {
+                    try {
+                        byte[] b = sortedInventory.get(i).itemImage;
+                        ItemIcon itemIcon = new ItemIcon(b);
+                        Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                        itemIcon = new ItemIcon(itemImage);
+                        JButton item = new JButton(itemName, itemIcon);
+                        item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                        item.setHorizontalTextPosition(SwingConstants.CENTER);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } catch (Exception ex) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                        System.out.println("Invalid Image");
+                    }
+                }
+            }
+        }
+        itemDisplay.validate();
+        panel.repaint();
+    }
+
+    void metamorphicSort() {
+        Color thistle = Color.decode("#D5CBE2");
+
+        sortedIgn = 0;
+        sortedSed = 0;
+        sortedMet = 1;
+        sortedSto = 0;
+        sortedGem = 0;
+
+        GridBagConstraints imageLayout = new GridBagConstraints();
+        imageLayout.insets = new Insets(2, 2, 2, 2);
+        int x = 0;
+        int y = 0;
+        itemDisplay.removeAll();
+        items.clear();
+        itemDisplay.repaint();
+        ItemSelection select = new ItemSelection(items);
+
+        int minPrice = minPriceSlider.getValue();
+        int maxPrice = maxPriceSlider.getValue();
+        int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+        ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+        if (maxPrice == maxPriceMaximum) {
+            sortedInventory.removeIf(item -> item.cost < minPrice);
+        } else {
+            sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+        }
+
+        Collections.sort(sortedInventory, new Comparator<Inventory>() {
+            @Override
+            public int compare(Inventory item1, Inventory item2) {
+                return Double.compare(item1.cost, item2.cost);
+            }
+        });
+
+        for (int i = 0; i < sortedInventory.size(); i++) {
+            if (sortedInventory.get(i).categoryID == 3) {
+                String itemName = sortedInventory.get(i).itemName;
+
+                imageLayout.weightx = 0.5;
+                imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                imageLayout.gridx = x;
+                imageLayout.gridy = y;
+
+                if (x == 4) {
+                    x = 0;
+                    y++;
+                } else {
+                    x++;
+                }
+
+                if (sortedInventory.get(i).itemImage == null) {
+                    JButton item = new JButton(itemName);
+                    item.setBackground(thistle);
+                    item.addActionListener(select);
+                    items.add(item);
+                    itemDisplay.add(item, imageLayout);
+                } else {
+                    try {
+                        byte[] b = sortedInventory.get(i).itemImage;
+                        ItemIcon itemIcon = new ItemIcon(b);
+                        Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                        itemIcon = new ItemIcon(itemImage);
+                        JButton item = new JButton(itemName, itemIcon);
+                        item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                        item.setHorizontalTextPosition(SwingConstants.CENTER);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } catch (Exception ex) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                        System.out.println("Invalid Image");
+                    }
+                }
+            }
+        }
+        itemDisplay.validate();
+        panel.repaint();
+    }
+
+    void stoneSort() {
+        Color thistle = Color.decode("#D5CBE2");
+
+        sortedIgn = 0;
+        sortedSed = 0;
+        sortedMet = 0;
+        sortedSto = 1;
+        sortedGem = 0;
+
+        GridBagConstraints imageLayout = new GridBagConstraints();
+        imageLayout.insets = new Insets(2, 2, 2, 2);
+        int x = 0;
+        int y = 0;
+        itemDisplay.removeAll();
+        items.clear();
+        itemDisplay.repaint();
+        ItemSelection select = new ItemSelection(items);
+
+        int minPrice = minPriceSlider.getValue();
+        int maxPrice = maxPriceSlider.getValue();
+        int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+        ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+        if (maxPrice == maxPriceMaximum) {
+            sortedInventory.removeIf(item -> item.cost < minPrice);
+        } else {
+            sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+        }
+
+        Collections.sort(sortedInventory, new Comparator<Inventory>() {
+            @Override
+            public int compare(Inventory item1, Inventory item2) {
+                return Double.compare(item1.cost, item2.cost);
+            }
+        });
+
+        for (int i = 0; i < sortedInventory.size(); i++) {
+            if (sortedInventory.get(i).stoneOrGemstone == 0) {
+                String itemName = sortedInventory.get(i).itemName;
+
+                imageLayout.weightx = 0.5;
+                imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                imageLayout.gridx = x;
+                imageLayout.gridy = y;
+
+                if (x == 4) {
+                    x = 0;
+                    y++;
+                } else {
+                    x++;
+                }
+
+                if (sortedInventory.get(i).itemImage == null) {
+                    JButton item = new JButton(itemName);
+                    item.setBackground(thistle);
+                    item.addActionListener(select);
+                    items.add(item);
+                    itemDisplay.add(item, imageLayout);
+                } else {
+                    try {
+                        byte[] b = sortedInventory.get(i).itemImage;
+                        ItemIcon itemIcon = new ItemIcon(b);
+                        Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                        itemIcon = new ItemIcon(itemImage);
+                        JButton item = new JButton(itemName, itemIcon);
+                        item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                        item.setHorizontalTextPosition(SwingConstants.CENTER);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } catch (Exception ex) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                        System.out.println("Invalid Image");
+                    }
+                }
+            }
+        }
+        itemDisplay.validate();
+        panel.repaint();
+    }
+
+    void gemstoneSort() {
+        Color thistle = Color.decode("#D5CBE2");
+
+        sortedIgn = 0;
+        sortedSed = 0;
+        sortedMet = 0;
+        sortedSto = 0;
+        sortedGem = 1;
+
+        GridBagConstraints imageLayout = new GridBagConstraints();
+        imageLayout.insets = new Insets(2, 2, 2, 2);
+        int x = 0;
+        int y = 0;
+        itemDisplay.removeAll();
+        items.clear();
+        itemDisplay.repaint();
+        ItemSelection select = new ItemSelection(items);
+
+        int minPrice = minPriceSlider.getValue();
+        int maxPrice = maxPriceSlider.getValue();
+        int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+        ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+        if (maxPrice == maxPriceMaximum) {
+            sortedInventory.removeIf(item -> item.cost < minPrice);
+        } else {
+            sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+        }
+
+        Collections.sort(sortedInventory, new Comparator<Inventory>() {
+            @Override
+            public int compare(Inventory item1, Inventory item2) {
+                return Double.compare(item1.cost, item2.cost);
+            }
+        });
+
+        for (int i = 0; i < sortedInventory.size(); i++) {
+            if (sortedInventory.get(i).stoneOrGemstone == 1) {
+                String itemName = sortedInventory.get(i).itemName;
+
+                imageLayout.weightx = 0.5;
+                imageLayout.fill = GridBagConstraints.HORIZONTAL;
+                imageLayout.gridx = x;
+                imageLayout.gridy = y;
+
+                if (x == 4) {
+                    x = 0;
+                    y++;
+                } else {
+                    x++;
+                }
+
+                if (sortedInventory.get(i).itemImage == null) {
+                    JButton item = new JButton(itemName);
+                    item.setBackground(thistle);
+                    item.addActionListener(select);
+                    items.add(item);
+                    itemDisplay.add(item, imageLayout);
+                } else {
+                    try {
+                        byte[] b = sortedInventory.get(i).itemImage;
+                        ItemIcon itemIcon = new ItemIcon(b);
+                        Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                        itemIcon = new ItemIcon(itemImage);
+                        JButton item = new JButton(itemName, itemIcon);
+                        item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                        item.setHorizontalTextPosition(SwingConstants.CENTER);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                    } catch (Exception ex) {
+                        JButton item = new JButton(itemName);
+                        item.setBackground(thistle);
+                        item.addActionListener(select);
+                        items.add(item);
+                        itemDisplay.add(item, imageLayout);
+                        System.out.println("Invalid Image");
+                    }
+                }
+            }
+        }
+        itemDisplay.validate();
+        panel.repaint();
+    }
+
     void updateData() {
         Color thistle = Color.decode("#D5CBE2");
         GridBagConstraints imageLayout = new GridBagConstraints();
@@ -1455,13 +1577,15 @@ public class CustomerView extends State {
             StringBuilder sb = new StringBuilder();
             sb.append("<html>");
             sb.append("<style>")
-                                    .append("body {background-color: #DFFDFF;}")
-                                    .append("table {width: 100%; border-collapse: collapse;}")
-                                    .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
-                                    .append("td {background-color: white !important;}")
-                                    .append("th {background-color: #f2f2f2;}")
-                                    .append("tr:hover { background-color: #f1f1f1;}")
-                                    .append("</style>");
+                    .append("body {background-color: #DFFDFF;}")
+                    .append("h1 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73; margin: 20px 0; padding: 10px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); letter-spacing: 1px;}")
+                    .append("h2 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73;}")
+                    .append("table {width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);}")
+                    .append("th, td {padding: 10px; text-align: center; border: 1px solid #ddd;}")
+                    .append("td {background-color: white !important;}")
+                    .append("th {background-color: #f2f2f2;}")
+                    .append("tr:hover {background-color: #f1f1f1;}")
+                    .append("</style>");
             sb.append("<head></head>");
             sb.append("<body>");
 
@@ -1743,14 +1867,16 @@ public class CustomerView extends State {
                     orderNumber++;
                     if (LoginView.currentPerson == order.personID) {
                         if (!ordersFound) {
-                            orderReport.append("<html><body><h1 style='text-align: center;'>Purchase Report</h1>");
+                            orderReport.append("<html><body><h1>Purchase Report</h1>");
                             orderReport.append("<style>")
                                     .append("body {background-color: #DFFDFF;}")
-                                    .append("table {width: 100%; border-collapse: collapse;}")
-                                    .append("th, td {padding: 10px; text-align: left; border: 1px solid #ddd;}")
+                                    .append("h1 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73; margin: 20px 0; padding: 10px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); letter-spacing: 1px;}")
+                                    .append("h2 {text-align: center; font-size: 2.5em; font-weight: bold; color: #005f73;}")
+                                    .append("table {width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);}")
+                                    .append("th, td {padding: 10px; text-align: center; border: 1px solid #ddd;}")
                                     .append("td {background-color: white !important;}")
                                     .append("th {background-color: #f2f2f2;}")
-                                    .append("tr:hover { background-color: #f1f1f1;}")
+                                    .append("tr:hover {background-color: #f1f1f1;}")
                                     .append("</style>");
                             orderReport.append("<table border='1'><tr></th><th>Order Date</th><th>Customer</th><th>Card Number</th><th>Card Expiration</th><th>Security Code</th><th>Discount Code</th><th>Order Total</th><th>Manager</th></tr>");
                             ordersFound = true;
