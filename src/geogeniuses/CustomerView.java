@@ -528,7 +528,6 @@ public class CustomerView extends State {
         minPriceSlider.setBounds(10, 165, 250, 25);
         minPriceSlider.addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent e) {
-                newMinForMax();
 
                 if (sortedIgn == 1) {
                     igneousSort();
@@ -2039,27 +2038,5 @@ public class CustomerView extends State {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.PLAIN, 10));
         return label;
-    }
-
-    void newMinForMax() {
-        maxPriceSlider.setMinimum(minPriceSlider.getValue());
-
-        if (maxPriceSlider.getValue() < maxPriceSlider.getMinimum()) {
-            maxPriceSlider.setValue(maxPriceSlider.getMinimum());
-        }
-
-        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-        if (minPriceSlider.getValue() > 0) {
-            labelTable.put(maxPriceSlider.getMinimum(), createLabel("$" + f.format(maxPriceSlider.getMinimum())));
-        } else {
-            labelTable.put(maxPriceSlider.getMinimum(), createLabel("$" + maxPriceSlider.getMinimum()));
-        }
-        labelTable.put(maxPriceSlider.getMaximum(), createLabel("$" + f.format(maxPriceSlider.getMaximum())));
-
-        double mediumPrice = (maxPriceSlider.getMaximum() + maxPriceSlider.getMinimum()) / 2;
-        labelTable.put((int) mediumPrice, createLabel("$" + f.format(mediumPrice)));
-
-        maxPriceSlider.setLabelTable(labelTable);
-        maxPriceSlider.repaint();
     }
 }
