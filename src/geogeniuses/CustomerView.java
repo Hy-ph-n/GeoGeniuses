@@ -28,7 +28,7 @@ import javax.swing.table.DefaultTableModel;
 //The customer view is entered by either a customer account or a guest account.
 public class CustomerView extends State {
 
-    ArrayList<JButton> items = new ArrayList();
+    static ArrayList<JButton> items = new ArrayList();
 
     static ArrayList<ArrayList<Cart>> cartList = new ArrayList<>();
 
@@ -357,7 +357,8 @@ public class CustomerView extends State {
         help.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                helpSystem();
+                Thread helpSys = new Thread(helpSystem);
+                helpSys.start();
             }
         });
 
@@ -475,7 +476,8 @@ public class CustomerView extends State {
             panel.repaint();
             setMin();
             setMax();
-            updateData();
+            Thread updData = new Thread(CustomerView.updateData);
+            updData.start();
         });
         panel.add(refreshButton);
 
@@ -483,7 +485,8 @@ public class CustomerView extends State {
         igneousButton.setBounds(135, 60, 110, 30);
         igneousButton.setBackground(thistle);
         igneousButton.addActionListener((e) -> {
-            igneousSort();
+            Thread ignSort = new Thread(igneousSort);
+            ignSort.start();
         });
         panel.add(igneousButton);
 
@@ -491,7 +494,8 @@ public class CustomerView extends State {
         sedimentaryButton.setBounds(20, 95, 110, 30);
         sedimentaryButton.setBackground(thistle);
         sedimentaryButton.addActionListener((e) -> {
-            sedimentarySort();
+            Thread sedSort = new Thread(sedimentarySort);
+            sedSort.start();
         });
         panel.add(sedimentaryButton);
 
@@ -499,7 +503,8 @@ public class CustomerView extends State {
         metamorphicButton.setBounds(135, 95, 110, 30);
         metamorphicButton.setBackground(thistle);
         metamorphicButton.addActionListener((e) -> {
-            metamorphicSort();
+            Thread metSort = new Thread(metamorphicSort);
+            metSort.start();
         });
         panel.add(metamorphicButton);
 
@@ -507,7 +512,8 @@ public class CustomerView extends State {
         stoneButton.setBounds(20, 130, 110, 30);
         stoneButton.setBackground(thistle);
         stoneButton.addActionListener((e) -> {
-            stoneSort();
+            Thread stoSort = new Thread(stoneSort);
+            stoSort.start();
         });
         panel.add(stoneButton);
 
@@ -515,7 +521,8 @@ public class CustomerView extends State {
         gemstoneButton.setBounds(135, 130, 110, 30);
         gemstoneButton.setBackground(thistle);
         gemstoneButton.addActionListener((e) -> {
-            gemstoneSort();
+            Thread gemSort = new Thread(gemstoneSort);
+            gemSort.start();
         });
         panel.add(gemstoneButton);
 
@@ -528,93 +535,24 @@ public class CustomerView extends State {
         minPriceSlider.setBounds(10, 165, 250, 25);
         minPriceSlider.addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent e) {
-
                 if (sortedIgn == 1) {
-                    igneousSort();
+                    Thread ignSort = new Thread(igneousSort);
+                    ignSort.start();
                 } else if (sortedSed == 1) {
-                    sedimentarySort();
+                    Thread sedSort = new Thread(sedimentarySort);
+                    sedSort.start();
                 } else if (sortedMet == 1) {
-                    metamorphicSort();
+                    Thread metSort = new Thread(metamorphicSort);
+                    metSort.start();
                 } else if (sortedSto == 1) {
-                    stoneSort();
+                    Thread stoSort = new Thread(stoneSort);
+                    stoSort.start();
                 } else if (sortedGem == 1) {
-                    gemstoneSort();
+                    Thread gemSort = new Thread(gemstoneSort);
+                    gemSort.start();
                 } else {
-
-                    GridBagConstraints imageLayout = new GridBagConstraints();
-                    imageLayout.insets = new Insets(2, 2, 2, 2);
-                    int x = 0;
-                    int y = 0;
-                    itemDisplay.removeAll();
-                    items.clear();
-                    itemDisplay.repaint();
-                    ItemSelection select = new ItemSelection(items);
-
-                    int minPrice = minPriceSlider.getValue();
-                    int maxPrice = maxPriceSlider.getValue();
-                    int maxPriceMaximum = maxPriceSlider.getMaximum();
-
-                    ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
-
-                    if (maxPrice == maxPriceMaximum) {
-                        sortedInventory.removeIf(item -> item.cost < minPrice);
-                    } else {
-                        sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
-                    }
-
-                    Collections.sort(sortedInventory, new Comparator<Inventory>() {
-                        @Override
-                        public int compare(Inventory item1, Inventory item2) {
-                            return Double.compare(item1.cost, item2.cost);
-                        }
-                    });
-
-                    for (int i = 0; i < sortedInventory.size(); i++) {
-                        String itemName = sortedInventory.get(i).itemName;
-
-                        imageLayout.weightx = 0.5;
-                        imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                        imageLayout.gridx = x;
-                        imageLayout.gridy = y;
-
-                        if (x == 4) {
-                            x = 0;
-                            y++;
-                        } else {
-                            x++;
-                        }
-
-                        if (sortedInventory.get(i).itemImage == null) {
-                            JButton item = new JButton(itemName);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                        } else {
-                            try {
-                                byte[] b = sortedInventory.get(i).itemImage;
-                                ItemIcon itemIcon = new ItemIcon(b);
-                                Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                                itemIcon = new ItemIcon(itemImage);
-                                JButton item = new JButton(itemName, itemIcon);
-                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                                item.setHorizontalTextPosition(SwingConstants.CENTER);
-                                item.setBackground(thistle);
-                                item.addActionListener(select);
-                                items.add(item);
-                                itemDisplay.add(item, imageLayout);
-                            } catch (Exception ex) {
-                                JButton item = new JButton(itemName);
-                                item.setBackground(thistle);
-                                item.addActionListener(select);
-                                items.add(item);
-                                itemDisplay.add(item, imageLayout);
-                                System.out.println("Invalid Image");
-                            }
-                        }
-                    }
-                    itemDisplay.validate();
-                    panel.repaint();
+                    Thread minSort = new Thread(priceSort);
+                    minSort.start();
                 }
             }
         });
@@ -630,90 +568,23 @@ public class CustomerView extends State {
         maxPriceSlider.addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent e) {
                 if (sortedIgn == 1) {
-                    igneousSort();
+                    Thread ignSort = new Thread(igneousSort);
+                    ignSort.start();
                 } else if (sortedSed == 1) {
-                    sedimentarySort();
+                    Thread sedSort = new Thread(sedimentarySort);
+                    sedSort.start();
                 } else if (sortedMet == 1) {
-                    metamorphicSort();
+                    Thread metSort = new Thread(metamorphicSort);
+                    metSort.start();
                 } else if (sortedSto == 1) {
-                    stoneSort();
+                    Thread stoSort = new Thread(stoneSort);
+                    stoSort.start();
                 } else if (sortedGem == 1) {
-                    gemstoneSort();
+                    Thread gemSort = new Thread(gemstoneSort);
+                    gemSort.start();
                 } else {
-                    GridBagConstraints imageLayout = new GridBagConstraints();
-                    imageLayout.insets = new Insets(2, 2, 2, 2);
-                    int x = 0;
-                    int y = 0;
-                    itemDisplay.removeAll();
-                    items.clear();
-                    itemDisplay.repaint();
-                    ItemSelection select = new ItemSelection(items);
-
-                    int minPrice = minPriceSlider.getValue();
-                    int maxPrice = maxPriceSlider.getValue();
-                    int maxPriceMaximum = maxPriceSlider.getMaximum();
-
-                    ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
-
-                    if (maxPrice == maxPriceMaximum) {
-                        sortedInventory.removeIf(item -> item.cost < minPrice);
-                    } else {
-                        sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
-                    }
-
-                    Collections.sort(sortedInventory, new Comparator<Inventory>() {
-                        @Override
-                        public int compare(Inventory item1, Inventory item2) {
-                            return Double.compare(item1.cost, item2.cost);
-                        }
-                    });
-
-                    for (int i = 0; i < sortedInventory.size(); i++) {
-                        String itemName = sortedInventory.get(i).itemName;
-
-                        imageLayout.weightx = 0.5;
-                        imageLayout.fill = GridBagConstraints.HORIZONTAL;
-                        imageLayout.gridx = x;
-                        imageLayout.gridy = y;
-
-                        if (x == 4) {
-                            x = 0;
-                            y++;
-                        } else {
-                            x++;
-                        }
-
-                        if (sortedInventory.get(i).itemImage == null) {
-                            JButton item = new JButton(itemName);
-                            item.setBackground(thistle);
-                            item.addActionListener(select);
-                            items.add(item);
-                            itemDisplay.add(item, imageLayout);
-                        } else {
-                            try {
-                                byte[] b = sortedInventory.get(i).itemImage;
-                                ItemIcon itemIcon = new ItemIcon(b);
-                                Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-                                itemIcon = new ItemIcon(itemImage);
-                                JButton item = new JButton(itemName, itemIcon);
-                                item.setVerticalTextPosition(SwingConstants.BOTTOM);
-                                item.setHorizontalTextPosition(SwingConstants.CENTER);
-                                item.setBackground(thistle);
-                                item.addActionListener(select);
-                                items.add(item);
-                                itemDisplay.add(item, imageLayout);
-                            } catch (Exception ex) {
-                                JButton item = new JButton(itemName);
-                                item.setBackground(thistle);
-                                item.addActionListener(select);
-                                items.add(item);
-                                itemDisplay.add(item, imageLayout);
-                                System.out.println("Invalid Image");
-                            }
-                        }
-                    }
-                    itemDisplay.validate();
-                    panel.repaint();
+                    Thread maxSort = new Thread(priceSort);
+                    maxSort.start();
                 }
             }
         });
@@ -723,7 +594,8 @@ public class CustomerView extends State {
         ordersButton.setBounds(136, 515, 100, 50);
         ordersButton.setBackground(thistle);
         ordersButton.addActionListener((e) -> {
-            customerSalesDetails();
+            Thread customSales = new Thread(customerSalesDetails);
+            customSales.start();
         });
         panel.add(ordersButton);
 
@@ -827,11 +699,15 @@ public class CustomerView extends State {
                     if (cardValid) {
                         Thread createCheckout = new Thread(customerCheckout);
                         createCheckout.start();
+                        cardError.setText("");
+                        cardSecurityError.setText("");
                     }
                 } else {
                     if (cardValid) {
                         Thread createCheckout = new Thread(customerCheckout);
                         createCheckout.start();
+                        cardError.setText("");
+                        cardSecurityError.setText("");
                     }
                 }
             }
@@ -900,6 +776,7 @@ public class CustomerView extends State {
             cardExpirationYear.setSelectedIndex(7);
             cardExpirationYear.setVisible(true);
             cardExpireMonth.setVisible(true);
+            cardExpirationMonth.setSelectedIndex(currentDate.getMonthValue() - 1);
             cardExpirationMonth.setVisible(true);
             cardError.setText("");
             cardSecurityError.setText("");
@@ -1059,7 +936,7 @@ public class CustomerView extends State {
         }
     }
 
-    void igneousSort() {
+    Runnable igneousSort = () -> {
         Color thistle = Color.decode("#D5CBE2");
 
         sortedIgn = 1;
@@ -1144,9 +1021,9 @@ public class CustomerView extends State {
         }
         itemDisplay.validate();
         panel.repaint();
-    }
+    };
 
-    void sedimentarySort() {
+    Runnable sedimentarySort = () -> {
         Color thistle = Color.decode("#D5CBE2");
 
         sortedIgn = 0;
@@ -1231,9 +1108,9 @@ public class CustomerView extends State {
         }
         itemDisplay.validate();
         panel.repaint();
-    }
+    };
 
-    void metamorphicSort() {
+    Runnable metamorphicSort = () -> {
         Color thistle = Color.decode("#D5CBE2");
 
         sortedIgn = 0;
@@ -1318,9 +1195,9 @@ public class CustomerView extends State {
         }
         itemDisplay.validate();
         panel.repaint();
-    }
+    };
 
-    void stoneSort() {
+    Runnable stoneSort = () -> {
         Color thistle = Color.decode("#D5CBE2");
 
         sortedIgn = 0;
@@ -1405,9 +1282,9 @@ public class CustomerView extends State {
         }
         itemDisplay.validate();
         panel.repaint();
-    }
+    };
 
-    void gemstoneSort() {
+    Runnable gemstoneSort = () -> {
         Color thistle = Color.decode("#D5CBE2");
 
         sortedIgn = 0;
@@ -1492,9 +1369,9 @@ public class CustomerView extends State {
         }
         itemDisplay.validate();
         panel.repaint();
-    }
+    };
 
-    void updateData() {
+    static Runnable updateData = () -> {
         Color thistle = Color.decode("#D5CBE2");
         GridBagConstraints imageLayout = new GridBagConstraints();
         imageLayout.insets = new Insets(2, 2, 2, 2);
@@ -1549,7 +1426,85 @@ public class CustomerView extends State {
             }
         }
         itemDisplay.validate();
-    }
+    };
+
+    Runnable priceSort = () -> {
+        Color thistle = Color.decode("#D5CBE2");
+        GridBagConstraints imageLayout = new GridBagConstraints();
+        imageLayout.insets = new Insets(2, 2, 2, 2);
+        int x = 0;
+        int y = 0;
+        itemDisplay.removeAll();
+        items.clear();
+        itemDisplay.repaint();
+        ItemSelection select = new ItemSelection(items);
+
+        int minPrice = minPriceSlider.getValue();
+        int maxPrice = maxPriceSlider.getValue();
+        int maxPriceMaximum = maxPriceSlider.getMaximum();
+
+        ArrayList<Inventory> sortedInventory = new ArrayList<>(LoginView.inventory);
+
+        if (maxPrice == maxPriceMaximum) {
+            sortedInventory.removeIf(item -> item.cost < minPrice);
+        } else {
+            sortedInventory.removeIf(item -> item.cost < minPrice || item.cost > maxPrice);
+        }
+
+        Collections.sort(sortedInventory, new Comparator<Inventory>() {
+            @Override
+            public int compare(Inventory item1, Inventory item2) {
+                return Double.compare(item1.cost, item2.cost);
+            }
+        });
+
+        for (int i = 0; i < sortedInventory.size(); i++) {
+            String itemName = sortedInventory.get(i).itemName;
+
+            imageLayout.weightx = 0.5;
+            imageLayout.fill = GridBagConstraints.HORIZONTAL;
+            imageLayout.gridx = x;
+            imageLayout.gridy = y;
+
+            if (x == 4) {
+                x = 0;
+                y++;
+            } else {
+                x++;
+            }
+
+            if (sortedInventory.get(i).itemImage == null) {
+                JButton item = new JButton(itemName);
+                item.setBackground(thistle);
+                item.addActionListener(select);
+                items.add(item);
+                itemDisplay.add(item, imageLayout);
+            } else {
+                try {
+                    byte[] b = sortedInventory.get(i).itemImage;
+                    ItemIcon itemIcon = new ItemIcon(b);
+                    Image itemImage = itemIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                    itemIcon = new ItemIcon(itemImage);
+                    JButton item = new JButton(itemName, itemIcon);
+                    item.setVerticalTextPosition(SwingConstants.BOTTOM);
+                    item.setHorizontalTextPosition(SwingConstants.CENTER);
+                    item.setBackground(thistle);
+                    item.addActionListener(select);
+                    items.add(item);
+                    itemDisplay.add(item, imageLayout);
+                } catch (Exception ex) {
+                    JButton item = new JButton(itemName);
+                    item.setBackground(thistle);
+                    item.addActionListener(select);
+                    items.add(item);
+                    itemDisplay.add(item, imageLayout);
+                    System.out.println("Invalid Image");
+                }
+            }
+        }
+        itemDisplay.validate();
+        panel.repaint();
+    };
 
     static Object[][] getCartData() {
         try {
@@ -1803,9 +1758,10 @@ public class CustomerView extends State {
 
                 cardNumber.setText("");
                 cardSecurityCode.setText("");
-                discountCode.setText("");
                 cardError.setText("");
                 cardSecurityError.setText("");
+                discountCode.setText("");
+                discountError.setText("");
                 cardExpirationYear.setSelectedIndex(7);
                 cardExpirationMonth.setSelectedIndex(currentDate.getMonthValue() - 1);
 
@@ -1819,7 +1775,7 @@ public class CustomerView extends State {
         }
     };
 
-    void helpSystem() {
+    Runnable helpSystem = () -> {
         Document document = new Document();
         Page page = document.getPages().add();
         page.getParagraphs().add(new TextFragment("Help Guide for Customers"));
@@ -1849,9 +1805,9 @@ public class CustomerView extends State {
         } catch (IOException e) {
             System.out.println(e);
         }
-    }
+    };
 
-    void customerSalesDetails() {
+    Runnable customerSalesDetails = () -> {
         int orderNumber = 0;
         boolean ordersFound = false;
         double totalOfAllOrders = 0;
@@ -1983,7 +1939,7 @@ public class CustomerView extends State {
         } else {
             orderError.setText("No orders found");
         }
-    }
+    };
 
     static void setMin() {
         for (int i = 0; i < LoginView.inventory.size(); i++) {

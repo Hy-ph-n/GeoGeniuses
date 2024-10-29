@@ -41,11 +41,11 @@ public class ManagerView extends State {
     static DecimalFormat ff = new DecimalFormat("###");
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
-    ArrayList<JButton> items = new ArrayList();
+    static ArrayList<JButton> items = new ArrayList();
 
     static JPanel panel = new JPanel(null);
     static JPanel viewPanel = new JPanel(null);
-    JPanel itemDisplay = new JPanel(null);
+    static JPanel itemDisplay = new JPanel(null);
     ScrollPane inventory;
 
     //A boolean to test of the manager is using customer view
@@ -368,7 +368,8 @@ public class ManagerView extends State {
         help.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                helpSystem();
+                Thread helpSys = new Thread(helpSystem);
+                helpSys.start();
             }
         });
 
@@ -487,7 +488,8 @@ public class ManagerView extends State {
                                 }
 
                                 //Updates the inventory for the customer
-                                ((CustomerView) customerView).updateData();
+                                Thread updData = new Thread(CustomerView.updateData);
+                                updData.start();
                                 jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
                                 managerAsCustomer = true;
                                 viewPanel.add(customerView.jp, BorderLayout.EAST);
@@ -797,7 +799,8 @@ public class ManagerView extends State {
                             }
 
                             //Updates the inventory for the customer
-                            ((CustomerView) customerView).updateData();
+                            Thread updData = new Thread(CustomerView.updateData);
+                            updData.start();
                             managerAsCustomer = true;
                             viewPanel.add(customerView.jp, BorderLayout.EAST);
                             jp.add(viewPanel);
@@ -929,7 +932,8 @@ public class ManagerView extends State {
                             }
 
                             //Updates the inventory for the customer
-                            ((CustomerView) customerView).updateData();
+                            Thread updData = new Thread(CustomerView.updateData);
+                            updData.start();
                             managerAsCustomer = true;
                             viewPanel.add(customerView.jp, BorderLayout.EAST);
                             jp.add(viewPanel);
@@ -1072,7 +1076,8 @@ public class ManagerView extends State {
                             }
 
                             //Updates the inventory for the customer
-                            ((CustomerView) customerView).updateData();
+                            Thread updData = new Thread(CustomerView.updateData);
+                            updData.start();
                             managerAsCustomer = true;
                             viewPanel.add(customerView.jp, BorderLayout.EAST);
                             jp.add(viewPanel);
@@ -1106,9 +1111,11 @@ public class ManagerView extends State {
         salesDetails.setBackground(thistle);
         salesDetails.addActionListener((e) -> {
             if (customerSelected == -1) {
-                generalSalesDetails();
+                Thread genSales = new Thread(generalSalesDetails);
+                genSales.start();
             } else {
-                customerSalesDetails();
+                Thread customSales = new Thread(customerSalesDetails);
+                customSales.start();
             }
         });
         panel.add(salesDetails);
@@ -1119,9 +1126,11 @@ public class ManagerView extends State {
         userDetails.setBackground(thistle);
         userDetails.addActionListener((e) -> {
             if (searchForCustomer.isSelected()) {
-                customerReport();
+                Thread customReport = new Thread(customerReport);
+                customReport.start();
             } else {
-                managerReport();
+                Thread manageReport = new Thread(managerReport);
+                manageReport.start();
             }
         });
         panel.add(userDetails);
@@ -2839,7 +2848,8 @@ public class ManagerView extends State {
             searchForManager.setVisible(false);
 
             //Updates the inventory for the manager
-            updateData();
+            Thread updData = new Thread(updateData);
+            updData.start();
             inventory.setVisible(true);
             allItems.setVisible(true);
 
@@ -4210,7 +4220,7 @@ public class ManagerView extends State {
         maximumDay.setSelectedIndex(currentDay - 1);
     }
 
-    void generalSalesDetails() {
+    Runnable generalSalesDetails = () -> {
         int orderNumber = 0;
         boolean ordersFound = false;
         double totalOfAllOrders = 0;
@@ -4361,9 +4371,9 @@ public class ManagerView extends State {
         } catch (ParseException e) {
             System.out.println(e);
         }
-    }
+    };
 
-    void customerSalesDetails() {
+    Runnable customerSalesDetails = () -> {
         int orderNumber = 0;
         boolean ordersFound = false;
         double totalOfAllOrders = 0;
@@ -4519,9 +4529,9 @@ public class ManagerView extends State {
         } catch (ParseException e) {
             System.out.println(e);
         }
-    }
+    };
 
-    void customerReport() {
+    Runnable customerReport = () -> {
         StringBuilder userReport = new StringBuilder();
         userReport.append("<html>");
         userReport.append("<style>")
@@ -4583,9 +4593,9 @@ public class ManagerView extends State {
         } catch (IOException e) {
             System.out.println(e);
         }
-    }
+    };
 
-    void managerReport() {
+    Runnable managerReport = () -> {
         StringBuilder userReport = new StringBuilder();
         userReport.append("<html>");
         userReport.append("<style>")
@@ -4647,7 +4657,7 @@ public class ManagerView extends State {
         } catch (IOException e) {
             System.out.println(e);
         }
-    }
+    };
 
     static void includeQuestions() {
         boolean question1Update = true;
@@ -6222,7 +6232,7 @@ public class ManagerView extends State {
         }
     }
 
-    void updateData() {
+    static Runnable updateData = () -> {
         needsRestock.setText("");
         needsRestock.setVisible(false);
         Color thistle = Color.decode("#D5CBE2");
@@ -6283,7 +6293,7 @@ public class ManagerView extends State {
             }
         }
         itemDisplay.validate();
-    }
+    };
 
     static Object[][] getDiscountData() {
         try {
@@ -6765,7 +6775,7 @@ public class ManagerView extends State {
         }
     }
 
-    void helpSystem() {
+    Runnable helpSystem = () -> {
         Document document = new Document();
         Page page = document.getPages().add();
         page.getParagraphs().add(new TextFragment("Help Guide for Managers"));
@@ -6789,5 +6799,5 @@ public class ManagerView extends State {
         } catch (IOException e) {
             System.out.println(e);
         }
-    }
+    };
 }

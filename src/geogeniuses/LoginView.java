@@ -97,7 +97,8 @@ public class LoginView extends State {
         help.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                helpSystem();
+                Thread helpSys = new Thread(helpSystem);
+                helpSys.start();
             }
         });
 
@@ -187,7 +188,8 @@ public class LoginView extends State {
                                     CustomerView.setMax();
 
                                     //Updates the inventory for the customer
-                                    ((CustomerView) customerView).updateData();
+                                    Thread updData = new Thread(CustomerView.updateData);
+                                    updData.start();
                                     //A switch to the customer's view
                                     jf.setTitle("Customer View");
                                     jp.setVisible(false);
@@ -223,7 +225,7 @@ public class LoginView extends State {
 
             CustomerView.logOut.setBounds(27, 515, 207, 50);
             CustomerView.ordersButton.setVisible(false);
-            
+
             CustomerView.searchBarEntry.setVisible(true);
             CustomerView.searchBar.setVisible(true);
             CustomerView.cardNumberEntry.setVisible(false);
@@ -249,7 +251,8 @@ public class LoginView extends State {
             CustomerView.setMax();
 
             //Updates the inventory for the customer
-            ((CustomerView) customerView).updateData();
+            Thread updData = new Thread(CustomerView.updateData);
+            updData.start();
             //A switch to the customer's view
             jf.setTitle("Customer View");
             jp.setVisible(false);
@@ -542,7 +545,8 @@ public class LoginView extends State {
             if (ManagerView.updatedFromManager) {
                 ManagerView.updatedFromManager = false;
                 //Updates the inventory for the manager
-                ((ManagerView) managerView).updateData();
+                Thread updData = new Thread(ManagerView.updateData);
+                updData.start();
                 //Updates the discount items table for manager
                 ManagerView.discountitemsData = ManagerView.getDiscountItemsData();
                 DefaultTableModel ditable = (DefaultTableModel) ManagerView.discountitemsjt.getModel();
@@ -690,7 +694,7 @@ public class LoginView extends State {
         }
     }
 
-    void helpSystem() {
+    Runnable helpSystem = () -> {
         Document document = new Document();
         Page page = document.getPages().add();
         page.getParagraphs().add(new TextFragment("Help Guide for Login"));
@@ -711,6 +715,6 @@ public class LoginView extends State {
         } catch (IOException e) {
             System.out.println(e);
         }
-    }
+    };
 
 }

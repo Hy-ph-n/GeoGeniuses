@@ -875,7 +875,8 @@ public class Register extends State {
             CustomerView.setMax();
 
             //Updates the inventory for the customer
-            ((CustomerView) customerView).updateData();
+            Thread updData = new Thread(CustomerView.updateData);
+            updData.start();
             //A switch to the customer's view
             jf.setTitle("Customer View");
             jp.setVisible(false);
