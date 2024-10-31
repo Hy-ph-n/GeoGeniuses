@@ -72,18 +72,18 @@ public class ManagerView extends State {
     static int discountSelected = -1;
 
     // The current date placed into a variable
-    LocalDate currentDate = LocalDate.now();
+    static LocalDate currentDate = LocalDate.now();
 
     JComboBox minimumYear;
 
     JComboBox minimumMonth;
 
-    JComboBox minimumDay;
+    static JComboBox minimumDay;
 
     //These int variables will contain the discount's starting year, month, and day.
     int orderStartYear = currentDate.getYear();
     int orderStartMonth = currentDate.getMonthValue();
-    int orderStartDay = currentDate.getDayOfMonth();
+    static int orderStartDay = currentDate.getDayOfMonth();
 
     JComboBox maximumYear;
 
@@ -281,12 +281,12 @@ public class ManagerView extends State {
 
     JComboBox startMonth;
 
-    JComboBox startDay;
+    static JComboBox startDay;
 
     //These int variables will contain the discount's starting year, month, and day.
     int discountStartYear = currentDate.getYear();
     int discountStartMonth = currentDate.getMonthValue();
-    int discountStartDay = currentDate.getDayOfMonth();
+    static int discountStartDay = currentDate.getDayOfMonth();
 
     JComboBox expireYear;
 
@@ -571,9 +571,6 @@ public class ManagerView extends State {
         minimumDay = new JComboBox(orderStartDayInitial);
         minimumDay.setBounds(27, 425, 55, 20);
         panel.add(minimumDay);
-
-        minimumDay.setSelectedIndex(currentDate.getDayOfMonth() - 1);
-        orderStartDay = currentDate.getDayOfMonth();
 
         minimumDay.addActionListener((e) -> {
             if (minimumDay.getSelectedItem() != null) {
@@ -3406,9 +3403,6 @@ public class ManagerView extends State {
         startDay.setBounds(27, 425, 55, 20);
         startDay.setVisible(false);
         panel.add(startDay);
-
-        startDay.setSelectedIndex(currentDate.getDayOfMonth() - 1);
-        discountStartDay = currentDate.getDayOfMonth();
 
         startDay.addActionListener((e) -> {
             if (startDay.getSelectedItem() != null) {

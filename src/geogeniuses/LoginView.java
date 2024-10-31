@@ -127,6 +127,12 @@ public class LoginView extends State {
                                 logPassword.setText("");
 
                                 if (positionTitle.equals("Manager")) {
+                                    ManagerView.minimumDay.setSelectedIndex(ManagerView.currentDate.getDayOfMonth() - 1);
+                                    ManagerView.orderStartDay = ManagerView.currentDate.getDayOfMonth();
+
+                                    ManagerView.startDay.setSelectedIndex(ManagerView.currentDate.getDayOfMonth() - 1);
+                                    ManagerView.discountStartDay = ManagerView.currentDate.getDayOfMonth();
+
                                     jp.remove(connectionStatus);
                                     connectionStatus = new JLabel("");
                                     connectionStatus.setBounds(0, 0, 200, 15);
