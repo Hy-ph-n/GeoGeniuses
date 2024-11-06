@@ -7,12 +7,17 @@ import java.sql.*;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
-//The class is just named after me and what this is. I am David Bowen and this is Advanced Java Programming, Mastery Assessment 6.
+/**
+* The class is just named after me and what this is. This is Advanced Java Programming, Mastery Assessment 6.
+* @author David Bowen
+*/
 public class GeoGeniuses extends State {
 
     static Timer connectionTimer;
 
-    //The sql link is created here.
+    /*
+    The sql link is created here.
+    */
     static String sqliteURL = "jdbc:sqlite:geogeniuses.db";
 
     static int delay = 7500;
@@ -34,7 +39,9 @@ public class GeoGeniuses extends State {
         Thread connection = new Thread(ConnectionStatus);
         connection.start();
 
-        //The login state is now in main
+        /*
+        The login state is now in main
+        */
         State.loginView = new LoginView();
         State.registerView = new Register();
         State.resetPasswordView = new ResetPassword();
@@ -43,6 +50,10 @@ public class GeoGeniuses extends State {
 
     }
 
+    /*
+    The ConnectionStatus method is responsible for checking if the user is still using the database.
+    If it is off, certain features are disabled.
+    */
     static Runnable ConnectionStatus = () -> {
         connectionTimer = new Timer(delay, new ActionListener() {
             @Override

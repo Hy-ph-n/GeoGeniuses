@@ -70,6 +70,10 @@ public class Register extends State {
 
     static JButton registerButton;
 
+    /**
+    * The register class is responsible for allowing the creation of new users, as long as they submit relevant data.
+    * @author David Bowen
+    */
     Register() {
 
         Color lightCyan = Color.decode("#DFFDFF");
@@ -318,11 +322,17 @@ public class Register extends State {
                 loginValid = true;
                 String registrationLogonName = registerLogName.getText();
                 logNameError.setText("");
-                //If statement ensuring the user entered a login name
+                /*
+                If statement ensuring the user entered a login name
+                */
                 if (!registrationLogonName.isEmpty()) {
-                    //If statement ensuring the login name does not begin with a number
+                    /*
+                    If statement ensuring the login name does not begin with a number
+                    */
                     if (!registrationLogonName.matches("^[0-9].*")) {
-                        //If statement ensuring the login name does not contain any special characters
+                        /*
+                        If statement ensuring the login name does not contain any special characters
+                        */
                         boolean specialChar = false;
                         for (char c : registrationLogonName.toCharArray()) {
                             if (!Character.isLetterOrDigit(c) && !Character.isWhitespace(c)) {
@@ -331,11 +341,15 @@ public class Register extends State {
                         }
                         if (!specialChar) {
                             boolean whitespace = false;
-                            //Line of code ensuring the login name does not contain a space at the start or end
+                            /*
+                            Line of code ensuring the login name does not contain a space at the start or end
+                            */
                             registrationLogonName = registrationLogonName.trim();
                             registerLogName.setText(registrationLogonName);
 
-                            //Ensures no whitespaces are present in the password
+                            /*
+                            Ensures no whitespaces are present in the password
+                            */
                             for (char c : registrationLogonName.toCharArray()) {
                                 if (Character.isWhitespace(c)) {
                                     whitespace = true;
@@ -343,9 +357,13 @@ public class Register extends State {
                             }
 
                             if (!whitespace) {
-                                //If statement ensuring the login name is not less than 8 characters or more than 20
+                                /*
+                                If statement ensuring the login name is not less than 8 characters or more than 20
+                                */
                                 if (registrationLogonName.length() >= 8 && registrationLogonName.length() <= 20) {
-                                    //This try statement contains a query that will test if the login name already exists.
+                                    /*
+                                    This try statement contains a query that will test if the login name already exists.
+                                    */
                                     for (int i = 0; i < LoginView.logon.size(); i++) {
                                         String logN = LoginView.logon.get(i).logonName;
                                         if (registrationLogonName.toUpperCase().equals(logN.toUpperCase())) {
@@ -387,14 +405,20 @@ public class Register extends State {
                 passError.setBounds(500, 27, 400, 15);
                 specialError.setText("");
 
-                //If statement ensuring the user entered a password
+                /*
+                If statement ensuring the user entered a password
+                */
                 if (!registrationPassword.isEmpty()) {
                     boolean whitespace = false;
-                    //Removes any whitespaces from the beginning or end of the password
+                    /*
+                    Removes any whitespaces from the beginning or end of the password
+                    */
                     registrationPassword = registrationPassword.trim();
                     registerPassword.setText(registrationPassword);
 
-                    //Ensures no whitespaces are present in the password
+                    /*
+                    Ensures no whitespaces are present in the password
+                    */
                     for (char c : registrationPassword.toCharArray()) {
                         if (Character.isWhitespace(c)) {
                             whitespace = true;
@@ -402,7 +426,9 @@ public class Register extends State {
                     }
 
                     if (!whitespace) {
-                        //If statement ensuring the password is not less than 8 characters or more than 20
+                        /*
+                        If statement ensuring the password is not less than 8 characters or more than 20
+                        */
                         if (registrationPassword.length() < 8) {
                             passwordValid = false;
                             passError.setText("Password must be at least 7 characters long");
@@ -428,7 +454,9 @@ public class Register extends State {
                                     specialPresent = true;
                                 }
                             }
-                            //A series of if statements to test if the user meets at least 3 out of 4 requirements
+                            /*
+                            A series of if statements to test if the user meets at least 3 out of 4 requirements
+                            */
                             if (uppercasePresent) {
                                 requirementsMet++;
                             }
@@ -473,7 +501,9 @@ public class Register extends State {
         returnButton.setBounds(500, 375, 100, 50);
         returnButton.setBackground(thistle);
         returnButton.addActionListener((e) -> {
-            //Resets all entries to their default states
+            /*
+            Resets all entries to their default states
+            */
             Reset();
 
             jp.remove(connectionStatus);
@@ -482,7 +512,9 @@ public class Register extends State {
             connectionStatus.setForeground(Color.red);
             loginView.jp.add(connectionStatus);
 
-            //A switch to the login view
+            /*
+            A switch to the login view
+            */
             jf.setTitle("Login");
             jp.setVisible(false);
             jf.remove(jp);
@@ -494,6 +526,10 @@ public class Register extends State {
         jp.add(returnButton);
     }
 
+    /**
+     * Retrieves the security questions stored in the database
+     * @return void
+     */
     static void includeQuestions() {
         boolean question1Update = true;
         boolean question2Update = true;
@@ -501,15 +537,21 @@ public class Register extends State {
 
         for (int i = 0; i < LoginView.securityQuestions.size(); i++) {
             if (question1Update) {
-                //Sets up the security question
+                /*
+                Sets up the security question
+                */
                 securityQuestion1.addItem(LoginView.securityQuestions.get(i).questionPrompt);
                 question1Update = false;
             } else if (question2Update) {
-                //Sets up the security question
+                /*
+                Sets up the security question
+                */
                 securityQuestion2.addItem(LoginView.securityQuestions.get(i).questionPrompt);
                 question2Update = false;
             } else if (question3Update) {
-                //Sets up the security question
+                /*
+                Sets up the security question
+                */
                 securityQuestion3.addItem(LoginView.securityQuestions.get(i).questionPrompt);
                 question1Update = true;
                 question2Update = true;
@@ -517,9 +559,15 @@ public class Register extends State {
         }
     }
 
+    /**
+     * Creates a new user using entered values
+     * @return void
+     */
     void createNewAccount() {
-        //A variable testing if a new account can be created. This value
-        //only needs to get switched once to prevent account creation.
+        /*
+        A variable testing if a new account can be created. This value
+        only needs to get switched once to prevent account creation.
+        */
         boolean valid = true;
 
         passError.setBounds(500, 27, 400, 15);
@@ -558,7 +606,9 @@ public class Register extends State {
         String secondary2 = phoneSecondary2.getText();
         String secondary3 = phoneSecondary3.getText();
 
-        //If statement ensuring the user entered a login name
+        /*
+        If statement ensuring the user entered a login name
+        */
         if (!loginValid) {
             valid = false;
         } else if (registrationLogonName.isEmpty()) {
@@ -566,7 +616,9 @@ public class Register extends State {
             logNameError.setText("Username required");
         }
 
-        //If statement ensuring the user has entered a valid password
+        /*
+        If statement ensuring the user has entered a valid password
+        */
         if (!passwordValid) {
             valid = false;
         } else if (registrationPassword.isEmpty()) {
@@ -577,31 +629,41 @@ public class Register extends State {
             specialError.setText("");
         }
 
-        //If statement ensuring the user has entered their first name
+        /*
+        If statement ensuring the user has entered their first name
+        */
         if (registrationFirstName.isEmpty()) {
             valid = false;
             firstNameError.setText("First name required");
         }
 
-        //If statement ensuring the user has entered their last name
+        /*
+        If statement ensuring the user has entered their last name
+        */
         if (registrationLastName.isEmpty()) {
             valid = false;
             lastNameError.setText("Last name required");
         }
 
-        //If statement ensuring the user has entered something for the address
+        /*
+        If statement ensuring the user has entered something for the address
+        */
         if (address1.isEmpty()) {
             valid = false;
             addressError.setText("Address required");
         }
 
-        //If statement ensuring the user has entered something for the city
+        /*
+        If statement ensuring the user has entered something for the city
+        */
         if (city.isEmpty()) {
             valid = false;
             cityError.setText("City required");
         }
 
-        //If statement ensuring the user has entered something valid for the zip
+        /*
+        If statement ensuring the user has entered something valid for the zip
+        */
         if (zipCode.isEmpty()) {
             valid = false;
             zipError.setText("Zip required");
@@ -621,7 +683,9 @@ public class Register extends State {
             }
             if (nonDigitCharacters < 2) {
                 if (isHyphen.equals("")) {
-                    // Keeps zip code length at 5 if a hyphen is not present
+                    /*
+                    Keeps zip code length at 5 if a hyphen is not present
+                    */
                     if (zipCode.length() < 5) {
                         valid = false;
                         zipError.setText("Zip too short");
@@ -630,7 +694,9 @@ public class Register extends State {
                         zipError.setText("Zip too long");
                     }
                 } else if (isHyphen.equals("-")) {
-                    // Makes sure the zip code length is long enough to be standard
+                    /*
+                    Makes sure the zip code length is long enough to be standard
+                    */
                     if (hyphenChar == 5) {
                         if (zipCode.length() < 10) {
                             valid = false;
@@ -653,13 +719,17 @@ public class Register extends State {
             }
         }
 
-        //If statement ensuring the user has entered a state
+        /*
+        If statement ensuring the user has entered a state
+        */
         if (state.equals("")) {
             valid = false;
             stateError.setText("Invalid state");
         }
 
-        // If statement ensuring the user has entered a valid email
+        /*
+        If statement ensuring the user has entered a valid email
+        */
         if (!email.equals("")) {
             if (email.length() <= 40) {
                 if (email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
@@ -677,7 +747,9 @@ public class Register extends State {
             emailError.setText("Email required");
         }
 
-        //If statements for the primary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        /*
+        If statements for the primary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        */
         if (!primary1.isEmpty() || !primary2.isEmpty() || !primary3.isEmpty()) {
             boolean phoneValid = true;
             if (primary1.length() != 3) {
@@ -725,7 +797,9 @@ public class Register extends State {
             phoneError1.setText("Enter phone number");
         }
 
-        //If statements for the secondary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        /*
+        If statements for the secondary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        */
         if (!secondary1.isEmpty() || !secondary2.isEmpty() || !secondary3.isEmpty()) {
             boolean phoneValid = true;
             if (secondary1.length() != 3) {
@@ -769,7 +843,9 @@ public class Register extends State {
             }
         }
 
-        //If statement ensuring the user has entered something for all three security questions
+        /*
+        If statement ensuring the user has entered something for all three security questions
+        */
         if (answer1.isEmpty() || answer2.isEmpty() || answer3.isEmpty()) {
             valid = false;
             answerError.setText("Answer ALL security questions");
@@ -851,10 +927,14 @@ public class Register extends State {
             LoginView.person.add(new Person(personID, title, registrationFirstName, registrationMiddleName, registrationLastName, suffix, address1, address2, address3, city, zipCode, state, email, phonePrimary, phoneSecondary, image, 0));
             LoginView.logon.add(new Logon(personID, registrationLogonName, registrationPassword, answer1, answer2, answer3, positionTitle));
 
-            //Resets all entries to their default states
+            /*
+            Resets all entries to their default states
+            */
             Reset();
 
-            //Sets the person id so that the customer view will work
+            /*
+            Sets the person id so that the customer view will work
+            */
             LoginView.SetPersonID(registrationLogonName);
 
             for (int l = 0; l < LoginView.person.size(); l++) {
@@ -873,11 +953,15 @@ public class Register extends State {
 
             CustomerView.setMin();
             CustomerView.setMax();
-
-            //Updates the inventory for the customer
+            
+            /*
+            Updates the inventory for the customer
+            */
             Thread updData = new Thread(CustomerView.updateData);
             updData.start();
-            //A switch to the customer's view
+            /*
+            A switch to the customer's view
+            */
             jf.setTitle("Customer View");
             jp.setVisible(false);
             jf.remove(jp);
@@ -887,6 +971,10 @@ public class Register extends State {
         }
     }
 
+    /**
+     * Resets all fields to their default states
+     * @return void
+     */
     void Reset() {
         registerLogName.setText("");
         logNameError.setText("");

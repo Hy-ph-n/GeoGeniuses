@@ -35,6 +35,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
 
+/**
+ * ManagerView is the largest and most complicated of the views, allowing valid users to
+ * add/edit/remove items, discounts, and people, as well as viewing orders, viewing users
+ * and making point of sales.
+ * @author David Bowen
+ */
 public class ManagerView extends State {
 
     static DecimalFormat f = new DecimalFormat("#,##0.00");
@@ -48,30 +54,46 @@ public class ManagerView extends State {
     static JPanel itemDisplay = new JPanel(null);
     ScrollPane inventory;
 
-    //A boolean to test of the manager is using customer view
+    /*
+    A boolean to test of the manager is using customer view
+    */
     static boolean managerAsCustomer = false;
 
-    //A boolean that will allow the inventory to be reloaded when necessary
+    /*
+    A boolean that will allow the inventory to be reloaded when necessary
+    */
     static boolean updatedFromManager = false;
     static boolean updatedFromManagerPerson = false;
     static boolean updatedFromManagerLogon = false;
 
-    //Identifies the manager
+    /*
+    Identifies the manager
+    */
     static int managerDetails = 0;
 
-    //Customer selected is used for customer data retrieval
+    /*
+    Customer selected is used for customer data retrieval
+    */
     static int customerSelected = -1;
 
-    //User selected is used for user data retrieval
+    /*
+    User selected is used for user data retrieval
+    */
     static int userSelected = -1;
 
-    //Item selected is used for item data retrieval
+    /*
+    Item selected is used for item data retrieval
+    */
     static int itemSelected = -1;
 
-    //Discount selected is used for item data retrieval
+    /*
+    Discount selected is used for item data retrieval
+    */
     static int discountSelected = -1;
 
-    // The current date placed into a variable
+    /*
+    The current date placed into a variable
+    */
     static LocalDate currentDate = LocalDate.now();
 
     JComboBox minimumYear;
@@ -80,7 +102,9 @@ public class ManagerView extends State {
 
     static JComboBox minimumDay;
 
-    //These int variables will contain the discount's starting year, month, and day.
+    /*
+    These int variables will contain the discount's starting year, month, and day.
+    */
     int orderStartYear = currentDate.getYear();
     int orderStartMonth = currentDate.getMonthValue();
     static int orderStartDay = currentDate.getDayOfMonth();
@@ -91,12 +115,16 @@ public class ManagerView extends State {
 
     JComboBox maximumDay;
 
-    //These int variables will contain the order's maximum year, month, and day.
+    /*
+    These int variables will contain the order's maximum year, month, and day.
+    */
     int orderEndingYear = currentDate.getYear();
     int orderEndingMonth = currentDate.getMonthValue();
     int orderEndingDay = currentDate.getDayOfMonth();
 
-    //These strings will be used to ensure the date is adapted properly.
+    /*
+    These strings will be used to ensure the date is adapted properly.
+    */
     String orderStartingMonth = "";
     String orderStartingDay = "";
     String orderEndMonth = "";
@@ -108,44 +136,60 @@ public class ManagerView extends State {
     static JRadioButton searchForManager;
     JLabel orderDateError;
 
-    //The table, scrollpane, column, and data for customers
+    /*
+    The table, scrollpane, column, and data for customers
+    */
     static JTable customerjt;
     ScrollPane customerjs;
     static String[] customerCol;
     static Object[][] customerData;
 
-    //The table, scrollpane, column, and data viewed for a manager's convenience
+    /*
+    The table, scrollpane, column, and data viewed for a manager's convenience
+    */
     static JTable managerdiscountjt;
     ScrollPane managerdiscountjs;
     static String[] managerDiscountCol;
     static Object[][] managerDiscountData;
 
-    //The table, scrollpane, column, and data for users
+    /*
+    The table, scrollpane, column, and data for users
+    */
     static JTable personjt;
     ScrollPane personjs;
     static String[] personCol;
     static Object[][] personData;
 
-    //The table, scrollpane, column, and data for login
+    /*
+    The table, scrollpane, column, and data for login
+    */
     static JTable loginjt;
     ScrollPane loginjs;
     static String[] loginCol;
     static Object[][] loginData;
 
-    //Logon name error label
+    /*
+    Logon name error label
+    */
     JLabel customersLogonNameError;
 
-    //The two text fields
+    /*
+    The two text fields
+    */
     static JTextField customersEmail;
     static JTextField customersPhoneNumber1;
     static JTextField customersPhoneNumber2;
     static JTextField customersPhoneNumber3;
 
-    //A series of booleans that will inform the program if data entered by the user is valid
+    /*
+    A series of booleans that will inform the program if data entered by the user is valid
+    */
     boolean loginValid = true;
     boolean passwordValid = true;
 
-    //A boolean only used in the context of a delete operation
+    /*
+    A boolean only used in the context of a delete operation
+    */
     static int personDetailsSelected = -1;
 
     JTextField personsLoginName;
@@ -194,7 +238,9 @@ public class ManagerView extends State {
     JRadioButton userIsManager;
     JLabel userSelectedWarning;
 
-    //A series of booleans that will inform the program if data entered by the user is valid
+    /*
+    A series of booleans that will inform the program if data entered by the user is valid
+    */
     boolean nameValid = true;
     boolean descriptionValid = true;
     boolean heftValid = true;
@@ -206,13 +252,19 @@ public class ManagerView extends State {
     boolean quantityValid = true;
     boolean restockThresholdValid = true;
 
-    //The label only visible if at least one item's quantity is at or below the restock threshold
+    /*
+    The label only visible if at least one item's quantity is at or below the restock threshold
+    */
     static JLabel needsRestock;
 
-    //The label that access a report consisting of all items
+    /*
+    The label that access a report consisting of all items
+    */
     static JLabel allItems;
 
-    //Text fields, error labels, and radio buttons required to receive the user's input and warn them about invalid entries for items
+    /*
+    Text fields, error labels, and radio buttons required to receive the user's input and warn them about invalid entries for items
+    */
     static JTextField itemsName;
     static JLabel itemsNameError;
     static JTextArea itemsDescription;
@@ -283,7 +335,9 @@ public class ManagerView extends State {
 
     static JComboBox startDay;
 
-    //These int variables will contain the discount's starting year, month, and day.
+    /*
+    These int variables will contain the discount's starting year, month, and day.
+     */
     int discountStartYear = currentDate.getYear();
     int discountStartMonth = currentDate.getMonthValue();
     static int discountStartDay = currentDate.getDayOfMonth();
@@ -294,12 +348,16 @@ public class ManagerView extends State {
 
     JComboBox expireDay;
 
-    //These int variables will contain the discount's expiration year, month, and day.
+    /*
+    These int variables will contain the discount's expiration year, month, and day.
+     */
     int discountExpirationYear = currentDate.getYear();
     int discountExpirationMonth = currentDate.getMonthValue();
     int discountExpirationDay = currentDate.getDayOfMonth();
 
-    //These strings will be used to ensure the date is adapted properly.
+    /*
+    These strings will be used to ensure the date is adapted properly.
+     */
     String startingMonth = "";
     String startingDay = "";
     String expirationMonth = "";
@@ -309,34 +367,46 @@ public class ManagerView extends State {
 
     JLabel discountDateError;
 
-    //The table, scrollpane, column, and data for discounts
+    /*
+    The table, scrollpane, column, and data for discounts
+     */
     static JTable discountjt;
     ScrollPane discountjs;
     static String[] discountCol;
     static Object[][] discountData;
 
-    //The table, scrollpane, column, and data for items
+    /*
+    The table, scrollpane, column, and data for items
+     */
     static JTable discountitemsjt;
     ScrollPane discountitemsjs;
     static String[] discountitemsCol;
     static Object[][] discountitemsData;
 
-    //Buttons for editing users
+    /*
+    Buttons for editing users
+     */
     static JButton addUser;
     static JButton editUser;
     static JButton deleteUser;
 
-    //Buttons for editing items
+    /*
+    Buttons for editing items
+    */
     static JButton addItem;
     static JButton addImage;
     static JButton editItem;
     static JButton deleteItem;
 
-    //Buttons for adding and editing discounts
+    /*
+    Buttons for adding and editing discounts
+    */
     static JButton addDiscount;
     static JButton editDiscount;
 
-    //Buttons present on the manager page
+    /*
+    Buttons present on the manager page
+    */
     JButton editUsers;
     JButton editItems;
     JButton editDiscounts;
@@ -487,7 +557,9 @@ public class ManagerView extends State {
                                     jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
                                 }
 
-                                //Updates the inventory for the customer
+                                /*
+                                Updates the inventory for the customer
+                                */
                                 Thread updData = new Thread(CustomerView.updateData);
                                 updData.start();
                                 jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
@@ -795,7 +867,9 @@ public class ManagerView extends State {
                                 jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
                             }
 
-                            //Updates the inventory for the customer
+                            /*
+                            Updates the inventory for the customer
+                            */
                             Thread updData = new Thread(CustomerView.updateData);
                             updData.start();
                             managerAsCustomer = true;
@@ -928,7 +1002,9 @@ public class ManagerView extends State {
                                 jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
                             }
 
-                            //Updates the inventory for the customer
+                            /*
+                            Updates the inventory for the customer
+                            */
                             Thread updData = new Thread(CustomerView.updateData);
                             updData.start();
                             managerAsCustomer = true;
@@ -1072,7 +1148,9 @@ public class ManagerView extends State {
                                 jf.setBounds(jf.getX(), jf.getY(), 1466, 610);
                             }
 
-                            //Updates the inventory for the customer
+                            /*
+                            Updates the inventory for the customer
+                            */
                             Thread updData = new Thread(CustomerView.updateData);
                             updData.start();
                             managerAsCustomer = true;
@@ -1102,7 +1180,9 @@ public class ManagerView extends State {
         );
         panel.add(phoneNumberCustomerSelect);
 
-        //This button searches for orders between the currently selected dates
+        /*
+        This button searches for orders between the currently selected dates
+        */
         JButton salesDetails = new JButton("Sale Details");
         salesDetails.setBounds(8, 460, 115, 50);
         salesDetails.setBackground(thistle);
@@ -1117,7 +1197,9 @@ public class ManagerView extends State {
         });
         panel.add(salesDetails);
 
-        //This button searches for all customers or all managers
+        /*
+        This button searches for all customers or all managers
+        */
         JButton userDetails = new JButton("User Details");
         userDetails.setBounds(210, 393, 150, 50);
         userDetails.setBackground(thistle);
@@ -1165,7 +1247,7 @@ public class ManagerView extends State {
         );
         panel.add(resetCustomer);
 
-        //--------------------------------------------------USERS SECTION--------------------------------------------------
+        /*--------------------------------------------------USERS SECTION--------------------------------------------------*/
         personCol = new String[]{"First Name", "Middle Name", "Last Name"};
         personjt = new JTable();
         personjt.setModel(new DefaultTableModel(personData, personCol));
@@ -1340,11 +1422,17 @@ public class ManagerView extends State {
                 loginValid = true;
                 String logonName = personsLoginName.getText();
                 personsLoginNameError.setText("");
-                //If statement ensuring the user entered a login name
+                /*
+                If statement ensuring the user entered a login name
+                */
                 if (!logonName.isEmpty()) {
-                    //If statement ensuring the login name does not begin with a number
+                    /*
+                    If statement ensuring the login name does not begin with a number
+                    */
                     if (!logonName.matches("^[0-9].*")) {
-                        //If statement ensuring the login name does not contain any special characters
+                        /*
+                        If statement ensuring the login name does not contain any special characters
+                        */
                         boolean specialChar = false;
                         for (char c : logonName.toCharArray()) {
                             if (!Character.isLetterOrDigit(c) && !Character.isWhitespace(c)) {
@@ -1353,11 +1441,15 @@ public class ManagerView extends State {
                         }
                         if (!specialChar) {
                             boolean whitespace = false;
-                            //Line of code ensuring the login name does not contain a space at the start or end
+                            /*
+                            Line of code ensuring the login name does not contain a space at the start or end
+                            */
                             logonName = logonName.trim();
                             personsLoginName.setText(logonName);
 
-                            //Ensures no whitespaces are present in the password
+                            /*
+                            Ensures no whitespaces are present in the password
+                            */
                             for (char c : logonName.toCharArray()) {
                                 if (Character.isWhitespace(c)) {
                                     whitespace = true;
@@ -1365,7 +1457,9 @@ public class ManagerView extends State {
                             }
 
                             if (!whitespace) {
-                                //If statement ensuring the login name is not less than 8 characters or more than 20
+                                /*
+                                If statement ensuring the login name is not less than 8 characters or more than 20
+                                */
                                 if (logonName.length() >= 8 && logonName.length() <= 20) {
                                 } else if (logonName.length() < 8) {
                                     loginValid = false;
@@ -1418,14 +1512,20 @@ public class ManagerView extends State {
                 personsPasswordError.setBounds(485, 27, 400, 15);
                 personsSpecialError.setText("");
 
-                //If statement ensuring the user entered a password
+                /*
+                If statement ensuring the user entered a password
+                */
                 if (!loginPassword.isEmpty()) {
                     boolean whitespace = false;
-                    //Removes any whitespaces from the beginning or end of the password
+                    /*
+                    Removes any whitespaces from the beginning or end of the password
+                    */
                     loginPassword = loginPassword.trim();
                     personsPassword.setText(loginPassword);
 
-                    //Ensures no whitespaces are present in the password
+                    /*
+                    Ensures no whitespaces are present in the password
+                    */
                     for (char c : loginPassword.toCharArray()) {
                         if (Character.isWhitespace(c)) {
                             whitespace = true;
@@ -1433,7 +1533,9 @@ public class ManagerView extends State {
                     }
 
                     if (!whitespace) {
-                        //If statement ensuring the password is not less than 8 characters or more than 20
+                        /*
+                        If statement ensuring the password is not less than 8 characters or more than 20
+                        */
                         if (loginPassword.length() < 8) {
                             passwordValid = false;
                             personsPasswordError.setText("Password must be at least 7 characters long");
@@ -1459,7 +1561,9 @@ public class ManagerView extends State {
                                     specialPresent = true;
                                 }
                             }
-                            //A series of if statements to test if the user meets at least 3 out of 4 requirements
+                            /*
+                            A series of if statements to test if the user meets at least 3 out of 4 requirements
+                            */
                             if (uppercasePresent) {
                                 requirementsMet++;
                             }
@@ -1972,7 +2076,7 @@ public class ManagerView extends State {
         );
         panel.add(editUsers);
 
-        //--------------------------------------------------ITEMS SECTION--------------------------------------------------
+        /*--------------------------------------------------ITEMS SECTION--------------------------------------------------*/
         needsRestock = new JLabel("Items Need Restock");
         needsRestock.setBounds(120, 0, 125, 20);
         needsRestock.setForeground(Color.red);
@@ -2844,7 +2948,9 @@ public class ManagerView extends State {
             searchForCustomer.setVisible(false);
             searchForManager.setVisible(false);
 
-            //Updates the inventory for the manager
+            /*
+            Updates the inventory for the manager
+            */
             Thread updData = new Thread(updateData);
             updData.start();
             inventory.setVisible(true);
@@ -2939,7 +3045,7 @@ public class ManagerView extends State {
         );
         panel.add(editItems);
 
-        //--------------------------------------------------DISCOUNTS SECTION--------------------------------------------------
+        /*--------------------------------------------------DISCOUNTS SECTION--------------------------------------------------*/
         discountCol = new String[]{"Discount Code", "Level", "Inventory ID", "Type", "Percentage", "Dollar Amount", "Start Date", "Expiration Date"};
         discountjt = new JTable();
         discountjt.setModel(new DefaultTableModel(discountData, discountCol));
@@ -3579,11 +3685,15 @@ public class ManagerView extends State {
             searchForCustomer.setVisible(false);
             searchForManager.setVisible(false);
 
-            //Updates the discount table for manager
+            /*
+            Updates the discount table for manager
+            */
             ManagerView.discountData = ManagerView.getDiscountData();
             DefaultTableModel dstable = (DefaultTableModel) ManagerView.discountjt.getModel();
             dstable.setDataVector(ManagerView.discountData, ManagerView.discountCol);
-            //Updates the discount items table for manager
+            /*
+            Updates the discount items table for manager
+            */
             ManagerView.discountitemsData = ManagerView.getDiscountItemsData();
             DefaultTableModel distable = (DefaultTableModel) ManagerView.discountitemsjt.getModel();
             distable.setDataVector(ManagerView.discountitemsData, ManagerView.discountitemsCol);
@@ -3958,7 +4068,9 @@ public class ManagerView extends State {
         );
         panel.add(returnToView);
 
-        //This button logs the user out, returning them to the login menu.
+        /*
+        This button logs the user out, returning them to the login menu.
+        */
         logOut = new JButton("Log Out");
         logOut.setBounds(8, 517, 115, 50);
         logOut.setBackground(thistle);
@@ -4038,7 +4150,9 @@ public class ManagerView extends State {
 
             jp.remove(viewPanel);
 
-            //A switch to the login view
+            /*
+            A switch to the login view
+            */
             LoginView.currentPerson = 0;
             jf.setTitle("Login");
             jp.setVisible(false);
@@ -4148,32 +4262,52 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Sets the starting day for the search of orders between two dates
+     * @return void
+     */
     void setOrderStartDay() {
         orderStartMonth = Integer.parseInt(minimumMonth.getSelectedItem().toString());
         minimumDay.removeAllItems();
         orderStartDay = 1;
 
-        //The second discount start calender. This one is often re-used. It will apply values to the start-day combobox as the months change.
+        /*
+        The second discount start calender. This one is often re-used. It will apply values to the start-day combobox as the months change.
+        */
         Calendar stayStartCalendar2 = new GregorianCalendar(orderStartYear, orderStartMonth - 1, 1);
-        //The proper amount of days, depending on the month, is added to the list. This even updates for leap years (febuary 29th).
+        /*
+        The proper amount of days, depending on the month, is added to the list. This even updates for leap years (febuary 29th).
+        */
         for (int i = 0; i < stayStartCalendar2.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
             minimumDay.addItem(i + 1);
         }
     }
 
+    /**
+     * Sets the ending day for the search of orders between two dates
+     * @return void
+     */
     void setOrderEndDay() {
         orderEndingMonth = Integer.parseInt(maximumMonth.getSelectedItem().toString());
         maximumDay.removeAllItems();
         orderEndingDay = 1;
 
-        //The second stay end calender. This one is often re-used. It will apply values to the end-day combobox as the months change.
+        /*
+        The second stay end calender. This one is often re-used. It will apply values to the end-day combobox as the months change.
+        */
         Calendar stayEndCalendar2 = new GregorianCalendar(orderEndingYear, orderEndingMonth - 1, 1);
-        //The proper amount of days, depending on the month, is added to the list. This even updates for leap years (febuary 29th).
+        /*
+        The proper amount of days, depending on the month, is added to the list. This even updates for leap years (febuary 29th).
+        */
         for (int i = 0; i < stayEndCalendar2.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
             maximumDay.addItem(i + 1);
         }
     }
 
+    /**
+     * Adapts the dates for the search of orders between two dates into usuable form
+     * @return void
+     */
     void adaptOrderDates() {
         if (orderStartMonth < 10) {
             orderStartingMonth = "0" + orderStartMonth;
@@ -4199,6 +4333,10 @@ public class ManagerView extends State {
         orderEndTime = orderEndingYear + "-" + orderEndMonth + "-" + orderEndDay;
     }
 
+    /**
+     * Resets order year, month, and date back to their original values for the search of orders between two dates
+     * @return void
+     */
     private void resetOrderDates() {
         Calendar today = Calendar.getInstance();
         int currentYear = today.get(Calendar.YEAR);
@@ -4653,6 +4791,10 @@ public class ManagerView extends State {
         }
     };
 
+    /**
+     * Retrieves the security questions stored in the database
+     * @return void
+     */
     static void includeQuestions() {
         boolean question1Update = true;
         boolean question2Update = true;
@@ -4660,15 +4802,21 @@ public class ManagerView extends State {
 
         for (int i = 0; i < LoginView.securityQuestions.size(); i++) {
             if (question1Update) {
-                //Sets up the security question
+                /*
+                Sets up the security question
+                */
                 securityQuestion1.addItem(LoginView.securityQuestions.get(i).questionPrompt);
                 question1Update = false;
             } else if (question2Update) {
-                //Sets up the security question
+                /*
+                Sets up the security question
+                */
                 securityQuestion2.addItem(LoginView.securityQuestions.get(i).questionPrompt);
                 question2Update = false;
             } else if (question3Update) {
-                //Sets up the security question
+                /*
+                Sets up the security question
+                */
                 securityQuestion3.addItem(LoginView.securityQuestions.get(i).questionPrompt);
                 question1Update = true;
                 question2Update = true;
@@ -4676,6 +4824,10 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Clears all fields in edit users and removes the selected user
+     * @return void
+     */
     void accountDataReset() {
         personsLoginName.setText("");
         personsLoginNameError.setText("");
@@ -4722,9 +4874,15 @@ public class ManagerView extends State {
         userIsManager.setSelected(false);
     }
 
+    /**
+     * Creates a new user using entered values
+     * @return void
+     */
     void newAccount() {
-        //A variable testing if a new account can be created. This value
-        //only needs to get switched once to prevent account creation.
+        /*
+        A variable testing if a new account can be created. This value
+        only needs to get switched once to prevent account creation.
+        */
         boolean valid = true;
 
         personsLoginNameError.setText("");
@@ -4765,17 +4923,25 @@ public class ManagerView extends State {
         String secondary3 = personsPhoneSecondary3.getText();
         String positionTitle = "Customer";
 
-        //If statement ensuring the user entered a login name
+        /*
+        If statement ensuring the user entered a login name
+        */
         if (!loginValid) {
             valid = false;
         } else {
             String logName = personsLoginName.getText();
             personsLoginNameError.setText("");
-            //If statement ensuring the user entered a login name
+            /*
+            If statement ensuring the user entered a login name
+            */
             if (!logName.isEmpty()) {
-                //If statement ensuring the login name does not begin with a number
+                /*
+                If statement ensuring the login name does not begin with a number
+                */
                 if (!logName.matches("^[0-9].*")) {
-                    //If statement ensuring the login name does not contain any special characters
+                    /*
+                    If statement ensuring the login name does not contain any special characters
+                    */
                     boolean specialChar = false;
                     for (char c : logName.toCharArray()) {
                         if (!Character.isLetterOrDigit(c) && !Character.isWhitespace(c)) {
@@ -4784,11 +4950,15 @@ public class ManagerView extends State {
                     }
                     if (!specialChar) {
                         boolean whitespace = false;
-                        //Line of code ensuring the login name does not contain a space at the start or end
+                        /*
+                        Line of code ensuring the login name does not contain a space at the start or end
+                        */
                         logName = logName.trim();
                         personsLoginName.setText(logName);
 
-                        //Ensures no whitespaces are present in the password
+                        /*
+                        Ensures no whitespaces are present in the password
+                        */
                         for (char c : logName.toCharArray()) {
                             if (Character.isWhitespace(c)) {
                                 whitespace = true;
@@ -4796,9 +4966,13 @@ public class ManagerView extends State {
                         }
 
                         if (!whitespace) {
-                            //If statement ensuring the login name is not less than 8 characters or more than 20
+                            /*
+                            If statement ensuring the login name is not less than 8 characters or more than 20
+                            */
                             if (logName.length() >= 8 && logName.length() <= 20) {
-                                //This try statement contains a query that will test if the login name already exists.
+                                /*
+                                This try statement contains a query that will test if the login name already exists.
+                                */
                                 for (int i = 0; i < LoginView.logon.size(); i++) {
                                     String logN = LoginView.logon.get(i).logonName;
                                     if (logName.toUpperCase().equals(logN.toUpperCase())) {
@@ -4830,7 +5004,9 @@ public class ManagerView extends State {
             }
         }
 
-        //If statement ensuring the user has entered a valid password
+        /*
+        If statement ensuring the user has entered a valid password
+        */
         if (!passwordValid) {
             valid = false;
         } else {
@@ -4839,14 +5015,20 @@ public class ManagerView extends State {
             personsPasswordError.setBounds(485, 27, 400, 15);
             personsSpecialError.setText("");
 
-            //If statement ensuring the user entered a password
+            /*
+            If statement ensuring the user entered a password
+            */
             if (!loginPassword.isEmpty()) {
                 boolean whitespace = false;
-                //Removes any whitespaces from the beginning or end of the password
+                /*
+                Removes any whitespaces from the beginning or end of the password
+                */
                 loginPassword = loginPassword.trim();
                 personsPassword.setText(loginPassword);
 
-                //Ensures no whitespaces are present in the password
+                /*
+                Ensures no whitespaces are present in the password
+                */
                 for (char c : loginPassword.toCharArray()) {
                     if (Character.isWhitespace(c)) {
                         whitespace = true;
@@ -4854,7 +5036,9 @@ public class ManagerView extends State {
                 }
 
                 if (!whitespace) {
-                    //If statement ensuring the password is not less than 8 characters or more than 20
+                    /*
+                    If statement ensuring the password is not less than 8 characters or more than 20
+                    */
                     if (loginPassword.length() < 8) {
                         valid = false;
                         personsPasswordError.setText("Password must be at least 7 characters long");
@@ -4880,7 +5064,9 @@ public class ManagerView extends State {
                                 specialPresent = true;
                             }
                         }
-                        //A series of if statements to test if the user meets at least 3 out of 4 requirements
+                        /*
+                        A series of if statements to test if the user meets at least 3 out of 4 requirements
+                        */
                         if (uppercasePresent) {
                             requirementsMet++;
                         }
@@ -4912,31 +5098,41 @@ public class ManagerView extends State {
             }
         }
 
-        //If statement ensuring the user has entered their first name
+        /*
+        If statement ensuring the user has entered their first name
+        */
         if (firstName.isEmpty()) {
             valid = false;
             personsFirstNameError.setText("First name required");
         }
 
-        //If statement ensuring the user has entered their last name
+        /*
+        If statement ensuring the user has entered their last name
+        */
         if (lastName.isEmpty()) {
             valid = false;
             personsLastNameError.setText("Last name required");
         }
 
-        //If statement ensuring the user has entered something for the address
+        /*
+        If statement ensuring the user has entered something for the address
+        */
         if (address1.isEmpty()) {
             valid = false;
             addressError.setText("Address required");
         }
 
-        //If statement ensuring the user has entered something for the city
+        /*
+        If statement ensuring the user has entered something for the city
+        */
         if (city.isEmpty()) {
             valid = false;
             personsCityError.setText("City required");
         }
 
-        //If statement ensuring the user has entered something valid for the zip
+        /*
+        If statement ensuring the user has entered something valid for the zip
+        */
         if (zipCode.isEmpty()) {
             valid = false;
             personsZipError.setText("Zip required");
@@ -4956,7 +5152,9 @@ public class ManagerView extends State {
             }
             if (nonDigitCharacters < 2) {
                 if (isHyphen.equals("")) {
-                    // Keeps zip code length at 5 if a hyphen is not present
+                    /*
+                    Keeps zip code length at 5 if a hyphen is not present
+                    */
                     if (zipCode.length() < 5) {
                         valid = false;
                         personsZipError.setText("Zip too short");
@@ -4965,7 +5163,9 @@ public class ManagerView extends State {
                         personsZipError.setText("Zip too long");
                     }
                 } else if (isHyphen.equals("-")) {
-                    // Makes sure the zip code length is long enough to be standard
+                    /*
+                    Makes sure the zip code length is long enough to be standard
+                    */
                     if (hyphenChar == 5) {
                         if (zipCode.length() < 10) {
                             valid = false;
@@ -4988,13 +5188,17 @@ public class ManagerView extends State {
             }
         }
 
-        //If statement ensuring the user has entered a state
+        /*
+        If statement ensuring the user has entered a state
+        */
         if (state.equals("")) {
             valid = false;
             personsStateError.setText("Invalid state");
         }
 
-        // If statement ensuring the user has entered a valid email
+        /*
+        If statement ensuring the user has entered a valid email
+        */
         if (!email.equals("")) {
             if (email.length() <= 40) {
                 if (email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
@@ -5012,7 +5216,9 @@ public class ManagerView extends State {
             personsEmailError.setText("Email required");
         }
 
-        //If statements for the primary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        /*
+        If statements for the primary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        */
         if (!primary1.isEmpty() || !primary2.isEmpty() || !primary3.isEmpty()) {
             boolean phoneValid = true;
             if (primary1.length() != 3) {
@@ -5060,7 +5266,9 @@ public class ManagerView extends State {
             personsPhoneError1.setText("Enter phone number");
         }
 
-        //If statements for the secondary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        /*
+        If statements for the secondary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        */
         if (!secondary1.isEmpty() || !secondary2.isEmpty() || !secondary3.isEmpty()) {
             boolean phoneValid = true;
             if (secondary1.length() != 3) {
@@ -5104,7 +5312,9 @@ public class ManagerView extends State {
             }
         }
 
-        //If statement ensuring the user has entered something for all three security questions
+        /*
+        If statement ensuring the user has entered something for all three security questions
+        */
         if (answer1.isEmpty() || answer2.isEmpty() || answer3.isEmpty()) {
             valid = false;
             answerError.setText("Answer ALL security questions");
@@ -5190,9 +5400,15 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Edits the selected user using entered values
+     * @return void
+     */
     void editAccount() {
-        //A variable testing if a new account can be created. This value
-        //only needs to get switched once to prevent account editing.
+        /*
+        A variable testing if a new account can be created. This value
+        only needs to get switched once to prevent account editing.
+        */
         boolean valid = true;
 
         personsLoginNameError.setText("");
@@ -5233,17 +5449,25 @@ public class ManagerView extends State {
         String secondary3 = personsPhoneSecondary3.getText();
         String positionTitle = "Customer";
 
-        //If statement ensuring the user entered a login name
+        /*
+        If statement ensuring the user entered a login name
+        */
         if (!loginValid) {
             valid = false;
         } else {
             String logName = personsLoginName.getText();
             personsLoginNameError.setText("");
-            //If statement ensuring the user entered a login name
+            /*
+            If statement ensuring the user entered a login name
+            */
             if (!logName.isEmpty()) {
-                //If statement ensuring the login name does not begin with a number
+                /*
+                If statement ensuring the login name does not begin with a number
+                */
                 if (!logName.matches("^[0-9].*")) {
-                    //If statement ensuring the login name does not contain any special characters
+                    /*
+                    If statement ensuring the login name does not contain any special characters
+                    */
                     boolean specialChar = false;
                     for (char c : logName.toCharArray()) {
                         if (!Character.isLetterOrDigit(c) && !Character.isWhitespace(c)) {
@@ -5252,11 +5476,15 @@ public class ManagerView extends State {
                     }
                     if (!specialChar) {
                         boolean whitespace = false;
-                        //Line of code ensuring the login name does not contain a space at the start or end
+                        /*
+                        Line of code ensuring the login name does not contain a space at the start or end
+                        */
                         logName = logName.trim();
                         personsLoginName.setText(logName);
 
-                        //Ensures no whitespaces are present in the password
+                        /*
+                        Ensures no whitespaces are present in the password
+                        */
                         for (char c : logName.toCharArray()) {
                             if (Character.isWhitespace(c)) {
                                 whitespace = true;
@@ -5264,7 +5492,9 @@ public class ManagerView extends State {
                         }
 
                         if (!whitespace) {
-                            //If statement ensuring the login name is not less than 8 characters or more than 20
+                            /*
+                            If statement ensuring the login name is not less than 8 characters or more than 20
+                            */
                             if (logName.length() >= 8 && logName.length() <= 20) {
                             } else if (logName.length() < 8) {
                                 valid = false;
@@ -5290,7 +5520,9 @@ public class ManagerView extends State {
             }
         }
 
-        //If statement ensuring the user has entered a valid password
+        /*
+        If statement ensuring the user has entered a valid password
+        */
         if (!passwordValid) {
             valid = false;
         } else {
@@ -5299,14 +5531,20 @@ public class ManagerView extends State {
             personsPasswordError.setBounds(485, 27, 400, 15);
             personsSpecialError.setText("");
 
-            //If statement ensuring the user entered a password
+            /*
+            If statement ensuring the user entered a password
+            */
             if (!loginPassword.isEmpty()) {
                 boolean whitespace = false;
-                //Removes any whitespaces from the beginning or end of the password
+                /*
+                Removes any whitespaces from the beginning or end of the password
+                */
                 loginPassword = loginPassword.trim();
                 personsPassword.setText(loginPassword);
 
-                //Ensures no whitespaces are present in the password
+                /*
+                Ensures no whitespaces are present in the password
+                */
                 for (char c : loginPassword.toCharArray()) {
                     if (Character.isWhitespace(c)) {
                         whitespace = true;
@@ -5314,7 +5552,9 @@ public class ManagerView extends State {
                 }
 
                 if (!whitespace) {
-                    //If statement ensuring the password is not less than 8 characters or more than 20
+                    /*
+                    If statement ensuring the password is not less than 8 characters or more than 20
+                    */
                     if (loginPassword.length() < 8) {
                         valid = false;
                         personsPasswordError.setText("Password must be at least 7 characters long");
@@ -5340,7 +5580,9 @@ public class ManagerView extends State {
                                 specialPresent = true;
                             }
                         }
-                        //A series of if statements to test if the user meets at least 3 out of 4 requirements
+                        /*
+                        A series of if statements to test if the user meets at least 3 out of 4 requirements
+                        */
                         if (uppercasePresent) {
                             requirementsMet++;
                         }
@@ -5372,31 +5614,41 @@ public class ManagerView extends State {
             }
         }
 
-        //If statement ensuring the user has entered their first name
+        /*
+        If statement ensuring the user has entered their first name
+        */
         if (firstName.isEmpty()) {
             valid = false;
             personsFirstNameError.setText("First name required");
         }
 
-        //If statement ensuring the user has entered their last name
+        /*
+        If statement ensuring the user has entered their last name
+        */
         if (lastName.isEmpty()) {
             valid = false;
             personsLastNameError.setText("Last name required");
         }
 
-        //If statement ensuring the user has entered something for the address
+        /*
+        If statement ensuring the user has entered something for the address
+        */
         if (address1.isEmpty()) {
             valid = false;
             addressError.setText("Address required");
         }
 
-        //If statement ensuring the user has entered something for the city
+        /*
+        If statement ensuring the user has entered something for the city
+        */
         if (city.isEmpty()) {
             valid = false;
             personsCityError.setText("City required");
         }
 
-        //If statement ensuring the user has entered something valid for the zip
+        /*
+        If statement ensuring the user has entered something valid for the zip
+        */
         if (zipCode.isEmpty()) {
             valid = false;
             personsZipError.setText("Zip required");
@@ -5416,7 +5668,9 @@ public class ManagerView extends State {
             }
             if (nonDigitCharacters < 2) {
                 if (isHyphen.equals("")) {
-                    // Keeps zip code length at 5 if a hyphen is not present
+                    /*
+                    Keeps zip code length at 5 if a hyphen is not present
+                    */
                     if (zipCode.length() < 5) {
                         valid = false;
                         personsZipError.setText("Zip too short");
@@ -5425,7 +5679,9 @@ public class ManagerView extends State {
                         personsZipError.setText("Zip too long");
                     }
                 } else if (isHyphen.equals("-")) {
-                    // Makes sure the zip code length is long enough to be standard
+                    /*
+                    Makes sure the zip code length is long enough to be standard
+                    */
                     if (hyphenChar == 5) {
                         if (zipCode.length() < 10) {
                             valid = false;
@@ -5448,13 +5704,17 @@ public class ManagerView extends State {
             }
         }
 
-        //If statement ensuring the user has entered a state
+        /*
+        If statement ensuring the user has entered a state
+        */
         if (state.equals("")) {
             valid = false;
             personsStateError.setText("Invalid state");
         }
 
-        // If statement ensuring the user has entered a valid email
+        /*
+        If statement ensuring the user has entered a valid email
+        */
         if (!email.equals("")) {
             if (email.length() <= 40) {
                 if (email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
@@ -5472,7 +5732,9 @@ public class ManagerView extends State {
             personsEmailError.setText("Email required");
         }
 
-        //If statements for the primary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        /*
+        If statements for the primary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        */
         if (!primary1.isEmpty() || !primary2.isEmpty() || !primary3.isEmpty()) {
             boolean phoneValid = true;
             if (primary1.length() != 3) {
@@ -5520,7 +5782,9 @@ public class ManagerView extends State {
             personsPhoneError1.setText("Enter phone number");
         }
 
-        //If statements for the secondary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        /*
+        If statements for the secondary phone number (optional) will give warnings if an entry is made but not prevent new account creation
+        */
         if (!secondary1.isEmpty() || !secondary2.isEmpty() || !secondary3.isEmpty()) {
             boolean phoneValid = true;
             if (secondary1.length() != 3) {
@@ -5564,7 +5828,9 @@ public class ManagerView extends State {
             }
         }
 
-        //If statement ensuring the user has entered something for all three security questions
+        /*
+        If statement ensuring the user has entered something for all three security questions
+        */
         if (answer1.isEmpty() || answer2.isEmpty() || answer3.isEmpty()) {
             valid = false;
             answerError.setText("Answer ALL security questions");
@@ -5659,6 +5925,10 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Deletes the selected user
+     * @return void
+     */
     void deleteAccount() {
         try {
             int personID = LoginView.person.get(userSelected).personID;
@@ -5725,6 +5995,10 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Creates a report of all items
+     * @return void
+     */
     void itemsReport() {
         StringBuilder orderReport = new StringBuilder();
         orderReport.append("<html><body><h1>All Items</h1>");
@@ -5801,6 +6075,10 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Creates a new item using entered values
+     * @return void
+     */
     void newItem() {
         boolean addValid = true;
         String itemName = itemsName.getText();
@@ -5825,7 +6103,9 @@ public class ManagerView extends State {
                 addValid = false;
             } else {
                 String testItemName = itemName.replaceAll("\\s", "");
-                //This try statement contains a query that will test if the login name already exists.
+                /*
+                This try statement contains a query that will test if the login name already exists.
+                */
                 for (int i = 0; i < LoginView.inventory.size(); i++) {
                     String logN = LoginView.inventory.get(i).itemName;
                     logN = logN.replaceAll("\\s", "");
@@ -6010,6 +6290,10 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Edits the selected item using entered values
+     * @return void
+     */
     void editItem() {
         boolean editValid = true;
         String itemName = itemsName.getText();
@@ -6208,6 +6492,10 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Deletes the selected item
+     * @return void
+     */
     void deleteItem() {
         try {
             int itemID = LoginView.inventory.get(itemSelected).inventoryID;
@@ -6335,32 +6623,52 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Sets the start day for discounts
+     * @return void
+     */
     void setDiscountStartDay() {
         discountStartMonth = Integer.parseInt(startMonth.getSelectedItem().toString());
         startDay.removeAllItems();
         discountStartDay = 1;
 
-        //The second discount start calender. This one is often re-used. It will apply values to the start-day combobox as the months change.
+        /*
+        The second discount start calender. This one is often re-used. It will apply values to the start-day combobox as the months change.
+        */
         Calendar stayStartCalendar2 = new GregorianCalendar(discountStartYear, discountStartMonth - 1, 1);
-        //The proper amount of days, depending on the month, is added to the list. This even updates for leap years (febuary 29th).
+        /*
+        The proper amount of days, depending on the month, is added to the list. This even updates for leap years (febuary 29th).
+        */
         for (int i = 0; i < stayStartCalendar2.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
             startDay.addItem(i + 1);
         }
     }
 
+    /**
+     * Sets the end day for discounts
+     * @return void
+     */
     void setDiscountEndDay() {
         discountExpirationMonth = Integer.parseInt(expireMonth.getSelectedItem().toString());
         expireDay.removeAllItems();
         discountExpirationDay = 1;
 
-        //The second stay end calender. This one is often re-used. It will apply values to the end-day combobox as the months change.
+        /*
+        The second stay end calender. This one is often re-used. It will apply values to the end-day combobox as the months change.
+        */
         Calendar stayEndCalendar2 = new GregorianCalendar(discountExpirationYear, discountExpirationMonth - 1, 1);
-        //The proper amount of days, depending on the month, is added to the list. This even updates for leap years (febuary 29th).
+        /*
+        The proper amount of days, depending on the month, is added to the list. This even updates for leap years (febuary 29th).
+        */
         for (int i = 0; i < stayEndCalendar2.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
             expireDay.addItem(i + 1);
         }
     }
 
+    /**
+     * Adapts dates for discounts
+     * @return void
+     */
     void adaptDiscountDates() {
         if (discountStartMonth < 10) {
             startingMonth = "0" + discountStartMonth;
@@ -6386,6 +6694,10 @@ public class ManagerView extends State {
         discountExpirationTime = discountExpirationYear + "-" + expirationMonth + "-" + expirationDay;
     }
 
+    /**
+     * Creates a new user using entered values
+     * @return void
+     */
     private void resetDiscountDates() {
         Calendar today = Calendar.getInstance();
         int currentMonth = today.get(Calendar.MONTH) + 1;
@@ -6400,6 +6712,10 @@ public class ManagerView extends State {
         expireDay.setSelectedIndex(currentDay - 1);
     }
 
+    /**
+     * Creates a new discount using entered values
+     * @return void
+     */
     void newDiscount() {
         boolean discountValid = true;
         String discountCode = discountsCode.getText();
@@ -6416,7 +6732,9 @@ public class ManagerView extends State {
                 discountValid = false;
             } else {
                 String testDiscountCode = discountCode.replaceAll("\\s", "");
-                //This try statement contains a query that will test if the discount code already exists.
+                /*
+                This try statement contains a query that will test if the discount code already exists.
+                */
                 for (int i = 0; i < LoginView.discount.size(); i++) {
                     String disC = LoginView.discount.get(i).discountCode;
                     disC = disC.replaceAll("\\s", "");
@@ -6534,6 +6852,10 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Edits the selected discount using entered values
+     * @return void
+     */
     void editDiscount() {
         boolean discountValid = true;
         String discountCode = discountsCode.getText();
@@ -6657,6 +6979,9 @@ public class ManagerView extends State {
         }
     }
 
+    /**
+     * Uploads an associated image to the database and assigns it to the selected item
+     */
     class UploadImage extends Thread {
 
         File imageFile = null;
@@ -6689,6 +7014,10 @@ public class ManagerView extends State {
         }
     };
 
+    /**
+     * Resets customer data to its default state, clearing all fields
+     * @return void
+     */
     void clearCustomerData() {
         inventory.setPreferredSize(new Dimension(625, 0));
         jp.validate();
@@ -6739,6 +7068,10 @@ public class ManagerView extends State {
         CustomerView.clearCart.setVisible(true);
     }
 
+    /**
+     * Creates a pdf document describing all items that need to be restocked
+     * @return void
+     */
     void restockAlert() {
         Document document = new Document();
         Page page = document.getPages().add();

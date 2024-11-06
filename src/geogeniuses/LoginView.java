@@ -1,6 +1,8 @@
 package geogeniuses;
 
-//Imports for the scanner, array list, filewriter, filereater, the buffered writer and reader, and ioexceptions.
+/*
+Imports for the scanner, array list, filewriter, filereater, the buffered writer and reader, and ioexceptions.
+*/
 import com.aspose.pdf.Document;
 import com.aspose.pdf.Page;
 import com.aspose.pdf.TextFragment;
@@ -18,7 +20,9 @@ import java.util.Date;
 
 public class LoginView extends State {
 
-    //Creates an arraylist of people, items, and discounts
+    /*
+    Creates an arraylist of people, items, and discounts
+    */
     static ArrayList<Person> person = new ArrayList();
     static ArrayList<Logon> logon = new ArrayList();
     static ArrayList<SecurityQuestion> securityQuestions = new ArrayList();
@@ -111,7 +115,9 @@ public class LoginView extends State {
             logonError.setText("");
             if (!loginName.isEmpty() && !loginPassword.isEmpty()) {
                 if (loginValid) {
-                    //A for loop that will test to see if the name and password match up with a manager or customer.
+                    /*
+                    A for loop that will test to see if the name and password match up with a manager or customer.
+                    */
                     boolean validPerson = false;
                     for (int i = 0; i < logon.size(); i++) {
                         try {
@@ -122,7 +128,9 @@ public class LoginView extends State {
 
                                 SetPersonID(loginName);
 
-                                //Resets the login name and login password fields to their default states
+                                /*
+                                Resets the login name and login password fields to their default states
+                                */
                                 logName.setText("");
                                 logPassword.setText("");
 
@@ -159,7 +167,9 @@ public class LoginView extends State {
                                         }
                                     }
 
-                                    //A switch to the the manager's view
+                                    /*
+                                    A switch to the the manager's view
+                                    */
                                     jf.setTitle("Manager View");
                                     jp.setVisible(false);
                                     jf.remove(jp);
@@ -193,10 +203,14 @@ public class LoginView extends State {
                                     CustomerView.setMin();
                                     CustomerView.setMax();
 
-                                    //Updates the inventory for the customer
+                                    /*
+                                    Updates the inventory for the customer
+                                    */
                                     Thread updData = new Thread(CustomerView.updateData);
                                     updData.start();
-                                    //A switch to the customer's view
+                                    /*
+                                    A switch to the customer's view
+                                    */
                                     jf.setTitle("Customer View");
                                     jp.setVisible(false);
                                     jf.remove(jp);
@@ -224,7 +238,9 @@ public class LoginView extends State {
         guestButton.setBounds(310, 205, 130, 50);
         guestButton.setBackground(thistle);
         guestButton.addActionListener((e) -> {
-            //Resets the login name and login password fields to their default states
+            /*
+            Resets the login name and login password fields to their default states
+            */
             logName.setText("");
             logPassword.setText("");
             logonError.setText("");
@@ -256,10 +272,14 @@ public class LoginView extends State {
             CustomerView.setMin();
             CustomerView.setMax();
 
-            //Updates the inventory for the customer
+            /*
+            Updates the inventory for the customer
+            */
             Thread updData = new Thread(CustomerView.updateData);
             updData.start();
-            //A switch to the customer's view
+            /*
+            A switch to the customer's view
+            */
             jf.setTitle("Customer View");
             jp.setVisible(false);
             jf.remove(jp);
@@ -333,6 +353,10 @@ public class LoginView extends State {
         jf.setVisible(true);
     }
 
+    /**
+     * Loads in all necessary data from the database
+     * @return void
+     */
     void load() {
         try {
             if (con != null & !con.isClosed()) {
@@ -376,7 +400,9 @@ public class LoginView extends State {
                     e[i - 1] = rs.getString(i);
                 }
 
-                //Several of the arrays positions need to be converted into forms that the arrayList can use.
+                /*
+                Several of the arrays positions need to be converted into forms that the arrayList can use.
+                */
                 int personID = Integer.parseInt(e[0]);
                 String title = e[1];
                 String nameFirst = e[2];
@@ -394,12 +420,16 @@ public class LoginView extends State {
                 String phoneSecondary = e[14];
                 int personDeleted = Integer.parseInt(e[15]);
 
-                //Adds everything
+                /*
+                Adds everything
+                */
                 person.add(new Person(personID, title, nameFirst, nameMiddle, nameLast, suffix, address1, address2, address3, city, zipCode, state, email, phonePrimary, phoneSecondary, null, personDeleted));
             }
             if (ManagerView.updatedFromManagerPerson) {
                 ManagerView.updatedFromManagerPerson = false;
-                //Updates the person table for manager
+                /*
+                Updates the person table for manager
+                */
                 ManagerView.personData = ManagerView.getPersonData();
                 DefaultTableModel ptable = (DefaultTableModel) ManagerView.personjt.getModel();
                 ptable.setDataVector(ManagerView.personData, ManagerView.personCol);
@@ -444,7 +474,9 @@ public class LoginView extends State {
                     e[i - 1] = rs.getString(i);
                 }
 
-                //Several of the arrays positions need to be converted into forms that the arrayList can use.
+                /*
+                Several of the arrays positions need to be converted into forms that the arrayList can use.
+                */
                 int personID = Integer.parseInt(e[0]);
                 String logonName = e[1];
                 String password = e[2];
@@ -453,12 +485,16 @@ public class LoginView extends State {
                 String thirdChallengeAnswer = e[5];
                 String positionTitle = e[6];
 
-                //Adds everything
+                /*
+                Adds everything
+                */
                 logon.add(new Logon(personID, logonName, password, firstChallengeAnswer, secondChallengeAnswer, thirdChallengeAnswer, positionTitle));
             }
             if (ManagerView.updatedFromManagerLogon) {
                 ManagerView.updatedFromManagerLogon = false;
-                //Updates the login table for manager
+                /*
+                Updates the login table for manager
+                */
                 ManagerView.loginData = ManagerView.getLoginData();
                 DefaultTableModel ltable = (DefaultTableModel) ManagerView.loginjt.getModel();
                 ltable.setDataVector(ManagerView.loginData, ManagerView.loginCol);
@@ -483,11 +519,15 @@ public class LoginView extends State {
                     e[i - 1] = rs.getString(i);
                 }
 
-                //Several of the arrays positions need to be converted into forms that the arrayList can use.
+                /*
+                Several of the arrays positions need to be converted into forms that the arrayList can use.
+                */
                 int questionID = Integer.parseInt(e[0]);
                 String questionPrompt = e[1];
 
-                //Adds everything to the security questions arraylist
+                /*
+                Adds everything to the security questions arraylist
+                */
                 securityQuestions.add(new SecurityQuestion(questionID, questionPrompt));
             }
         } catch (SQLException ex) {
@@ -511,7 +551,9 @@ public class LoginView extends State {
                     e[i - 1] = rs.getString(i);
                 }
 
-                //Several of the arrays positions need to be converted into forms that the arrayList can use.
+                /*
+                Several of the arrays positions need to be converted into forms that the arrayList can use.
+                */
                 int inventoryID = Integer.parseInt(e[0]);
                 String itemName = e[1];
                 String itemDescription = e[2];
@@ -545,15 +587,21 @@ public class LoginView extends State {
                     itemImage = rs.getBytes("ItemImage");
                 }
 
-                //Adds everything
+                /*
+                Adds everything
+                */
                 inventory.add(new Inventory(inventoryID, itemName, itemDescription, categoryID, stoneOrGemstone, grainSize, grainShape, heft, semiOrPrecious, hardness, stoneSize, stoneWeight, retailPrice, cost, quantity, restockThreshold, itemImage));
             }
             if (ManagerView.updatedFromManager) {
                 ManagerView.updatedFromManager = false;
-                //Updates the inventory for the manager
+                /*
+                Updates the inventory for the manager
+                */
                 Thread updData = new Thread(ManagerView.updateData);
                 updData.start();
-                //Updates the discount items table for manager
+                /*
+                Updates the discount items table for manager
+                */
                 ManagerView.discountitemsData = ManagerView.getDiscountItemsData();
                 DefaultTableModel ditable = (DefaultTableModel) ManagerView.discountitemsjt.getModel();
                 ditable.setDataVector(ManagerView.discountitemsData, ManagerView.discountitemsCol);
@@ -599,12 +647,16 @@ public class LoginView extends State {
                 }
                 String expirationDate = e[9];
 
-                //Adds everything
+                /*
+                Adds everything
+                */
                 discount.add(new Discount(discountID, discountCode, discountDescription, discountLevel, inventoryID, discountType, discountPercentage, discountDollarAmount, startDate, expirationDate));
             }
             if (ManagerView.updatedFromManager) {
                 ManagerView.updatedFromManager = false;
-                //Updates the discount table for manager
+                /*
+                Updates the discount table for manager
+                */
                 ManagerView.discountData = ManagerView.getDiscountData();
                 DefaultTableModel dstable = (DefaultTableModel) ManagerView.discountjt.getModel();
                 dstable.setDataVector(ManagerView.discountData, ManagerView.discountCol);
@@ -648,7 +700,9 @@ public class LoginView extends State {
                 String expDate = e[6];
                 int ccv = Integer.parseInt(e[7]);
 
-                //Adds everything
+                /*
+                Adds everything
+                */
                 orders.add(new Orders(orderID, discountID, personID, managerID, orderDate, ccNumber, expDate, ccv));
             }
         } catch (SQLException ex) {
@@ -680,7 +734,9 @@ public class LoginView extends State {
                 }
                 int quantity = Integer.parseInt(e[3]);
 
-                //Adds everything
+                /*
+                Adds everything
+                */
                 orderDetails.add(new OrderDetails(orderID, inventoryID, discountID, quantity));
             }
         } catch (SQLException ex) {

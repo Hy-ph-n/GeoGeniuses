@@ -25,20 +25,29 @@ import java.util.regex.*;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
 
-//The customer view is entered by either a customer account or a guest account.
+/**
+ * The customer view is entered by either a customer account or a guest account.
+ * @author David Bowen
+ */
 public class CustomerView extends State {
 
     static ArrayList<JButton> items = new ArrayList();
 
     static ArrayList<ArrayList<Cart>> cartList = new ArrayList<>();
 
-    //The cart arraylist will track items waiting to be purchased.
+    /*
+    The cart arraylist will track items waiting to be purchased.
+     */
     static ArrayList<Cart> cart = new ArrayList();
 
-    //The personDetails integer will contain the current user's arraylist index value
+    /*
+    The personDetails integer will contain the current user's arraylist index value
+     */
     static int personDetails = 0;
 
-    //The decimal format is now listed properly.
+    /*
+    The decimal format is now listed properly.
+     */
     static DecimalFormat f = new DecimalFormat("#,###.00");
 
     static JPanel panel = new JPanel(null);
@@ -64,9 +73,13 @@ public class CustomerView extends State {
     static JLabel price;
     static JLabel quantity;
 
-    //Items selected is just to ensure the user does not make an order without having bought anything
+    /*
+    Items selected is just to ensure the user does not make an order without having bought anything
+     */
     static int itemsSelected = 0;
-    //Item selected is used for data retrieval
+    /*
+    Item selected is used for data retrieval
+     */
     static int itemSelected = 0;
 
     static JLabel searchBarEntry;
@@ -99,7 +112,9 @@ public class CustomerView extends State {
     double discountPercent = 0;
     double discountAmount = 0;
 
-    // The current date placed into a variable
+    /*
+    The current date placed into a variable
+     */
     LocalDate currentDate = LocalDate.now();
 
     static int sortedIgn = 0;
@@ -245,7 +260,9 @@ public class CustomerView extends State {
                         itemNotInCart = false;
                         if ((LoginView.inventory.get(itemSelected).quantity - cartItem.quantity) > 0) {
                             cartItem.quantity++;
-                            // Changes the data in the current cart index, the only difference being a change in quantity
+                            /*
+                            Changes the data in the current cart index, the only difference being a change in quantity
+                             */
                             cartList.get(LoginView.personPosition).set(i, cartItem);
                             quantity.setText("Quantity: " + (LoginView.inventory.get(itemSelected).quantity - cartItem.quantity));
                             cartChange = true;
@@ -254,7 +271,10 @@ public class CustomerView extends State {
                             addToCart.setEnabled(false);
                         }
                     }
-                } // If the selected item is not already in the cart, it gets added
+                }
+                /*
+                If the selected item is not already in the cart, it gets added
+                 */
                 if (itemNotInCart) {
                     cartList.get(LoginView.personPosition).add(new Cart(LoginView.inventory.get(itemSelected).inventoryID, LoginView.inventory.get(itemSelected).itemName, LoginView.inventory.get(itemSelected).retailPrice, 1));
                     quantity.setText("Quantity: " + (LoginView.inventory.get(itemSelected).quantity - 1));
@@ -731,7 +751,9 @@ public class CustomerView extends State {
         });
         panel.add(clearCart);
 
-        //This button logs the user out, returning them to the login menu.
+        /*
+        This button logs the user out, returning them to the login menu.
+         */
         logOut = new JButton("Log Out");
         logOut.setBounds(27, 515, 100, 50);
         logOut.setBackground(thistle);
@@ -802,7 +824,9 @@ public class CustomerView extends State {
             connectionStatus.setForeground(Color.red);
             loginView.jp.add(connectionStatus);
 
-            //A switch to the login view
+            /*
+            A switch to the login view
+             */
             LoginView.currentPerson = 0;
             jf.setTitle("Login");
             jp.setVisible(false);
@@ -814,6 +838,11 @@ public class CustomerView extends State {
         panel.add(logOut);
     }
 
+    /**
+    The validate card method checks if the entered card number, security
+    code, and year are valid All values being checked are static, which means
+    they can be accessed without being parameters.
+    */
     void validateCard() {
         boolean cardNum = false;
         boolean cvvValid = false;
@@ -875,6 +904,11 @@ public class CustomerView extends State {
         }
     }
 
+    /**
+     * The validate discount method searches the discount table inside of the
+     * database for a matching code.
+     * @return void
+     */
     void validateDiscount() {
         discountError.setText("");
         if (!discountCode.getText().equals("")) {
@@ -936,6 +970,10 @@ public class CustomerView extends State {
         }
     }
 
+    /*
+    Igneous sort searches the inventory for all items tagged as igneous
+    rocks. It considers price range when making this search.
+    */
     Runnable igneousSort = () -> {
         Color thistle = Color.decode("#D5CBE2");
 
@@ -1023,6 +1061,10 @@ public class CustomerView extends State {
         panel.repaint();
     };
 
+    /*
+    Sedimentary sort searches the inventory for all items tagged as
+    sedimentary rocks. It considers price range when making this search.
+    */
     Runnable sedimentarySort = () -> {
         Color thistle = Color.decode("#D5CBE2");
 
@@ -1110,6 +1152,10 @@ public class CustomerView extends State {
         panel.repaint();
     };
 
+    /*
+    Metamorphic sort searches the inventory for all items tagged as
+    metamorphic rocks. It considers price range when making this search.
+    */
     Runnable metamorphicSort = () -> {
         Color thistle = Color.decode("#D5CBE2");
 
@@ -1197,6 +1243,10 @@ public class CustomerView extends State {
         panel.repaint();
     };
 
+    /*
+    Stone sort searches the inventory for all items tagged as stones. It
+    considers price range when making this search.
+    */
     Runnable stoneSort = () -> {
         Color thistle = Color.decode("#D5CBE2");
 
@@ -1284,6 +1334,10 @@ public class CustomerView extends State {
         panel.repaint();
     };
 
+    /*
+    Gemstone sort searches the inventory for all items tagged as gemstones.
+    It considers price range when making this search.
+    */
     Runnable gemstoneSort = () -> {
         Color thistle = Color.decode("#D5CBE2");
 
@@ -1371,6 +1425,9 @@ public class CustomerView extends State {
         panel.repaint();
     };
 
+    /*
+    Update data gathers all items from the inventory.
+    */
     static Runnable updateData = () -> {
         Color thistle = Color.decode("#D5CBE2");
         GridBagConstraints imageLayout = new GridBagConstraints();
@@ -1428,6 +1485,9 @@ public class CustomerView extends State {
         itemDisplay.validate();
     };
 
+    /*
+    Price sort searches by price range
+    */
     Runnable priceSort = () -> {
         Color thistle = Color.decode("#D5CBE2");
         GridBagConstraints imageLayout = new GridBagConstraints();
@@ -1519,6 +1579,9 @@ public class CustomerView extends State {
         }
     }
 
+    /*
+    Takes information from the cart to generate a html page covering the order
+    */
     Runnable customerCheckout = () -> {
         try {
             double itemSubtotal = 0;
@@ -1628,7 +1691,9 @@ public class CustomerView extends State {
                 costBeforeTax = itemSubtotal;
             }
 
-            //Uses items discount to ensure all values are accurate
+            /*
+            Uses items discount to ensure all values are accurate
+             */
             taxValue = costBeforeTax * TAX;
 
             sb.append("<tr>");
@@ -1673,7 +1738,9 @@ public class CustomerView extends State {
                 File file = new File(filePath);
                 URI uri = file.toURI();
                 Desktop.getDesktop().browse(uri);
-                //Files.deleteIfExists(Paths.get(filePath));
+                /*
+                Files.deleteIfExists(Paths.get(filePath));
+                 */
 
                 Date dateNow = Date.valueOf(currentDate);
 
