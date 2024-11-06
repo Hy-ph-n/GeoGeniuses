@@ -6,6 +6,11 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
 
+/**
+ * The manager item selection class is used to display data of an item selected
+ * by a manager who is acting as a customer in point of sales.
+ * @author David Bowen
+ */
 public class ManagerItemSelection extends State implements ActionListener {
 
     private ArrayList<JButton> items;

@@ -1,5 +1,9 @@
 package geogeniuses;
 
+/**
+ * The inventory class contains all data that matches with individual items
+ * @author David Bowen
+ */
 public class Inventory {
 
     int inventoryID;

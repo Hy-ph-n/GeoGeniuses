@@ -1,5 +1,9 @@
 package geogeniuses;
 
+/**
+ * The cart class contains all data found in each customer's cart
+ * @author David Bowen
+ */
 public class Cart {
     
     int inventoryID;

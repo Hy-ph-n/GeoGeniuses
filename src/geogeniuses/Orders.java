@@ -2,6 +2,10 @@ package geogeniuses;
 
 import java.util.Date;
 
+/**
+ * The orders class contains all the information found in an order.
+ * @author David Bowen
+ */
 public class Orders {
     
     int orderID;

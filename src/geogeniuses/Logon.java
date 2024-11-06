@@ -1,5 +1,9 @@
 package geogeniuses;
 
+/**
+ * The login class contains all variables that correlate with a user
+ * @author David Bowen
+ */
 public class Logon {
     
     int personID;

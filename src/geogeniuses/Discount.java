@@ -1,5 +1,9 @@
 package geogeniuses;
 
+/**
+ * The discount class contains the variables used for examples of discount
+ * @author David Bowen
+ */
 public class Discount {
     
     int discountID;

@@ -10,6 +10,11 @@ import java.awt.event.KeyAdapter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * The register view allows a user to create a new customer account using fields
+ * that they enter data into.
+ * @author David Bowen
+ */
 public class Register extends State {
 
     JTextField registerLogName;

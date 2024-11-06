@@ -5,6 +5,10 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
 
+/**
+ * The item selection class retrieves data for the item selected in the customer view.
+ * @author David Bowen
+ */
 public class ItemSelection extends State implements ActionListener {
 
     private ArrayList<JButton> items;

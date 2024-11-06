@@ -18,6 +18,12 @@ import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import java.util.Date;
 
+/**
+ * The login view is the first view seen by the instructor allows users to login
+ * as manager, customer, or guest, and gives them access to views where they can
+ * register or reset their password.
+ * @author David Bowen
+ */
 public class LoginView extends State {
 
     /*

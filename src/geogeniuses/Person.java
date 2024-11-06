@@ -1,5 +1,9 @@
 package geogeniuses;
 
+/**
+ * The person class contains all data associated with a person
+ * @author David Bowen
+ */
 public class Person {
     
     int personID;

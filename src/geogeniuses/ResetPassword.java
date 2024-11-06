@@ -4,6 +4,12 @@ import javax.swing.*;
 import java.awt.Color;
 import java.sql.*;
 
+/**
+ * The ResetPassword view allows a user, chosen by their unique login name, to
+ * change the password associated with their account by answering security
+ * questions.
+ * @author David Bowen
+ */
 public class ResetPassword extends State {
 
     static JLabel securityQuestion1;
