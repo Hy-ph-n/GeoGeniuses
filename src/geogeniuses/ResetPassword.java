@@ -8,6 +8,7 @@ import java.sql.*;
  * The ResetPassword view allows a user, chosen by their unique login name, to
  * change the password associated with their account by answering security
  * questions.
+ *
  * @author David Bowen
  */
 public class ResetPassword extends State {
@@ -42,7 +43,11 @@ public class ResetPassword extends State {
 
     static int currentPerson = LoginView.currentPerson;
 
-    ResetPassword() {
+    /**
+    * The constructor containing the labels, fields, and buttons the user uses
+    * to reset their password
+    */
+    public ResetPassword() {
 
         Color lightCyan = Color.decode("#DFFDFF");
         Color thistle = Color.decode("#D5CBE2");
@@ -130,7 +135,7 @@ public class ResetPassword extends State {
             try {
                 /*
                 Collects challenge answers for comparison purposes, also makes them all uppercase so there is no case sensitivity
-                */
+                 */
                 String query = "SELECT FirstChallengeAnswer FROM Logon WHERE PersonID = " + currentPerson + ";";
                 ps = con.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
@@ -172,7 +177,7 @@ public class ResetPassword extends State {
 
                 /*
                 If the user answered all questions correctly, they can see the new password and validate password fields
-                */
+                 */
                 if (validUser) {
                     ShowFields();
                 }
@@ -198,14 +203,14 @@ public class ResetPassword extends State {
         returnButton.addActionListener((e) -> {
             /*
             Hides password and validate password fields
-            */
+             */
             HideFields();
 
             /*
             Resets all entries to their default states
-            */
+             */
             Reset();
-            
+
             jp.remove(connectionStatus);
             connectionStatus = new JLabel("");
             connectionStatus.setBounds(5, 445, 200, 15);
@@ -214,13 +219,13 @@ public class ResetPassword extends State {
 
             /*
             Sets the current person back to nothing
-            */
+             */
             currentPerson = 0;
             LoginView.currentPerson = 0;
 
             /*
             A switch to the login view
-            */
+             */
             jf.setTitle("Login");
             jp.setVisible(false);
             jf.remove(jp);
@@ -233,15 +238,14 @@ public class ResetPassword extends State {
 
         /*
         Hides password and validate password fields
-        */
+         */
         HideFields();
     }
 
     /**
      * Collects all questions tied to the associated customer resetting their password
-     * @return void
      */
-    static void CollectQuestions() {
+    public static void CollectQuestions() {
 
         try {
             String query = "SELECT FirstChallengeQuestion FROM Logon WHERE PersonID = " + currentPerson + ";";
@@ -290,9 +294,8 @@ public class ResetPassword extends State {
     /**
      * Shows all fields involved in creating and validating a new password while
      * hiding all fields relating to confirming answers.
-     * @return void
      */
-    void ShowFields() {
+    public void ShowFields() {
         passLabel.setVisible(true);
         passwordField.setVisible(true);
         passError.setVisible(true);
@@ -307,9 +310,8 @@ public class ResetPassword extends State {
     /**
      * Hides all fields involved in creating and validating a new password while
      * showing all fields relating to confirming answers.
-     * @return void
      */
-    void HideFields() {
+    public void HideFields() {
         passLabel.setVisible(false);
         passwordField.setVisible(false);
         passError.setVisible(false);
@@ -323,9 +325,8 @@ public class ResetPassword extends State {
 
     /**
      * Resets all fields to their default states
-     * @return void
      */
-    void Reset() {
+    public void Reset() {
         securityAnswer1.setText("");
         securityAnswer2.setText("");
         securityAnswer3.setText("");
@@ -341,9 +342,8 @@ public class ResetPassword extends State {
 
     /**
      * Creates a new password as long as one has been entered and validated
-     * @return void
      */
-    void NewPassword() {
+    public void NewPassword() {
         boolean valid = true;
         String newPassword = new String(passwordField.getPassword());
         passError.setText("");
@@ -353,18 +353,18 @@ public class ResetPassword extends State {
 
         /*
         If statement ensuring the user entered a password
-        */
+         */
         if (!newPassword.isEmpty()) {
             boolean whitespace = false;
             /*
             Removes any whitespaces from the beginning or end of the password
-            */
+             */
             newPassword = newPassword.trim();
             passwordField.setText(newPassword);
 
             /*
             Ensures no whitespaces are present in the password
-            */
+             */
             for (char c : newPassword.toCharArray()) {
                 if (Character.isWhitespace(c)) {
                     whitespace = true;
@@ -374,7 +374,7 @@ public class ResetPassword extends State {
             if (!whitespace) {
                 /*
                 If statement ensuring the password is not less than 8 characters or more than 20
-                */
+                 */
                 if (newPassword.length() < 8) {
                     valid = false;
                     passError.setText("Must be at least 7 characters");
@@ -402,7 +402,7 @@ public class ResetPassword extends State {
                     }
                     /*
                     A series of if statements to test if the user meets at least 3 out of 4 requirements
-                    */
+                     */
                     if (uppercasePresent) {
                         requirementsMet++;
                     }
@@ -433,11 +433,11 @@ public class ResetPassword extends State {
 
         /*
         If statement ensuring the user entered a validation password
-        */
+         */
         if (!validatePassword.isEmpty()) {
             /*
             Removes any whitespaces from the beginning or end of the validation password
-            */
+             */
             validatePassword = validatePassword.trim();
             passwordValidationField.setText(validatePassword);
 
@@ -462,23 +462,23 @@ public class ResetPassword extends State {
 
                 /*
                 Hides password and validate password fields
-                */
+                 */
                 HideFields();
 
                 /*
                 Resets all entries to their default states
-                */
+                 */
                 Reset();
 
                 /*
                 Sets the current person back to nothing
-                */
+                 */
                 currentPerson = 0;
                 LoginView.currentPerson = 0;
 
                 /*
                 A switch to the login view
-                */
+                 */
                 jf.setTitle("Login");
                 jp.setVisible(false);
                 jf.remove(jp);

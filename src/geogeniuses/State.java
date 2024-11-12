@@ -4,11 +4,11 @@ import java.sql.*;
 import javax.swing.*;
 
 /**
- * State contains all the views associated with the major classes of loginView,
- * registerView, resetPasswordView, customerView, and managerView, as well as
- * some general variables that apply to all the views like the sql connection.
- * @author David Bowen
- */
+* State contains all the views associated with the major classes of loginView,
+* registerView, resetPasswordView, customerView, and managerView, as well as
+* some general variables that apply to all the views like the sql connection.
+* @author David Bowen
+*/
 abstract class State {
 
     static State loginView, registerView, resetPasswordView, customerView, managerView;

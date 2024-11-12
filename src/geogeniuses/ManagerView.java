@@ -36,11 +36,11 @@ import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * ManagerView is the largest and most complicated of the views, allowing valid users to
- * add/edit/remove items, discounts, and people, as well as viewing orders, viewing users
- * and making point of sales.
- * @author David Bowen
- */
+* ManagerView is the largest and most complicated of the views, allowing valid users to
+* add/edit/remove items, discounts, and people, as well as viewing orders, viewing users
+* and making point of sales.
+* @author David Bowen
+*/
 public class ManagerView extends State {
 
     static DecimalFormat f = new DecimalFormat("#,##0.00");
@@ -337,7 +337,7 @@ public class ManagerView extends State {
 
     /*
     These int variables will contain the discount's starting year, month, and day.
-     */
+    */
     int discountStartYear = currentDate.getYear();
     int discountStartMonth = currentDate.getMonthValue();
     static int discountStartDay = currentDate.getDayOfMonth();
@@ -350,14 +350,14 @@ public class ManagerView extends State {
 
     /*
     These int variables will contain the discount's expiration year, month, and day.
-     */
+    */
     int discountExpirationYear = currentDate.getYear();
     int discountExpirationMonth = currentDate.getMonthValue();
     int discountExpirationDay = currentDate.getDayOfMonth();
 
     /*
     These strings will be used to ensure the date is adapted properly.
-     */
+    */
     String startingMonth = "";
     String startingDay = "";
     String expirationMonth = "";
@@ -369,7 +369,7 @@ public class ManagerView extends State {
 
     /*
     The table, scrollpane, column, and data for discounts
-     */
+    */
     static JTable discountjt;
     ScrollPane discountjs;
     static String[] discountCol;
@@ -377,7 +377,7 @@ public class ManagerView extends State {
 
     /*
     The table, scrollpane, column, and data for items
-     */
+    */
     static JTable discountitemsjt;
     ScrollPane discountitemsjs;
     static String[] discountitemsCol;
@@ -385,7 +385,7 @@ public class ManagerView extends State {
 
     /*
     Buttons for editing users
-     */
+    */
     static JButton addUser;
     static JButton editUser;
     static JButton deleteUser;
@@ -413,7 +413,12 @@ public class ManagerView extends State {
     JButton logOut;
     JButton returnToView;
 
-    ManagerView() {
+    /**
+    * The manager view constructor has several different views depending on the manager's
+    * aims whether they are editing users, items, or discounts, shopping as a customer, or
+    * viewing orders.
+    */
+    public ManagerView() {
 
         Color lightCyan = Color.decode("#DFFDFF");
         Color thistle = Color.decode("#D5CBE2");
@@ -4262,10 +4267,6 @@ public class ManagerView extends State {
         }
     }
 
-    /**
-     * Sets the starting day for the search of orders between two dates
-     * @return void
-     */
     void setOrderStartDay() {
         orderStartMonth = Integer.parseInt(minimumMonth.getSelectedItem().toString());
         minimumDay.removeAllItems();
@@ -4283,10 +4284,6 @@ public class ManagerView extends State {
         }
     }
 
-    /**
-     * Sets the ending day for the search of orders between two dates
-     * @return void
-     */
     void setOrderEndDay() {
         orderEndingMonth = Integer.parseInt(maximumMonth.getSelectedItem().toString());
         maximumDay.removeAllItems();
@@ -4305,10 +4302,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Adapts the dates for the search of orders between two dates into usuable form
-     * @return void
-     */
-    void adaptOrderDates() {
+    * Adapts the dates for the search of orders between two dates into usable form
+    */
+    public void adaptOrderDates() {
         if (orderStartMonth < 10) {
             orderStartingMonth = "0" + orderStartMonth;
         } else {
@@ -4334,10 +4330,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Resets order year, month, and date back to their original values for the search of orders between two dates
-     * @return void
-     */
-    private void resetOrderDates() {
+    * Resets order year, month, and date back to their original values for the search of orders between two dates
+    */
+    public void resetOrderDates() {
         Calendar today = Calendar.getInstance();
         int currentYear = today.get(Calendar.YEAR);
         int currentMonth = today.get(Calendar.MONTH) + 1;
@@ -4792,10 +4787,9 @@ public class ManagerView extends State {
     };
 
     /**
-     * Retrieves the security questions stored in the database
-     * @return void
-     */
-    static void includeQuestions() {
+    * Retrieves the security questions stored in the database
+    */
+    public static void includeQuestions() {
         boolean question1Update = true;
         boolean question2Update = true;
         boolean question3Update = true;
@@ -4825,10 +4819,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Clears all fields in edit users and removes the selected user
-     * @return void
-     */
-    void accountDataReset() {
+    * Clears all fields in edit users and removes the selected user
+    */
+    public void accountDataReset() {
         personsLoginName.setText("");
         personsLoginNameError.setText("");
         personsPassword.setText("");
@@ -4875,10 +4868,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Creates a new user using entered values
-     * @return void
-     */
-    void newAccount() {
+    * Creates a new user using entered values
+    */
+    public void newAccount() {
         /*
         A variable testing if a new account can be created. This value
         only needs to get switched once to prevent account creation.
@@ -5401,10 +5393,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Edits the selected user using entered values
-     * @return void
-     */
-    void editAccount() {
+    * Edits the selected user using entered values
+    */
+    public void editAccount() {
         /*
         A variable testing if a new account can be created. This value
         only needs to get switched once to prevent account editing.
@@ -5926,10 +5917,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Deletes the selected user
-     * @return void
-     */
-    void deleteAccount() {
+    * Deletes the selected user
+    */
+    public void deleteAccount() {
         try {
             int personID = LoginView.person.get(userSelected).personID;
             personDetailsSelected = userSelected;
@@ -5996,10 +5986,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Creates a report of all items
-     * @return void
-     */
-    void itemsReport() {
+    * Creates a report of all items
+    */
+    public void itemsReport() {
         StringBuilder orderReport = new StringBuilder();
         orderReport.append("<html><body><h1>All Items</h1>");
         orderReport.append("<style>")
@@ -6076,10 +6065,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Creates a new item using entered values
-     * @return void
-     */
-    void newItem() {
+    * Creates a new item using entered values
+    */
+    public void newItem() {
         boolean addValid = true;
         String itemName = itemsName.getText();
         String itemDescription = itemsDescription.getText();
@@ -6291,10 +6279,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Edits the selected item using entered values
-     * @return void
-     */
-    void editItem() {
+    * Edits the selected item using entered values
+    */
+    public void editItem() {
         boolean editValid = true;
         String itemName = itemsName.getText();
         String itemDescription = itemsDescription.getText();
@@ -6493,10 +6480,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Deletes the selected item
-     * @return void
-     */
-    void deleteItem() {
+    * Deletes the selected item
+    */
+    public void deleteItem() {
         try {
             int itemID = LoginView.inventory.get(itemSelected).inventoryID;
 
@@ -6624,10 +6610,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Sets the start day for discounts
-     * @return void
-     */
-    void setDiscountStartDay() {
+    * Sets the start day for discounts
+    */
+    public void setDiscountStartDay() {
         discountStartMonth = Integer.parseInt(startMonth.getSelectedItem().toString());
         startDay.removeAllItems();
         discountStartDay = 1;
@@ -6645,10 +6630,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Sets the end day for discounts
-     * @return void
-     */
-    void setDiscountEndDay() {
+    * Sets the end day for discounts
+    */
+    public void setDiscountEndDay() {
         discountExpirationMonth = Integer.parseInt(expireMonth.getSelectedItem().toString());
         expireDay.removeAllItems();
         discountExpirationDay = 1;
@@ -6666,10 +6650,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Adapts dates for discounts
-     * @return void
-     */
-    void adaptDiscountDates() {
+    * Adapts dates for discounts
+    */
+    public void adaptDiscountDates() {
         if (discountStartMonth < 10) {
             startingMonth = "0" + discountStartMonth;
         } else {
@@ -6695,10 +6678,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Creates a new user using entered values
-     * @return void
-     */
-    private void resetDiscountDates() {
+    * Creates a new user using entered values
+    */
+    public void resetDiscountDates() {
         Calendar today = Calendar.getInstance();
         int currentMonth = today.get(Calendar.MONTH) + 1;
         int currentDay = today.get(Calendar.DAY_OF_MONTH);
@@ -6713,10 +6695,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Creates a new discount using entered values
-     * @return void
-     */
-    void newDiscount() {
+    * Creates a new discount using entered values
+    */
+    public void newDiscount() {
         boolean discountValid = true;
         String discountCode = discountsCode.getText();
         String discountDescription = discountsDescription.getText();
@@ -6853,10 +6834,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Edits the selected discount using entered values
-     * @return void
-     */
-    void editDiscount() {
+    * Edits the selected discount using entered values
+    */
+    public void editDiscount() {
         boolean discountValid = true;
         String discountCode = discountsCode.getText();
         String discountDescription = discountsDescription.getText();
@@ -6980,12 +6960,16 @@ public class ManagerView extends State {
     }
 
     /**
-     * Uploads an associated image to the database and assigns it to the selected item
-     */
-    class UploadImage extends Thread {
+    Uploads an associated image to the database and assigns it to the selected item
+    */
+    public class UploadImage extends Thread {
 
         File imageFile = null;
 
+        /**
+        * Interacts with the image file
+        * @param imageFile 
+        */
         UploadImage(File imageFile) {
             this.imageFile = imageFile;
         }
@@ -7015,10 +6999,9 @@ public class ManagerView extends State {
     };
 
     /**
-     * Resets customer data to its default state, clearing all fields
-     * @return void
-     */
-    void clearCustomerData() {
+    * Resets customer data to its default state, clearing all fields
+    */
+    public void clearCustomerData() {
         inventory.setPreferredSize(new Dimension(625, 0));
         jp.validate();
 
@@ -7069,10 +7052,9 @@ public class ManagerView extends State {
     }
 
     /**
-     * Creates a pdf document describing all items that need to be restocked
-     * @return void
-     */
-    void restockAlert() {
+    * Creates a pdf document describing all items that need to be restocked
+    */
+    public void restockAlert() {
         Document document = new Document();
         Page page = document.getPages().add();
         TextFragment title = new TextFragment("Items in Need of Restock");

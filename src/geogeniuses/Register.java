@@ -4,17 +4,16 @@ import javax.swing.*;
 import javax.swing.JButton;
 import java.sql.ResultSet;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * The register view allows a user to create a new customer account using fields
- * that they enter data into.
- * @author David Bowen
- */
+* The register view allows a user to create a new customer account using fields
+* that they enter data into.
+* @author David Bowen
+*/
 public class Register extends State {
 
     JTextField registerLogName;
@@ -76,10 +75,9 @@ public class Register extends State {
     static JButton registerButton;
 
     /**
-    * The register class is responsible for allowing the creation of new users, as long as they submit relevant data.
-    * @author David Bowen
+    * The register constructor is responsible for allowing the creation of new users, as long as they submit relevant data.
     */
-    Register() {
+    public Register() {
 
         Color lightCyan = Color.decode("#DFFDFF");
         Color thistle = Color.decode("#D5CBE2");
@@ -532,10 +530,9 @@ public class Register extends State {
     }
 
     /**
-     * Retrieves the security questions stored in the database
-     * @return void
-     */
-    static void includeQuestions() {
+    * Retrieves the security questions stored in the database
+    */
+    public static void includeQuestions() {
         boolean question1Update = true;
         boolean question2Update = true;
         boolean question3Update = true;
@@ -565,10 +562,9 @@ public class Register extends State {
     }
 
     /**
-     * Creates a new user using entered values
-     * @return void
-     */
-    void createNewAccount() {
+    * Creates a new user using entered values
+    */
+    public void createNewAccount() {
         /*
         A variable testing if a new account can be created. This value
         only needs to get switched once to prevent account creation.
@@ -977,10 +973,9 @@ public class Register extends State {
     }
 
     /**
-     * Resets all fields to their default states
-     * @return void
-     */
-    void Reset() {
+    * Resets all fields to their default states
+    */
+    public void Reset() {
         registerLogName.setText("");
         logNameError.setText("");
         registerPassword.setText("");

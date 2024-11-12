@@ -6,17 +6,25 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 
 /**
- * The item selection class retrieves data for the item selected in the customer view.
- * @author David Bowen
- */
+* The item selection class retrieves data for the item selected in the customer view.
+* @author David Bowen
+*/
 public class ItemSelection extends State implements ActionListener {
 
     private ArrayList<JButton> items;
 
+    /**
+    * The arraylist of items is interacted with for item selection
+    * @param items The arraylist filled with items of the inventory
+    */
     public ItemSelection(ArrayList<JButton> items) {
         this.items = items;
     }
 
+    /**
+    * Action performed is the response to the customer or guest selecting an item
+    * @param event When an item is selected by a customer, guest, or manager in point of sales
+    */
     @Override
     public void actionPerformed(ActionEvent event) {
         String itemName = event.getActionCommand();

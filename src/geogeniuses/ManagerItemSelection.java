@@ -7,18 +7,26 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 
 /**
- * The manager item selection class is used to display data of an item selected
- * by a manager who is acting as a customer in point of sales.
- * @author David Bowen
- */
+* The manager item selection class is used to display data of an item selected
+* by a manager who is acting as a customer in point of sales.
+* @author David Bowen
+*/
 public class ManagerItemSelection extends State implements ActionListener {
 
     private ArrayList<JButton> items;
 
+    /**
+    * The arraylist of items is interacted with for item selection
+    * @param items The arraylist filled with items of the inventory
+    */
     public ManagerItemSelection(ArrayList<JButton> items) {
         this.items = items;
     }
 
+    /**
+    * Action performed is the response to the manager selecting an item when editing items
+    * @param event When an item is selected by the manager in the edit items view
+    */
     @Override
     public void actionPerformed(ActionEvent event) {
         String itemName = event.getActionCommand();

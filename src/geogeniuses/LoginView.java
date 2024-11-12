@@ -11,19 +11,17 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
-import java.util.Date;
 
 /**
- * The login view is the first view seen by the instructor allows users to login
- * as manager, customer, or guest, and gives them access to views where they can
- * register or reset their password.
- * @author David Bowen
- */
+* The login view is the first view seen by the instructor allows users to login
+* as manager, customer, or guest, and gives them access to views where they can
+* register or reset their password.
+* @author David Bowen
+*/
 public class LoginView extends State {
 
     /*
@@ -52,7 +50,11 @@ public class LoginView extends State {
 
     static boolean personFirstUpdate = true;
 
-    LoginView() {
+    /**
+    * The login view constructor is the user is given the opportunity to enter a username and password
+    * begin to register as a new user, become a guest, or reset their password.
+    */
+    public LoginView() {
 
         ImageIcon icon = new ImageIcon(getClass().getResource("/Geo-Geniuses.png"));
         jf.setIconImage(icon.getImage());
@@ -360,10 +362,9 @@ public class LoginView extends State {
     }
 
     /**
-     * Loads in all necessary data from the database
-     * @return void
-     */
-    void load() {
+    * Loads in all necessary data from the database
+    */
+    public void load() {
         try {
             if (con != null & !con.isClosed()) {
                 Thread personData = new Thread(personInfo);

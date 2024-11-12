@@ -4,11 +4,11 @@ import static geogeniuses.State.con;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
-import javax.swing.JLabel;
 import javax.swing.Timer;
 
 /**
-* The class is just named after me and what this is. This is Advanced Java Programming, Mastery Assessment 6.
+* The program's title, GeoGeniuses, is used for the java file where main is
+* located, though most of the program's code is in the views.
 * @author David Bowen
 */
 public class GeoGeniuses extends State {
@@ -22,6 +22,11 @@ public class GeoGeniuses extends State {
 
     static int delay = 7500;
 
+    /**
+    * The main class is where the program truly begins. It sets up the database connection and enters
+    * our first state, the login state.
+    * @param args The standard parameter for main
+    */
     public static void main(String[] args) {
 
         try {

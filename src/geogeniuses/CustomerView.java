@@ -147,7 +147,11 @@ public class CustomerView extends State {
     static double minPrice;
     static double maxPrice;
 
-    CustomerView() {
+    /**
+    * The customer view constructor is where users interact with the created interface
+    * to browse items as customer or guest, and purchase if they are a customer.
+    */
+    public CustomerView() {
 
         Color lightCyan = Color.decode("#DFFDFF");
         Color thistle = Color.decode("#D5CBE2");
@@ -839,11 +843,11 @@ public class CustomerView extends State {
     }
 
     /**
-    The validate card method checks if the entered card number, security
-    code, and year are valid All values being checked are static, which means
-    they can be accessed without being parameters.
+    * The validate card method checks if the entered card number, security
+    * code, and year are valid All values being checked are static, which means
+    * they can be accessed without being parameters.
     */
-    void validateCard() {
+    public void validateCard() {
         boolean cardNum = false;
         boolean cvvValid = false;
         boolean cardNotExpired = false;
@@ -905,11 +909,10 @@ public class CustomerView extends State {
     }
 
     /**
-     * The validate discount method searches the discount table inside of the
-     * database for a matching code.
-     * @return void
-     */
-    void validateDiscount() {
+    * The validate discount method searches the discount table inside of the
+    * database for a matching code.
+    */
+    public void validateDiscount() {
         discountError.setText("");
         if (!discountCode.getText().equals("")) {
             String n[];
